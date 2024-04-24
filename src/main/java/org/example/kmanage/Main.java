@@ -46,7 +46,9 @@ public class Main extends Application {
         Label pw = new Label("Password:");
         grid.add(pw, 0, 2);
 
+
         PasswordField passwordBox = new PasswordField();
+
         grid.add(passwordBox, 1, 2);
 
         Button btn = new Button("Sign in");
@@ -58,6 +60,12 @@ public class Main extends Application {
         final Text actiontarget = new Text();
         grid.add(actiontarget, 1, 6);
 
+        passwordBox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                btn.fire();
+            }
+        });
         btn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
