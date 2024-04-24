@@ -17,9 +17,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 //taken from https://www.javaguides.net/2022/11/javafx-login-form-validation-example.html
 public class Main extends Application {
-
-    private String adminUsername = "admin";
-    private String adminPassword = "admin";
+    private LoginDAO ldi = new LoginDAOImp();
 
     public static void main(String[] args) {
         launch(args);
@@ -64,23 +62,15 @@ public class Main extends Application {
 
             @Override
             public void handle(ActionEvent e) {
+
+
                 String username = userTextField.getText().toString();
                 String password = passwordBox.getText().toString();
 
-                if(userTextField.getText().isEmpty()) {
-                    showAlert(Alert.AlertType.ERROR, "Form Error!",
-                            "Please enter your email id");
-                    return;
-                }
-                if(passwordBox.getText().isEmpty()) {
-                    showAlert(Alert.AlertType.ERROR, "Form Error!",
-                            "Please enter a password");
-                    return;
-                }
-
-                if(adminUsername.equals(username) && adminPassword.equals(password)){
-                    infoBox("Login Successful!", null, "Success");
-                } else{
+                String loggedInUser = ldi.checkLogin(username, password);
+                if (loggedInUser != null) {
+                    infoBox("Login Successful! Logged in as " + loggedInUser, null, "Success");
+                } else {
                     infoBox("Please enter correct Email and Password", null, "Failed");
                 }
             }
