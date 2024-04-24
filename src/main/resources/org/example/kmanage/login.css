@@ -1,3 +1,5 @@
 .root {
-    -fx-background-color: RED;
+
+    -fx-background-image: url("loginfor2.jpg");
+    -fx-background-color: GRAY;
 }
