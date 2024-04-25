@@ -5,13 +5,16 @@ import java.time.LocalTime;
 
 import com.calendarfx.model.Calendar;
 import com.calendarfx.model.Calendar.Style;
+import com.calendarfx.model.CalendarEvent;
 import com.calendarfx.model.CalendarSource;
+import com.calendarfx.model.Entry;
 import com.calendarfx.view.CalendarView;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.w3c.dom.events.Event;
 
 public class CalenderApp extends Application {
 
@@ -38,7 +41,9 @@ public class CalenderApp extends Application {
 
         calendarView.setRequestedTime(LocalTime.now());
 
-        Thread updateTimeThread = new Thread("Calendar: Update Time Thread") {
+
+
+            Thread updateTimeThread = new Thread("Calendar: Update Time Thread") {
             @Override
             public void run() {
                 while (true) {
@@ -69,9 +74,5 @@ public class CalenderApp extends Application {
         primaryStage.setHeight(1000);
         primaryStage.centerOnScreen();
         primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
