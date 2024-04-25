@@ -81,6 +81,14 @@ public class Main extends Application {
                 String loggedInUser = ldi.checkLogin(username, password);
                 if (loggedInUser != null) {
                     infoBox("Login Successful! Logged in as " + loggedInUser, null, "Success");
+                    primaryStage.close();
+                    CalenderApp calenderApp = new CalenderApp(loggedInUser);
+
+                    try {
+                        calenderApp.start(new Stage());
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
                 } else {
                     infoBox("Please enter correct Email and Password", null, "Failed");
                 }
