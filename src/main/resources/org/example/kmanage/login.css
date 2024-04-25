@@ -1,5 +1,22 @@
 .root {
-
     -fx-background-image: url("loginfor2.jpg");
-    -fx-background-color: GRAY;
 }
+
+.text-field {
+    -fx-font-size: 14px;
+    -fx-font-family: "Berlin Sans FB";
+    -fx-border-color: BLACK;
+    -fx-border-radius: 5;
+    -fx-padding: 5;
+}
+
+.label {
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+}
+
+.check-box .text {
+    -fx-font-weight: bold;
+}
+
+
