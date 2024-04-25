@@ -51,6 +51,9 @@ public class Main extends Application {
 
         grid.add(passwordBox, 1, 2);
 
+        CheckBox rememberMeCheckBox = new CheckBox("Husk mig");
+        grid.add(rememberMeCheckBox, 1, 3);
+
         Button btn = new Button("Sign in");
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
