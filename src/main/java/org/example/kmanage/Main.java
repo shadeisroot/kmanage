@@ -27,6 +27,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("JavaFX Login Example");
         GridPane grid = new GridPane();
+        primaryStage.setResizable(false);
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
