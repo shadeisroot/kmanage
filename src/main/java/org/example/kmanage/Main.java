@@ -85,19 +85,22 @@ public class Main extends Application {
                 String username = userTextField.getText().toString();
                 String password = passwordBox.getText().toString();
 
-                //tjekker hvem der logger ind
-                String loggedInUser = ldi.checkLogin(username, password);
+
+                User loggedInUser = ldi.checkLogin(username, password);
 
                 //håndter om login er vellykket eller fejlet
+
                 if (loggedInUser != null) {
-                    infoBox("Login Successful! Logged in as " + loggedInUser, null, "Success");
+                    infoBox("Login Successful! Logged in as " + loggedInUser.getUsername() , null, "Success");
                     primaryStage.close();
 
                     //åbner næste vindue
                     CalenderApp calenderApp = new CalenderApp(loggedInUser);
                     HelloApplication helloApplication = new HelloApplication();
                     try {
+
                         helloApplication.start(new Stage());
+
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
