@@ -12,7 +12,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.kmanage.HelloController">
     <children>
-        <Button fx:id="notButton" layoutX="89.0" layoutY="41.0" mnemonicParsing="false" onAction="#notButtonPressed" text="Noti" />
+        <Button fx:id="notButton" layoutX="150.0" layoutY="50.0" mnemonicParsing="false" onAction="#notButtonPressed" text="Noti" />
         <HBox layoutX="70.0" layoutY="154.0" spacing="20">
             <children>
                 <TableView prefHeight="402.0" prefWidth="200.0">
@@ -23,20 +23,21 @@
                 </TableView>
                 <GridPane fx:id="calendarGrid">
                     <children>
+
                     </children>
                 </GridPane>
             </children>
         </HBox>
-        <Button layoutX="118.0" layoutY="675.0" mnemonicParsing="false" text="Opret" />
-        <Label layoutX="463.0" layoutY="32.0" text="NAVN PÅ SIDE" />
-        <MenuButton layoutX="1083.0" layoutY="41.0" mnemonicParsing="false" text="Profil">
+        <Button layoutX="150.0" layoutY="700.0" mnemonicParsing="false" text="Opret" />
+        <Label layoutX="600.0" layoutY="50.0" text="NAVN PÅ SIDE" />
+        <MenuButton layoutX="1000.0" layoutY="50.0" mnemonicParsing="false" text="Profil">
             <items>
                 <MenuItem mnemonicParsing="false" text="Action 1" />
                 <MenuItem mnemonicParsing="false" text="Action 2" />
             </items>
         </MenuButton>
-        <Button layoutX="450.0" layoutY="688.0" mnemonicParsing="false" text="Min kalender" />
-        <Button layoutX="1097.0" layoutY="688.0" mnemonicParsing="false" text="zoom ud" />
-        <Button layoutX="1001.0" layoutY="688.0" mnemonicParsing="false" text="zoom ind" />
+        <Button layoutX="600.0" layoutY="700.0" mnemonicParsing="false" text="Min kalender" />
+        <Button fx:id="zoomOut" layoutX="1097.0" layoutY="700.0" mnemonicParsing="false" onAction="#zoomOutPressed" text="zoom ud" />
+        <Button fx:id="zoomInd" layoutX="1001.0" layoutY="700.0" mnemonicParsing="false" onAction="#zoomIndPressed" text="zoom ind" />
     </children>
 </AnchorPane>
