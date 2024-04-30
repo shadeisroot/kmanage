@@ -16,16 +16,20 @@ public class LoginDAOImp implements LoginDAO{
         }
     }
 
-    public String checkLogin(String username, String password) {
+    public User checkLogin(String username, String password) {
         try {
-            String sql = "SELECT * FROM Login WHERE Username = ? AND Password = ?";
+            String sql = "SELECT * from dbo.Login " +
+                    "join dbo.Permissions P on P.id = Login.pid " +
+                    "join dbo.employee e on e.userid = Login.uid " +
+                    "WHERE Username = ? AND Password = ?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, username);
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getString("Username"); // return the username if login is successful
             }
+            User user = new User(rs.getString("Username"), new Role(rs.getInt("id"), new Permissions(rs.getInt("id"), rs.getString("name"))) , new Profile(rs.getString("Navn"), rs.getString("Stilling"), rs.getString("Afdeling")));
+            return user;
         } catch (SQLException e) {
             System.out.println("Error" + e);
         }

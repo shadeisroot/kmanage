@@ -79,14 +79,13 @@ public class Main extends Application {
                 String username = userTextField.getText().toString();
                 String password = passwordBox.getText().toString();
 
-                String loggedInUser = ldi.checkLogin(username, password);
+                User loggedInUser = ldi.checkLogin(username, password);
+                ;
                 if (loggedInUser != null) {
-                    infoBox("Login Successful! Logged in as " + loggedInUser, null, "Success");
+                    infoBox("Login Successful! Logged in as " + loggedInUser.getUsername() , null, "Success");
                     primaryStage.close();
-                    CalenderApp calenderApp = new CalenderApp(loggedInUser);
 
                     try {
-                        calenderApp.start(new Stage());
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
