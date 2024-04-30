@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.example.kmanage.HelloController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.kmanage.HelloController">
+    <children>
+        <Button fx:id="notButton" layoutX="89.0" layoutY="41.0" mnemonicParsing="false" onAction="#notButtonPressed" text="Noti" />
+        <HBox layoutX="70.0" layoutY="154.0" spacing="20">
+            <children>
+                <TableView prefHeight="402.0" prefWidth="200.0">
+                    <columns>
+                        <TableColumn prefWidth="75.0" text="C1" />
+                        <TableColumn prefWidth="75.0" text="C2" />
+                    </columns>
+                </TableView>
+                <GridPane fx:id="calendarGrid">
+                    <children>
+                    </children>
+                </GridPane>
+            </children>
+        </HBox>
+        <Button layoutX="118.0" layoutY="675.0" mnemonicParsing="false" text="Opret" />
+        <Label layoutX="463.0" layoutY="32.0" text="NAVN PÅ SIDE" />
+        <MenuButton layoutX="1083.0" layoutY="41.0" mnemonicParsing="false" text="Profil">
+            <items>
+                <MenuItem mnemonicParsing="false" text="Action 1" />
+                <MenuItem mnemonicParsing="false" text="Action 2" />
+            </items>
+        </MenuButton>
+        <Button layoutX="450.0" layoutY="688.0" mnemonicParsing="false" text="Min kalender" />
+        <Button layoutX="1097.0" layoutY="688.0" mnemonicParsing="false" text="zoom ud" />
+        <Button layoutX="1001.0" layoutY="688.0" mnemonicParsing="false" text="zoom ind" />
+    </children>
+</AnchorPane>
