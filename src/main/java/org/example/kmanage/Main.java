@@ -93,6 +93,7 @@ public class Main extends Application {
                 if (loggedInUser != null) {
                     infoBox("Login Successful! Logged in as " + loggedInUser.getUsername() , null, "Success");
                     primaryStage.close();
+                    UserSession.getInstance(loggedInUser);
 
                     //åbner næste vindue
 
