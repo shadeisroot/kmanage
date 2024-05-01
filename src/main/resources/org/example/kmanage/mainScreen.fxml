@@ -33,5 +33,7 @@
         <Button layoutX="600.0" layoutY="700.0" mnemonicParsing="false" text="Min kalender" />
         <Button fx:id="zoomOut" layoutX="1097.0" layoutY="700.0" mnemonicParsing="false" onAction="#zoomOutPressed" text="zoom ud" />
         <Button fx:id="zoomInd" layoutX="1001.0" layoutY="700.0" mnemonicParsing="false" onAction="#zoomIndPressed" text="zoom ind" />
+      <Button fx:id="tilbageButton" layoutX="317.0" layoutY="129.0" mnemonicParsing="false" onAction="#tilbageButtonPressed" text="&lt;" />
+      <Button fx:id="fremButton" layoutX="342.0" layoutY="129.0" mnemonicParsing="false" onAction="#fremButtonPressed" text="&gt;" />
     </children>
 </AnchorPane>

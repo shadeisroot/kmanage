@@ -96,6 +96,7 @@ public class Main extends Application {
                     UserSession.getInstance(loggedInUser);
 
                     //åbner næste vindue
+
                     HelloApplication helloApplication = new HelloApplication();
                     try {
 
