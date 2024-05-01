@@ -35,7 +35,6 @@ public class HelloController {
   
  
 
-=======
     PlistDAO pdi = new PlistDAOimp();
 
 
@@ -51,7 +50,6 @@ public class HelloController {
     public void initialize() {
 
         weekView();
-=======
         initializeplist();
 
         updateCalender();
@@ -62,7 +60,7 @@ public class HelloController {
     public void initializeplist() {
         plistc1.setCellValueFactory(new PropertyValueFactory<>("name"));
         plistc2.setCellValueFactory(new PropertyValueFactory<>("position"));
-        plistc3.setCellValueFactory(new PropertyValueFactory<>("department"));
+        plistc3.setCellValueFactory(new PropertyValueFactory<>("department"));;
         plist.setItems(profiles);
     }
 
