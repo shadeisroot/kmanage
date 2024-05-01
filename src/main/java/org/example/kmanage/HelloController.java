@@ -1,21 +1,30 @@
 package org.example.kmanage;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 public class HelloController {
 
 
-
+    public TableView plist;
+    public TableColumn plistc1;
+    public TableColumn plistc2;
+    public TableColumn plistc3;
     @FXML
     private GridPane calendarGrid;
 
+    PlistDAO pdi = new PlistDAOimp();
 
 
+    private ObservableList<Profile> profiles = pdi.getprofile();
     private enum ViewMode { DAG, UGE, MÅNED, TRE_MÅNEDER }
     private ViewMode currentViewMode = ViewMode.DAG;
 
@@ -24,6 +33,11 @@ public class HelloController {
 
     User loggedInUser = UserSession.getInstance(null).getUser();
     public void initialize() {
+        plistc1.setCellValueFactory(new PropertyValueFactory<>("name"));
+        plistc2.setCellValueFactory(new PropertyValueFactory<>("position"));
+        plistc3.setCellValueFactory(new PropertyValueFactory<>("department"));
+        plist.setItems(profiles);
+
         updateCalender();
     }
 
