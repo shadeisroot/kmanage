@@ -33,14 +33,18 @@ public class HelloController {
 
     User loggedInUser = UserSession.getInstance(null).getUser();
     public void initialize() {
-        plistc1.setCellValueFactory(new PropertyValueFactory<>("name"));
-        plistc2.setCellValueFactory(new PropertyValueFactory<>("position"));
-        plistc3.setCellValueFactory(new PropertyValueFactory<>("department"));
-        plist.setItems(profiles);
+        initializeplist();
 
         updateCalender();
     }
 
+
+    public void initializeplist() {
+        plistc1.setCellValueFactory(new PropertyValueFactory<>("name"));
+        plistc2.setCellValueFactory(new PropertyValueFactory<>("position"));
+        plistc3.setCellValueFactory(new PropertyValueFactory<>("department"));
+        plist.setItems(profiles);
+    }
 
     @FXML
     private void notButtonPressed(ActionEvent event) {
