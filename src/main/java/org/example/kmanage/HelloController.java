@@ -1,12 +1,16 @@
 package org.example.kmanage;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -17,11 +21,25 @@ import java.util.Locale;
 
 public class HelloController {
 
+
+    public TableView plist;
+    public TableColumn plistc1;
+    public TableColumn plistc2;
+    public TableColumn plistc3;
     @FXML
     private GridPane calendarGrid;
 
+
     private LocalDate currentDate = LocalDate.now();
 
+  
+ 
+
+=======
+    PlistDAO pdi = new PlistDAOimp();
+
+
+    private ObservableList<Profile> profiles = pdi.getprofile();
 
     private enum ViewMode { DAG, UGE, MÅNED, TRE_MÅNEDER }
     private ViewMode currentViewMode = ViewMode.UGE;
@@ -29,9 +47,23 @@ public class HelloController {
     @FXML
     private Button zoomInd, zoomOut;
 
-
+    User loggedInUser = UserSession.getInstance(null).getUser();
     public void initialize() {
+
         weekView();
+=======
+        initializeplist();
+
+        updateCalender();
+
+    }
+
+
+    public void initializeplist() {
+        plistc1.setCellValueFactory(new PropertyValueFactory<>("name"));
+        plistc2.setCellValueFactory(new PropertyValueFactory<>("position"));
+        plistc3.setCellValueFactory(new PropertyValueFactory<>("department"));
+        plist.setItems(profiles);
     }
 
     @FXML
