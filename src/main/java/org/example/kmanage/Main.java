@@ -81,22 +81,18 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent e) {
 
-
                 String username = userTextField.getText().toString();
                 String password = passwordBox.getText().toString();
-
 
                 User loggedInUser = ldi.checkLogin(username, password);
 
                 //håndter om login er vellykket eller fejlet
-
                 if (loggedInUser != null) {
                     infoBox("Login Successful! Logged in as " + loggedInUser.getUsername() , null, "Success");
                     primaryStage.close();
                     UserSession.getInstance(loggedInUser);
 
                     //åbner næste vindue
-
                     HelloApplication helloApplication = new HelloApplication();
                     try {
 
