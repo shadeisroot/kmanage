@@ -95,7 +95,7 @@ public class Main extends Application {
                     primaryStage.close();
 
                     //åbner næste vindue
-                    CalenderApp calenderApp = new CalenderApp(loggedInUser);
+
                     HelloApplication helloApplication = new HelloApplication();
                     try {
 
