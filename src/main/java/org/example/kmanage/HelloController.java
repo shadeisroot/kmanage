@@ -2,6 +2,7 @@ package org.example.kmanage;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -18,6 +19,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.Optional;
 
 public class HelloController {
 
@@ -39,6 +41,43 @@ public class HelloController {
 
 
     private ObservableList<Profile> profiles = pdi.getprofile();
+
+    public void opretonpressed(ActionEvent actionEvent) {
+        createNewEventDialog();
+    }
+    public void createNewEventDialog () {
+        // Create a new dialog
+        Dialog<Event> dialog = new Dialog<>();
+        dialog.setTitle("Create New Event");
+
+        // Set the button types
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        // Create the event name and date labels and fields
+        TextField eventName = new TextField();
+        eventName.setPromptText("Event Name");
+        DatePicker eventDate = new DatePicker();
+
+        // Create a grid pane and set the labels and fields to it
+        GridPane grid = new GridPane();
+        grid.add(new Label("Event Name:"), 0, 0);
+        grid.add(eventName, 1, 0);
+        grid.add(new Label("Event Date:"), 0, 1);
+        grid.add(eventDate, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Convert the result to an Event object when the OK button is clicked
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == ButtonType.OK) {
+                return null;
+            }
+            return null;
+        });
+
+        // Show the dialog and wait for the user to respond
+        Optional<Event> result = dialog.showAndWait();
+    }
 
     private enum ViewMode { DAG, UGE, MÅNED, TRE_MÅNEDER }
     private ViewMode currentViewMode = ViewMode.UGE;
