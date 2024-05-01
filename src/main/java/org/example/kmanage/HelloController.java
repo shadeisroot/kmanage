@@ -9,8 +9,12 @@ import javafx.scene.layout.VBox;
 
 public class HelloController {
 
+
+
     @FXML
     private GridPane calendarGrid;
+
+
 
     private enum ViewMode { DAG, UGE, MÅNED, TRE_MÅNEDER }
     private ViewMode currentViewMode = ViewMode.DAG;
@@ -18,10 +22,11 @@ public class HelloController {
     @FXML
     private Button zoomInd, zoomOut;
 
-
+    User loggedInUser = UserSession.getInstance(null).getUser();
     public void initialize() {
         updateCalender();
     }
+
 
     @FXML
     private void notButtonPressed(ActionEvent event) {
