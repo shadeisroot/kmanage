@@ -28,12 +28,14 @@ public class LoginDAOImp implements LoginDAO{
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
             }
-            User user = new User(rs.getString("Username"), new Role(rs.getInt("id"), new Permissions(rs.getInt("id"), rs.getString("name"))) , new Profile(rs.getString("Navn"), rs.getString("Stilling"), rs.getString("Afdeling")));
+            User user = new User(rs.getString("Username"), new Role(rs.getInt("id"), new Permissions(rs.getInt("id"),
+                    rs.getString("name"))) , new Profile(rs.getString("Navn"), rs.getString("Stilling"),
+                    rs.getString("Afdeling")));
             return user;
         } catch (SQLException e) {
             System.out.println("Error" + e);
         }
-        return null; // return null if login is unsuccessful
+        return null;
     }
 
 
