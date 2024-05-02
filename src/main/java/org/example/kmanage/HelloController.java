@@ -1,5 +1,6 @@
 package org.example.kmanage;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -30,17 +32,12 @@ public class HelloController {
     public TableColumn plistc3;
     @FXML
     private GridPane calendarGrid;
-
-
     private LocalDate currentDate = LocalDate.now();
-
-  
- 
-
     PlistDAO pdi = new PlistDAOimp();
-
-
     private ObservableList<Profile> profiles = pdi.getprofile();
+
+    Notification not = new Notification();
+
 
     public void opretonpressed(ActionEvent actionEvent) {
         createNewEventDialog();
@@ -86,11 +83,10 @@ public class HelloController {
     private Button zoomInd, zoomOut;
 
     User loggedInUser = UserSession.getInstance(null).getUser();
-    public void initialize() {
 
+    public void initialize() {
         weekView();
         initializeplist();
-
         updateCalender();
 
     }
@@ -103,9 +99,22 @@ public class HelloController {
         plist.setItems(profiles);
     }
 
+
+    public void notifi(List<String> messages) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Notification");
+        alert.setHeaderText("You have new notifications");
+        StringBuilder allMessages = new StringBuilder();
+        for (String message : messages) {
+            allMessages.append(message).append("\n");
+        }
+
+        alert.setContentText(allMessages.toString());
+        alert.showAndWait();
+    }
     @FXML
     private void notButtonPressed(ActionEvent event) {
-        System.out.println("test test");
+        notifi(not.showMessages());
     }
 
     private void updateCalender() {
