@@ -1,9 +1,13 @@
 package org.example.kmanage;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.*;
@@ -11,17 +15,23 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class HelloController {
 
-
+    private ObservableList<Project> projects = FXCollections.observableArrayList();
     public TableView plist;
     public TableColumn plistc1;
     public TableColumn plistc2;
@@ -35,23 +45,22 @@ public class HelloController {
   
  
 
-=======
     PlistDAO pdi = new PlistDAOimp();
 
 
     private ObservableList<Profile> profiles = pdi.getprofile();
 
+
     private enum ViewMode { DAG, UGE, MÅNED, TRE_MÅNEDER }
     private ViewMode currentViewMode = ViewMode.UGE;
 
     @FXML
-    private Button zoomInd, zoomOut;
+    private Button zoomInd, zoomOut, opretButton;
 
     User loggedInUser = UserSession.getInstance(null).getUser();
     public void initialize() {
 
         weekView();
-=======
         initializeplist();
 
         updateCalender();
@@ -129,21 +138,22 @@ public class HelloController {
 
         LocalDate today = LocalDate.now();
         LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+        Map<String, Integer> projectRowMap = new HashMap<>();
+        int nextAvailableRow = 1;
+
+
 
         for (int i = 0; i < 7; i++) {
             LocalDate date = startOfWeek.plusDays(i);
-            String dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, new Locale("da", "DK"));
-            String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM yyyy", new Locale("da", "DK")));
-
             VBox dayBox = new VBox();
             dayBox.setSpacing(0);
-            dayBox.setPrefHeight(500);
+            dayBox.setPrefHeight(25);
             dayBox.setPrefWidth(120);
             dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-padding: 10;");
 
-            if (date.equals(today)) {
-                dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffdd55; -fx-padding: 10;");
-            }
+            String dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, new Locale("da", "DK"));
+            String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM yyyy", new Locale("da", "DK")));
 
             Label dayLabel = new Label(dayName);
             dayLabel.setStyle("-fx-font-weight: bold;");
@@ -152,7 +162,30 @@ public class HelloController {
             dateLabel.setStyle("-fx-text-fill: #666666;");
 
             dayBox.getChildren().addAll(dayLabel, dateLabel);
+            if (date.equals(today)) {
+                dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
+            }
+
             calendarGrid.add(dayBox, i, 0);
+
+            for (Project project : projects) {
+                if (!project.getStartDate().isAfter(date) && !project.getEndDate().isBefore(date)) {
+                    int startCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getStartDate());
+                    int endCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getEndDate());
+                    int rowForProject = projectRowMap.getOrDefault(project.getName(), nextAvailableRow);
+
+                    if (!projectRowMap.containsKey(project.getName())) {
+                        projectRowMap.put(project.getName(), nextAvailableRow++);
+                    }
+
+                    VBox projectBox = new VBox(new Label(project.getName()));
+                    projectBox.setStyle("-fx-background-color: lightblue; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+
+                    GridPane.setConstraints(projectBox, startCol, rowForProject, endCol - startCol + 1, 1);
+                    GridPane.setFillWidth(projectBox, true);
+                    calendarGrid.getChildren().add(projectBox);
+                }
+            }
         }
     }
 
@@ -244,4 +277,38 @@ public class HelloController {
         }
         updateCalender();
     }
+
+    public void opretButtonPressed(ActionEvent event) {
+        Stage stage = new Stage();
+        GridPane pane = new GridPane();
+        pane.setAlignment(Pos.CENTER);
+        pane.setHgap(10);
+        pane.setVgap(10);
+        pane.setPadding(new Insets(25, 25, 25, 25));
+
+        TextField nameField = new TextField();
+        DatePicker startDatePick = new DatePicker();
+        DatePicker endDatePick = new DatePicker();
+        Button opretButton = new Button("opret projekt");
+
+        pane.add(new Label("Navn:"), 0, 0);
+        pane.add(nameField, 1, 0);
+        pane.add(new Label("Start Dato:"), 0, 1);
+        pane.add(startDatePick, 1, 1);
+        pane.add(new Label("slut dato"), 0, 2);
+        pane.add(endDatePick, 1, 2);
+        pane.add(opretButton, 1, 3);
+
+        opretButton.setOnAction(e -> {
+            Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue());
+            projects.add(project);
+            updateCalender();
+            stage.close();
+        });
+
+        Scene scene = new Scene(pane);
+        stage.setScene(scene);
+        stage.show();
+    }
+
 }
