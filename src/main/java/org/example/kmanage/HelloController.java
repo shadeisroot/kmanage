@@ -35,9 +35,22 @@ public class HelloController {
     private LocalDate currentDate = LocalDate.now();
     PlistDAO pdi = new PlistDAOimp();
     private ObservableList<Profile> profiles = pdi.getprofile();
+    private enum ViewMode { DAG, UGE, MÅNED, TRE_MÅNEDER }
+    private ViewMode currentViewMode = ViewMode.UGE;
+
+    @FXML
+    private Button zoomInd, zoomOut;
+
+    User loggedInUser = UserSession.getInstance(null).getUser();
 
     Notification not = new Notification();
 
+    public void initialize() {
+        weekView();
+        initializeplist();
+        updateCalender();
+
+    }
 
     public void opretonpressed(ActionEvent actionEvent) {
         createNewEventDialog();
@@ -76,20 +89,8 @@ public class HelloController {
         Optional<Event> result = dialog.showAndWait();
     }
 
-    private enum ViewMode { DAG, UGE, MÅNED, TRE_MÅNEDER }
-    private ViewMode currentViewMode = ViewMode.UGE;
 
-    @FXML
-    private Button zoomInd, zoomOut;
 
-    User loggedInUser = UserSession.getInstance(null).getUser();
-
-    public void initialize() {
-        weekView();
-        initializeplist();
-        updateCalender();
-
-    }
 
 
     public void initializeplist() {
