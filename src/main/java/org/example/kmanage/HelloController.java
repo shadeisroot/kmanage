@@ -1,8 +1,13 @@
 package org.example.kmanage;
 
+
 import javafx.collections.FXCollections;
+
+import javafx.application.Platform;
+
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,6 +33,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 public class HelloController {
 
@@ -38,18 +46,10 @@ public class HelloController {
     public TableColumn plistc3;
     @FXML
     private GridPane calendarGrid;
-
-
     private LocalDate currentDate = LocalDate.now();
 
-  
- 
-
     PlistDAO pdi = new PlistDAOimp();
-
-
     private ObservableList<Profile> profiles = pdi.getprofile();
-
 
     private enum ViewMode { DAG, UGE, MÅNED, TRE_MÅNEDER }
     private ViewMode currentViewMode = ViewMode.UGE;
@@ -58,26 +58,80 @@ public class HelloController {
     private Button zoomInd, zoomOut, opretButton;
 
     User loggedInUser = UserSession.getInstance(null).getUser();
-    public void initialize() {
 
+    Notification not = new Notification();
+
+    public void initialize() {
         weekView();
         initializeplist();
-
         updateCalender();
 
     }
+
+    public void opretonpressed(ActionEvent actionEvent) {
+        createNewEventDialog();
+    }
+    public void createNewEventDialog () {
+        // Create a new dialog
+        Dialog<Event> dialog = new Dialog<>();
+        dialog.setTitle("Create New Event");
+
+        // Set the button types
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        // Create the event name and date labels and fields
+        TextField eventName = new TextField();
+        eventName.setPromptText("Event Name");
+        DatePicker eventDate = new DatePicker();
+
+        // Create a grid pane and set the labels and fields to it
+        GridPane grid = new GridPane();
+        grid.add(new Label("Event Name:"), 0, 0);
+        grid.add(eventName, 1, 0);
+        grid.add(new Label("Event Date:"), 0, 1);
+        grid.add(eventDate, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Convert the result to an Event object when the OK button is clicked
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == ButtonType.OK) {
+                return null;
+            }
+            return null;
+        });
+
+        // Show the dialog and wait for the user to respond
+        Optional<Event> result = dialog.showAndWait();
+    }
+
+
+
 
 
     public void initializeplist() {
         plistc1.setCellValueFactory(new PropertyValueFactory<>("name"));
         plistc2.setCellValueFactory(new PropertyValueFactory<>("position"));
-        plistc3.setCellValueFactory(new PropertyValueFactory<>("department"));
+        plistc3.setCellValueFactory(new PropertyValueFactory<>("department"));;
         plist.setItems(profiles);
     }
 
+
+    public void notifi(List<String> messages) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Notification");
+        alert.setHeaderText("You have new notifications");
+        StringBuilder allMessages = new StringBuilder();
+        for (String message : messages) {
+            allMessages.append(message).append("\n");
+        }
+
+        alert.setContentText(allMessages.toString());
+        alert.showAndWait();
+    }
     @FXML
     private void notButtonPressed(ActionEvent event) {
-        System.out.println("test test");
+        notifi(not.showMessages());
     }
 
     private void updateCalender() {

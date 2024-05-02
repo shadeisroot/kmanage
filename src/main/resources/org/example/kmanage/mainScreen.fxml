@@ -30,6 +30,7 @@
                 <MenuItem mnemonicParsing="false" text="Action 2" />
             </items>
         </MenuButton>
+
         <Button layoutX="600.0" layoutY="700.0" mnemonicParsing="false" text="Min kalender" />
         <Button fx:id="zoomOut" layoutX="1097.0" layoutY="700.0" mnemonicParsing="false" onAction="#zoomOutPressed" text="zoom ud" />
         <Button fx:id="zoomInd" layoutX="1001.0" layoutY="700.0" mnemonicParsing="false" onAction="#zoomIndPressed" text="zoom ind" />
