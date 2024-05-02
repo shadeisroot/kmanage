@@ -22,9 +22,7 @@
                 </GridPane>
             </children>
         </HBox>
-
-        <Button layoutX="150.0" layoutY="700.0" mnemonicParsing="false" onAction="#opretonpressed" text="Opret" />
-
+        <Button fx:id="opretButton" layoutX="150.0" layoutY="700.0" mnemonicParsing="false" onAction="#opretButtonPressed" text="Opret" />
         <Label layoutX="600.0" layoutY="50.0" text="NAVN PÅ SIDE" />
         <MenuButton layoutX="1000.0" layoutY="50.0" mnemonicParsing="false" text="Profil">
             <items>
