@@ -1,4 +1,4 @@
-package org.example.kmanage;
+package org.example.kmanage.Controller;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -17,5 +17,4 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
     }
-
 }

@@ -1,8 +1,8 @@
-package org.example.kmanage;
+package org.example.kmanage.DAO;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
+import org.example.kmanage.User.Profile;
 
 import java.sql.*;
 

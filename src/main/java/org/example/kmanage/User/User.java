@@ -1,13 +1,13 @@
-package org.example.kmanage;
+package org.example.kmanage.User;
 
 public class User {
     private String username;
-    private Role role;
+    private Permissions permissions;
     private Profile profile;
 
-    public User(String username, Role role, Profile profile) {
+    public User(String username, Permissions permissions, Profile profile) {
         this.username = username;
-        this.role = role;
+        this.permissions = permissions;
         this.profile = profile;
     }
 
@@ -15,7 +15,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "username='" + username + '\'' +
-                ", role=" + role +
+                ", Permissions=" + permissions +
                 ", profile=" + profile +
                 '}';
     }
@@ -28,12 +28,12 @@ public class User {
         this.username = username;
     }
 
-    public Role getRole() {
-        return role;
+    public Permissions getPermissions() {
+        return permissions;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setPermissions(Permissions permissions) {
+        this.permissions = permissions;
     }
 
     public Profile getProfile() {
