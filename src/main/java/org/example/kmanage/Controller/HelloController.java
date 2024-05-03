@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.kmanage.DAO.PlistDAO;
@@ -157,12 +158,12 @@ public class HelloController {
         calendarGrid.getChildren().clear();
 
         // Gemmer dagens dato til sammenligning
-        LocalDate today = LocalDate.now();
+        LocalDate today = currentDate;
 
         // Opbygger viewet for den aktuelle dag
         VBox dayBox = new VBox();
         dayBox.setSpacing(10);
-        dayBox.setPrefHeight(500);
+        dayBox.setPrefHeight(25);
         dayBox.setPrefWidth(840);
         dayBox.setAlignment(Pos.CENTER);
         dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-padding: 20;");
@@ -179,12 +180,24 @@ public class HelloController {
 
         dayBox.getChildren().addAll(dayLabel, dateLabel);
 
-        // Kontrollerer om den aktuelle dag er i dag og ændrer baggrundsfarven hvis sandt
         if (currentDate.equals(today)) {
             dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffdd55; -fx-padding: 20;");
         }
 
         calendarGrid.add(dayBox, 0, 0);
+
+        int projectRow = 1;
+        for (Project project : projects) {
+            if (!project.getStartDate().isAfter(today) && !project.getEndDate().isBefore(today)) {
+                Label projectLabel = new Label(project.getName());
+                projectLabel.setStyle("-fx-background-color: lightblue; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+
+                VBox projectBox = new VBox(projectLabel);
+                projectBox.setPadding(new Insets(2));
+                projectBox.setStyle("-fx-background-color: lightblue; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                calendarGrid.add(projectBox, 0, projectRow++);
+            }
+        }
     }
 
     private void weekView(){
@@ -243,34 +256,50 @@ public class HelloController {
         }
     }
 
-    private void monthView(){
+    private void monthView() {
         calendarGrid.getChildren().clear();
 
         LocalDate today = LocalDate.now();
         LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
-        YearMonth yearMonth = YearMonth.from(today);
+        LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
+        YearMonth yearMonth = YearMonth.from(currentDate);
         int daysInMonth = yearMonth.lengthOfMonth();
 
-        for (int i = 0; i < daysInMonth; i++) {
-            LocalDate date = firstDayOfMonth.plusDays(i);
+        DayOfWeek startDayOfWeek = firstDayOfMonth.getDayOfWeek();
+        int startCol1 = (startDayOfWeek.getValue() - 1) % 7;  // Juster, hvis ugen starter på mandag
+        LocalDate gridStartDate = firstDayOfMonth.minusDays(startCol1);  // Juster første dag til at inkludere dage fra forrige måned
+
+        int totalDays = daysInMonth + startCol1;
+        totalDays += (7 - (totalDays % 7)) % 7;  // Sørg for at kalenderen slutter på en søndag
+
+
+        for (int i = 0; i < totalDays; i++) {
+            LocalDate date = gridStartDate.plusDays(i);
             String dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, new Locale("da", "DK"));
-            String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM yyyy", new Locale("da", "DK")));
+            String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM", new Locale("da", "DK")));
 
             VBox dayBox = new VBox();
             dayBox.setSpacing(0);
+            dayBox.setPrefWidth(120);
             dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-padding: 10;");
 
-            if (date.equals(today)) {
-                dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffdd55; -fx-padding: 10;");
+            if (date.isBefore(firstDayOfMonth) || date.isAfter(lastDayOfMonth)) {
+                dayBox.setStyle("-fx-background-color: #bab3b3; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
+            } else if (date.equals(today)) {
+                dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
             }
 
             Label dayLabel = new Label(dayName + " " + formattedDate);
             dayLabel.setStyle("-fx-font-weight: bold;");
-
             dayBox.getChildren().add(dayLabel);
-            calendarGrid.add(dayBox, i % 7, i / 7);
+
+            int col = i % 7;
+            int row = (i / 7) * 2;  // Multiplicer med 2 for at tilføje en tom række under hver uge til projekter
+            calendarGrid.add(dayBox, col, row);
+
         }
 
+        // Tilføj projekter
     }
 
     private void threeMonthView(){
