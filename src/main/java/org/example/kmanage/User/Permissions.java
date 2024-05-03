@@ -1,4 +1,4 @@
-package org.example.kmanage;
+package org.example.kmanage.User;
 
 public class Permissions {
 

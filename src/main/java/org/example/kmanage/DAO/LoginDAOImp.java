@@ -1,4 +1,8 @@
-package org.example.kmanage;
+package org.example.kmanage.DAO;
+
+import org.example.kmanage.User.Permissions;
+import org.example.kmanage.User.Profile;
+import org.example.kmanage.User.User;
 
 import java.sql.*;
 
@@ -28,8 +32,8 @@ public class LoginDAOImp implements LoginDAO{
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
             }
-            User user = new User(rs.getString("Username"), new Role(rs.getInt("id"), new Permissions(rs.getInt("id"),
-                    rs.getString("name"))) , new Profile(rs.getString("Navn"), rs.getString("Stilling"),
+            User user = new User(rs.getString("Username"), new Permissions(rs.getInt("id"),
+                    rs.getString("name")), new Profile(rs.getString("Navn"), rs.getString("Stilling"),
                     rs.getString("Afdeling")));
             return user;
         } catch (SQLException e) {

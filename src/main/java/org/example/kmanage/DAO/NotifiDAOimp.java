@@ -1,4 +1,4 @@
-package org.example.kmanage;
+package org.example.kmanage.DAO;
 
 import java.sql.*;
 import java.util.ArrayList;

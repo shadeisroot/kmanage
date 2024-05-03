@@ -1,4 +1,7 @@
-package org.example.kmanage;
+package org.example.kmanage.Notifications;
+
+import org.example.kmanage.DAO.NotifiDAO;
+import org.example.kmanage.DAO.NotifiDAOimp;
 
 import java.util.ArrayList;
 import java.util.List;

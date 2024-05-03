@@ -9,12 +9,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import org.example.kmanage.Controller.HelloApplication;
+import org.example.kmanage.DAO.LoginDAO;
+import org.example.kmanage.DAO.LoginDAOImp;
+import org.example.kmanage.User.User;
+import org.example.kmanage.User.UserSession;
+
 //taken from https://www.javaguides.net/2022/11/javafx-login-form-validation-example.html
 public class Main extends Application {
     private LoginDAO ldi = new LoginDAOImp();

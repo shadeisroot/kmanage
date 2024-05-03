@@ -1,9 +1,7 @@
-package org.example.kmanage;
+package org.example.kmanage.Controller;
 
 
 import javafx.collections.FXCollections;
-
-import javafx.application.Platform;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,7 +9,6 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,9 +16,14 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import org.example.kmanage.DAO.PlistDAO;
+import org.example.kmanage.DAO.PlistDAOimp;
+import org.example.kmanage.Notifications.Notification;
+import org.example.kmanage.User.Profile;
+import org.example.kmanage.User.Project;
+import org.example.kmanage.User.User;
+import org.example.kmanage.User.UserSession;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -33,8 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 public class HelloController {
