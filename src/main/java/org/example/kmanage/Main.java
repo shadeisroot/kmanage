@@ -14,7 +14,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import org.example.kmanage.Controller.HelloApplication;
 import org.example.kmanage.DAO.LoginDAO;
 import org.example.kmanage.DAO.LoginDAOImp;
 import org.example.kmanage.User.User;

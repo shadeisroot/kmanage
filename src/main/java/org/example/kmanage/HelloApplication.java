@@ -1,4 +1,4 @@
-package org.example.kmanage.Controller;
+package org.example.kmanage;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
