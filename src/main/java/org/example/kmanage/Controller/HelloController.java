@@ -7,8 +7,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -203,14 +205,17 @@ public class HelloController {
     private void weekView(){
         calendarGrid.getChildren().clear();
 
+        // Definerer dagens dato, ugens start og slut
         LocalDate today = LocalDate.now();
         LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
         LocalDate endOfWeek = startOfWeek.plusDays(6);
+
+        // Sporer rækkenummeret tilgængeligt for nye projektopslag
         Map<String, Integer> projectRowMap = new HashMap<>();
         int nextAvailableRow = 1;
 
 
-
+        // Løkke igennem hver dag i ugen
         for (int i = 0; i < 7; i++) {
             LocalDate date = startOfWeek.plusDays(i);
             VBox dayBox = new VBox();
@@ -235,6 +240,7 @@ public class HelloController {
 
             calendarGrid.add(dayBox, i, 0);
 
+            //Viser projekter, der spænder over den aktuelle dato
             for (Project project : projects) {
                 if (!project.getStartDate().isAfter(date) && !project.getEndDate().isBefore(date)) {
                     int startCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getStartDate());
@@ -259,20 +265,24 @@ public class HelloController {
     private void monthView() {
         calendarGrid.getChildren().clear();
 
+        // Definerer dagens dato samt start- og slutdatoer for den aktuelle måned
         LocalDate today = LocalDate.now();
         LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
         LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
         YearMonth yearMonth = YearMonth.from(currentDate);
         int daysInMonth = yearMonth.lengthOfMonth();
-
         DayOfWeek startDayOfWeek = firstDayOfMonth.getDayOfWeek();
-        int startCol1 = (startDayOfWeek.getValue() - 1) % 7;  // Juster, hvis ugen starter på mandag
-        LocalDate gridStartDate = firstDayOfMonth.minusDays(startCol1);  // Juster første dag til at inkludere dage fra forrige måned
+        int startCol = (startDayOfWeek.getValue() - 1) % 7;
+        LocalDate gridStartDate = firstDayOfMonth.minusDays(startCol);
 
-        int totalDays = daysInMonth + startCol1;
-        totalDays += (7 - (totalDays % 7)) % 7;  // Sørg for at kalenderen slutter på en søndag
+        // Beregner det samlede antal celler, der skal udfyldes i gitteret
+        int totalDays = daysInMonth + startCol;
+        totalDays += (7 - (totalDays % 7)) % 7;
 
+        // Hashmap til at spore den sidst brugte række for hver dato
+        Map<LocalDate, Integer> lastRowUsedPerDay = new HashMap<>();
 
+        // Udfylder grid med bokse
         for (int i = 0; i < totalDays; i++) {
             LocalDate date = gridStartDate.plusDays(i);
             String dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, new Locale("da", "DK"));
@@ -283,6 +293,7 @@ public class HelloController {
             dayBox.setPrefWidth(120);
             dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-padding: 10;");
 
+            // Ændrer stil for dage uden for den aktuelle måned
             if (date.isBefore(firstDayOfMonth) || date.isAfter(lastDayOfMonth)) {
                 dayBox.setStyle("-fx-background-color: #bab3b3; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
             } else if (date.equals(today)) {
@@ -294,12 +305,37 @@ public class HelloController {
             dayBox.getChildren().add(dayLabel);
 
             int col = i % 7;
-            int row = (i / 7) * 2;  // Multiplicer med 2 for at tilføje en tom række under hver uge til projekter
+            int row = (i / 7) * 2;
             calendarGrid.add(dayBox, col, row);
 
+            // Nulstil eller initialiser kortet over den sidst brugte række for denne dag
+            lastRowUsedPerDay.putIfAbsent(date, row + 1);
         }
 
-        // Tilføj projekter
+        // Viser projekter i kalender
+        for (Project project : projects) {
+            LocalDate startDate = project.getStartDate();
+            LocalDate endDate = project.getEndDate();
+
+            int startIdx = (int) ChronoUnit.DAYS.between(gridStartDate, startDate);
+            int endIdx = (int) ChronoUnit.DAYS.between(gridStartDate, endDate);
+            int startColProj = startIdx % 7;
+            int endColProj = endIdx % 7;
+
+            int startRow = lastRowUsedPerDay.getOrDefault(gridStartDate.plusDays(startIdx), (startIdx / 7) * 2 + 1);
+            int endRow = startRow;
+
+            VBox projectBox = new VBox(new Label(project.getName()));
+            projectBox.setStyle("-fx-background-color: lightblue; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+
+            GridPane.setConstraints(projectBox, startColProj, startRow, endColProj - startColProj + 1, 1, HPos.LEFT, VPos.TOP);
+            calendarGrid.getChildren().add(projectBox);
+
+
+            for (int j = startIdx; j <= endIdx; j++) {
+                lastRowUsedPerDay.put(gridStartDate.plusDays(j), endRow + 1);
+            }
+        }
     }
 
     private void threeMonthView(){
