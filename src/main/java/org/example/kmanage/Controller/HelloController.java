@@ -22,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.kmanage.DAO.PlistDAO;
 import org.example.kmanage.DAO.PlistDAOimp;
+import org.example.kmanage.Main;
 import org.example.kmanage.Notifications.Notification;
 import org.example.kmanage.User.Profile;
 import org.example.kmanage.User.Project;
@@ -68,7 +69,6 @@ public class HelloController {
         weekView();
         initializeplist();
         updateCalender();
-
     }
 
     public void opretonpressed(ActionEvent actionEvent) {
@@ -124,12 +124,33 @@ public class HelloController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Notification");
         alert.setHeaderText("You have new notifications");
+
+        // Opret en TextArea til at vise beskeder
+        TextArea textArea = new TextArea();
+        textArea.setEditable(false);  // Sørger for, at brugeren ikke kan redigere tekst
+        textArea.setWrapText(true);   // Aktiverer tekstombrydning
+
+        // Byg en streng af alle beskeder med linjeskift mellem hver besked
         StringBuilder allMessages = new StringBuilder();
         for (String message : messages) {
             allMessages.append(message).append("\n");
         }
+        textArea.setText(allMessages.toString());
 
-        alert.setContentText(allMessages.toString());
+        // Opret en ScrollPane og tilføj TextArea til den
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(textArea);
+        textArea.setPrefWidth(100);
+        scrollPane.setFitToWidth(true);  // Sørger for at bredden tilpasses til TextArea
+        scrollPane.setPrefHeight(200);   // Sætter en foretrukken højde for ScrollPane
+
+        // Sæt scrollPane som indhold i dialogvinduet
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setContent(scrollPane);
+        dialogPane.getStylesheets().add
+                (Main.class.getResource("notiStyle.css").toExternalForm());
+        dialogPane.getStyleClass().add("alert");
+
         alert.showAndWait();
     }
     @FXML
@@ -428,6 +449,33 @@ public class HelloController {
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
+    }
+    @FXML
+    private void handleToggleTheme(ActionEvent event) {
+        Scene scene = ((MenuItem)event.getSource()).getParentPopup().getOwnerWindow().getScene();
+        toggleTheme(scene);
+    }
+
+    private void toggleTheme(Scene scene) {
+        ObservableList<String> stylesheets = scene.getStylesheets();
+        // Opretter fulde stier for CSS-filerne
+        String lightThemePath = getClass().getResource("/org/example/kmanage/maincss.css").toExternalForm();
+        String darkThemePath = getClass().getResource("/org/example/kmanage/mainCssDark.css").toExternalForm();
+
+        if (lightThemePath == null || darkThemePath == null) {
+            System.err.println("Din tråd til css'erne er forkert gg");
+            return;
+        }
+
+        if (stylesheets.contains(lightThemePath)) {
+            // Skifter fra lys til mørk tema
+            stylesheets.clear();
+            stylesheets.add(darkThemePath);
+        } else {
+            // Skifter fra mørk til lys tema eller initialiserer lys tema
+            stylesheets.clear();
+            stylesheets.add(lightThemePath);
+        }
     }
 
 }

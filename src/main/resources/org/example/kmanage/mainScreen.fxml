@@ -26,8 +26,9 @@
         <Label layoutX="600.0" layoutY="50.0" text="NAVN PÅ SIDE" />
         <MenuButton layoutX="1000.0" layoutY="50.0" mnemonicParsing="false" text="Profil">
             <items>
-                <MenuItem mnemonicParsing="false" text="Action 1" />
-                <MenuItem mnemonicParsing="false" text="Action 2" />
+                <MenuItem mnemonicParsing="false" text="Rediger profil" />
+                <MenuItem mnemonicParsing="false" text="Skift tema " onAction="#handleToggleTheme"/>
+                <MenuItem mnemonicParsing="false" text="Log ud" />
             </items>
         </MenuButton>
 

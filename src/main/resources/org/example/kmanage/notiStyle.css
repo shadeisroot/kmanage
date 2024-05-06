@@ -1,0 +1,25 @@
+.root {
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+}
+
+.alert {
+    -fx-base: #FFFFFF;
+    -fx-border-color: #000000;
+    -fx-border-width: 2px;
+}
+
+.button-bar {
+    -fx-background-color: #EEEEEE;
+}
+
+.button {
+    -fx-background-color: #1976D2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 8 16;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
