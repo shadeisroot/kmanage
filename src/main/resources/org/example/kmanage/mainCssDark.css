@@ -1,0 +1,56 @@
+.root {
+    -fx-background-color: #121212;
+    -fx-text-fill: #e0e0e0;
+}
+
+.button {
+    -fx-background-color: #1976D2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 8 16;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+
+.button:hover {
+    -fx-background-color: #1565C0;
+}
+
+
+.menu-button {
+    -fx-background-color: #1976D2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 8 16;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+
+}
+
+.menu-button:hover {
+    -fx-background-color: #1565C0;
+}
+
+
+.table-view {
+    -fx-base: #222222;
+    -fx-control-inner-background: #222222;  /* Mørkegrå for baggrunde inden i kontrols */
+    -fx-background-color: #222222;  /* Mørkegrå baggrund */
+    -fx-table-cell-border-color: #333333;  /* Grænser mellem celler */
+    -fx-text-fill: #e0e0e0;
+}
+
+.table-row-cell:filled:selected {
+    -fx-background-color: #0057b8;  /* En mørkere blå for valgte rækker */
+    -fx-text-fill: #ffffff;
+}
+
+
+.text-field, .text-area {
+    -fx-background-color: #333333;  /* Mørkegrå baggrund */
+    -fx-text-fill: #e0e0e0;         /* Lysegrå tekst */
+}
