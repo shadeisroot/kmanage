@@ -135,6 +135,7 @@ public class HelloController {
 
 
 
+
     public void initializeplist() {
         plistc1.setCellValueFactory(new PropertyValueFactory<>("name"));
         plistc2.setCellValueFactory(new PropertyValueFactory<>("position"));
@@ -504,6 +505,33 @@ public class HelloController {
         profileTable.getColumns().add(nameColumn);
         profileTable.getColumns().add(positionColumn);
         profileTable.getColumns().add(departmentColumn);
+
+        profileTable.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (event.getClickCount() == 2) {
+                Profile profile = (Profile) profileTable.getSelectionModel().getSelectedItem();
+                if (profile != null) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Profile Information");
+                    alert.setHeaderText("Profile: " + profile.getName());
+                    alert.setContentText("Name: " + profile.getName() + "\n" +
+                            "Position: " + profile.getPosition() + "\n" +
+                            "Department: " + profile.getDepartment());
+
+                    // Tilføj en knap til at invitere brugeren
+                    ButtonType invitebutton = new ButtonType("invite" , ButtonBar.ButtonData.OK_DONE);
+                    alert.getButtonTypes().add(invitebutton);
+                    Button inviteButtonNode = (Button) alert.getDialogPane().lookupButton(invitebutton);
+                    inviteButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
+                        System.out.println("Invite button clicked for profile: " + profile.getName());
+                        event2.consume(); // This prevents the alert from closing
+                    });
+
+                    alert.showAndWait();
+                }
+
+            }
+
+        });
 
 
         profileTable.setRowFactory(tv -> new TableRow<Profile>() {
