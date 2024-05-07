@@ -43,4 +43,5 @@ public class Profile {
     public void setDepartment(String department) {
         Department = department;
     }
+
 }

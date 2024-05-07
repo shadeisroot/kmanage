@@ -17,9 +17,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.kmanage.DAO.PlistDAO;
 import org.example.kmanage.DAO.PlistDAOimp;
@@ -30,17 +32,14 @@ import org.example.kmanage.User.Project;
 import org.example.kmanage.User.User;
 import org.example.kmanage.User.UserSession;
 
+import java.io.File;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class HelloController {
 
@@ -70,7 +69,6 @@ public class HelloController {
             stage.close();
         }
     }
-
     private enum ViewMode { DAG, UGE, MÅNED, TRE_MÅNEDER }
     private ViewMode currentViewMode = ViewMode.UGE;
 
@@ -410,6 +408,8 @@ public class HelloController {
 
     }
 
+    // knappe events
+
     public void zoomOutPressed(ActionEvent event) {
         if (currentViewMode == ViewMode.DAG) {
             currentViewMode = ViewMode.UGE;
@@ -476,24 +476,42 @@ public class HelloController {
         TextField nameField = new TextField();
         DatePicker startDatePick = new DatePicker();
         DatePicker endDatePick = new DatePicker();
-        Button opretButton = new Button("opret projekt");
+        TextField notesField = new TextField();
+        Button addFilesButton = new Button("Vedhæft fil");
+        Button opretButton = new Button("Opret projekt");
 
         pane.add(new Label("Navn:"), 0, 0);
         pane.add(nameField, 1, 0);
         pane.add(new Label("Start Dato:"), 0, 1);
         pane.add(startDatePick, 1, 1);
-        pane.add(new Label("slut dato"), 0, 2);
+        pane.add(new Label("Slut dato"), 0, 2);
         pane.add(endDatePick, 1, 2);
-        pane.add(opretButton, 1, 3);
+        pane.add(new Label("Noter:"), 0, 3);
+        pane.add(notesField, 1, 3);
+        pane.add(addFilesButton, 1, 4);
+        pane.add(opretButton, 1, 5);
+
+        List<String> files = new ArrayList<>();
+        addFilesButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            File selectedFile = fileChooser.showOpenDialog(stage);
+            if (selectedFile != null) {
+                files.add(selectedFile.getName());
+            }
+        });
 
         opretButton.setOnAction(e -> {
             Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue());
+            project.setNotes(notesField.getText());
+            files.forEach(project::addFiles);
             projects.add(project);
             updateCalender();
             stage.close();
         });
 
         Scene scene = new Scene(pane);
+        scene.getStylesheets().add
+                (Main.class.getResource("notiStyle.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
     }
@@ -502,6 +520,22 @@ public class HelloController {
         Scene scene = ((MenuItem)event.getSource()).getParentPopup().getOwnerWindow().getScene();
         toggleTheme(scene);
     }
+
+    //søgefelter
+
+    public void personSearchField(ActionEvent event) {
+
+    }
+
+    public void personSearchButtonPressed(MouseEvent mouseEvent) {
+
+    }
+
+
+
+
+
+    //skift tema
 
     private void toggleTheme(Scene scene) {
         ObservableList<String> stylesheets = scene.getStylesheets();
