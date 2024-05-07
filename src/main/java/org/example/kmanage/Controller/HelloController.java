@@ -58,6 +58,7 @@ public class HelloController {
 
     PlistDAO pdi = new PlistDAOimp();
     private ObservableList<Profile> profiles = pdi.getprofile();
+    private enum ViewMode { DAG, UGE, MÅNED } //test
 
     public void logout(ActionEvent actionEvent) {
 
@@ -65,7 +66,6 @@ public class HelloController {
         Stage stage = (Stage) plist.getScene().getWindow();
 
 
-    private enum ViewMode { DAG, UGE, MÅNED }
 
         //start the main class
         Main main = new Main();
