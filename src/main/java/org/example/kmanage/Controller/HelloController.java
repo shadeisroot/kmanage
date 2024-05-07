@@ -60,9 +60,30 @@ public class HelloController {
     private LocalDate currentDate = LocalDate.now();
 
     PlistDAO pdi = new PlistDAOimp();
+    Notification not = new Notification();
     private ObservableList<Profile> profiles = pdi.getprofile();
 
     private enum ViewMode {DAG, UGE, MÅNED} //test
+
+    private ViewMode currentViewMode = ViewMode.UGE;
+
+    @FXML
+    private Button zoomInd, zoomOut, opretButton;
+
+    User loggedInUser = UserSession.getInstance(null).getUser();
+
+
+    //-------------------------------------------------------------------------------
+
+
+    public void initialize() {
+        weekView();
+        initializeplist();
+        updateCalender();
+        filterplist();
+        doubleclickeventplist();
+    }
+
 
     public void logout(ActionEvent actionEvent) {
 
@@ -80,28 +101,6 @@ public class HelloController {
         }
     }
 
-
-    private ViewMode currentViewMode = ViewMode.UGE;
-
-    @FXML
-    private Button zoomInd, zoomOut, opretButton;
-
-    User loggedInUser = UserSession.getInstance(null).getUser();
-
-    Notification not = new Notification();
-
-    public void initialize() {
-        weekView();
-        initializeplist();
-        updateCalender();
-        filterplist();
-        doubleclickeventplist();
-
-    }
-
-    public void opretonpressed(ActionEvent actionEvent) {
-        createNewEventDialog();
-    }
 
 
 
@@ -133,39 +132,7 @@ public class HelloController {
 
             });
         }
-    public void createNewEventDialog() {
-        // Create a new dialog
-        Dialog<Event> dialog = new Dialog<>();
-        dialog.setTitle("Create New Event");
 
-        // Set the button types
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-        // Create the event name and date labels and fields
-        TextField eventName = new TextField();
-        eventName.setPromptText("Event Name");
-        DatePicker eventDate = new DatePicker();
-
-        // Create a grid pane and set the labels and fields to it
-        GridPane grid = new GridPane();
-        grid.add(new Label("Event Name:"), 0, 0);
-        grid.add(eventName, 1, 0);
-        grid.add(new Label("Event Date:"), 0, 1);
-        grid.add(eventDate, 1, 1);
-
-        dialog.getDialogPane().setContent(grid);
-
-        // Convert the result to an Event object when the OK button is clicked
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == ButtonType.OK) {
-                return null;
-            }
-            return null;
-        });
-
-        // Show the dialog and wait for the user to respond
-        Optional<Event> result = dialog.showAndWait();
-    }
 
 
     public void initializeplist() {
@@ -521,6 +488,58 @@ public class HelloController {
         updateCalender();
     }
 
+    public TableView<Profile> initializecreatenewtable(){
+        // Create a TableView for profiles
+        TableView<Profile> profileTable = new TableView<>();
+        TableColumn<Profile, String> nameColumn = new TableColumn<>("Name");
+        TableColumn<Profile, String> positionColumn = new TableColumn<>("Position");
+        TableColumn<Profile, String> departmentColumn = new TableColumn<>("Department");
+
+        // Set cell value factories
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
+        departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
+
+        // Add columns to the table
+        profileTable.getColumns().add(nameColumn);
+        profileTable.getColumns().add(positionColumn);
+        profileTable.getColumns().add(departmentColumn);
+
+
+        profileTable.setRowFactory(tv -> new TableRow<Profile>() {
+            @Override
+            protected void updateItem(Profile item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    switch (item.getDepartment()) {
+                        case "Tønder Bibliotekerne":
+                            setStyle("-fx-background-color: lightblue;");
+                            break;
+                        case "Tønder Kulturskole":
+                            setStyle("-fx-background-color: lightgreen;");
+                            break;
+                        case "Tønder Medborgerhus":
+                            setStyle("-fx-background-color: lightyellow;");
+                            break;
+                        case "Schweizerhalle":
+                            setStyle("-fx-background-color: lightpink;");
+                            break;
+                        default:
+                            setStyle("");
+                            break;
+                    }
+                }
+            }
+        });
+
+        // Set data to the table
+        profileTable.setItems(profiles);
+        return profileTable;
+    }
+
     public void opretButtonPressed(ActionEvent event) {
         Stage stage = new Stage();
         GridPane pane = new GridPane();
@@ -536,6 +555,7 @@ public class HelloController {
         Button addFilesButton = new Button("Vedhæft fil");
         Button opretButton = new Button("Opret projekt");
 
+
         pane.add(new Label("Navn:"), 0, 0);
         pane.add(nameField, 1, 0);
         pane.add(new Label("Start Dato:"), 0, 1);
@@ -544,8 +564,9 @@ public class HelloController {
         pane.add(endDatePick, 1, 2);
         pane.add(new Label("Noter:"), 0, 3);
         pane.add(notesField, 1, 3);
-        pane.add(addFilesButton, 1, 4);
-        pane.add(opretButton, 1, 5);
+        pane.add(initializecreatenewtable(), 1, 4);
+        pane.add(addFilesButton, 1, 5);
+        pane.add(opretButton, 1, 6);
 
         List<String> files = new ArrayList<>();
         addFilesButton.setOnAction(e -> {
