@@ -4,6 +4,8 @@ package org.example.kmanage.Controller;
 import javafx.collections.FXCollections;
 
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -45,6 +47,7 @@ import java.util.*;
 
 public class HelloController {
 
+    public TextField personSearchField;
     private ObservableList<Project> projects = FXCollections.observableArrayList();
     public TableView plist;
     public TableColumn plistc1;
@@ -58,13 +61,13 @@ public class HelloController {
 
     PlistDAO pdi = new PlistDAOimp();
     private ObservableList<Profile> profiles = pdi.getprofile();
-    private enum ViewMode { DAG, UGE, MÅNED } //test
+
+    private enum ViewMode {DAG, UGE, MÅNED} //test
 
     public void logout(ActionEvent actionEvent) {
 
         UserSession.getInstance(null).cleanUserSession();
         Stage stage = (Stage) plist.getScene().getWindow();
-
 
 
         //start the main class
@@ -76,7 +79,7 @@ public class HelloController {
             stage.close();
         }
     }
-    
+
 
     private ViewMode currentViewMode = ViewMode.UGE;
 
@@ -91,12 +94,14 @@ public class HelloController {
         weekView();
         initializeplist();
         updateCalender();
+        filterplist();
     }
 
     public void opretonpressed(ActionEvent actionEvent) {
         createNewEventDialog();
     }
-    public void createNewEventDialog () {
+
+    public void createNewEventDialog() {
         // Create a new dialog
         Dialog<Event> dialog = new Dialog<>();
         dialog.setTitle("Create New Event");
@@ -131,13 +136,11 @@ public class HelloController {
     }
 
 
-
-
-
     public void initializeplist() {
         plistc1.setCellValueFactory(new PropertyValueFactory<>("name"));
         plistc2.setCellValueFactory(new PropertyValueFactory<>("position"));
-        plistc3.setCellValueFactory(new PropertyValueFactory<>("department"));;
+        plistc3.setCellValueFactory(new PropertyValueFactory<>("department"));
+        ;
 
         plist.setRowFactory(tv -> new TableRow<Profile>() {
             @Override
@@ -171,6 +174,42 @@ public class HelloController {
 
 
     }
+
+
+    public void filterplist() {
+
+
+        FilteredList<Profile> filteredProfiles = new FilteredList<>(profiles, p -> true);
+
+
+        personSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredProfiles.setPredicate(profile -> {
+                // If filter text is empty, display all profiles.
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                if (profile.getName().toLowerCase().contains(lowerCaseFilter)) {
+                    return true; // Filter matches name.
+                } else if (profile.getPosition().toLowerCase().contains(lowerCaseFilter)) {
+                    return true; // Filter matches position.
+                } else if (profile.getDepartment().toLowerCase().contains(lowerCaseFilter)) {
+                    return true; // Filter matches department.
+                }
+                return false; // Does not match.
+            });
+        });
+
+
+        SortedList<Profile> sortedProfiles = new SortedList<>(filteredProfiles);
+
+        sortedProfiles.comparatorProperty().bind(plist.comparatorProperty());
+
+        plist.setItems(sortedProfiles);
+    }
+
 
 
     public void notifi(List<String> messages) {
