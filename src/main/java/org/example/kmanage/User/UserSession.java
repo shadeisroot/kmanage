@@ -20,4 +20,9 @@ public class UserSession {
     public User getUser() {
         return user;
     }
+
+    public void cleanUserSession() {
+        user = null;
+        instance = null;
+    }
 }
