@@ -19,6 +19,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -35,6 +37,7 @@ import org.example.kmanage.User.User;
 import org.example.kmanage.User.UserSession;
 
 import java.io.File;
+import java.io.InputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -57,6 +60,8 @@ public class HelloController {
     private GridPane calendarGrid;
     @FXML
     private Label calendarInfoLabel;
+    @FXML
+    private ImageView personSearchButton;
     private LocalDate currentDate = LocalDate.now();
 
     PlistDAO pdi = new PlistDAOimp();
@@ -84,6 +89,8 @@ public class HelloController {
         doubleclickeventplist();
     }
 
+
+    private boolean darkMode = false;
 
     public void logout(ActionEvent actionEvent) {
 
@@ -277,7 +284,7 @@ public class HelloController {
         dayBox.setPrefHeight(25);
         dayBox.setPrefWidth(840);
         dayBox.setAlignment(Pos.CENTER);
-        dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-padding: 20;");
+        dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-border-color: #121212; -fx-border-width: 1; -fx-padding: 20;");
 
         // Formaterer og viser datoen
         String dayName = currentDate.getDayOfWeek().getDisplayName(TextStyle.FULL_STANDALONE, new Locale("da", "DK"));
@@ -291,9 +298,18 @@ public class HelloController {
 
         dayBox.getChildren().addAll(dayLabel, dateLabel);
 
+        if (darkMode) {
+            dayBox.setStyle("-fx-background-color: #121212; -fx-text-fill: #ffffff; -fx-border-color: #cccccc; -fx-border-width: 1;");
+            dateLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 16px; ");
+        } else {
+            dayBox.setStyle("-fx-background-color: #ffffff; -fx-text-fill: #000000; -fx-border-color: #121212; -fx-border-width: 1;");
+        }
+
         //highlighter dagen i dag
         if (currentDate.equals(today)) {
-            dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffdd55; -fx-padding: 20;");
+            dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffdd55; -fx-border-color: #121212; -fx-border-width: 1; -fx-padding: 20;");
+            dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-size: 18px;");
+            dateLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold; -fx-font-size: 16px;");
         }
 
         calendarGrid.add(dayBox, 0, 0);
@@ -347,8 +363,14 @@ public class HelloController {
             dateLabel.setStyle("-fx-text-fill: #666666;");
 
             dayBox.getChildren().addAll(dayLabel, dateLabel);
+
             if (date.equals(today)) {
                 dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
+                dayLabel.setStyle("-fx-text-fill: #121212");
+                dateLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold");
+            } else if (darkMode) {
+                dayBox.setStyle("-fx-background-color: #121212; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10; -fx-text-fill: #ffffff");
+                dateLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: bold;");
             }
 
             calendarGrid.add(dayBox, i, 0);
@@ -404,16 +426,30 @@ public class HelloController {
             dayBox.setPrefWidth(120);
             dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-padding: 10;");
 
+
             if (date.isBefore(firstDayOfMonth) || date.isAfter(lastDayOfMonth)) {
                 dayBox.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
             } else if (date.equals(today)) {
-                dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
+                dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;-fx-text-fill: #121212" );
             }
+
 
             Label dayLabel = new Label(dayName + " " + formattedDate);
             dayLabel.setStyle("-fx-font-weight: bold;");
             dayBox.getChildren().add(dayLabel);
 
+            if (darkMode) {
+                if (date.isEqual(today)) {
+                    dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10" );
+                    dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold" );
+                } else if (date.isBefore(firstDayOfMonth) || date.isAfter(lastDayOfMonth)) {
+                    dayBox.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
+                    dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold" );
+                } else {
+                    dayBox.setStyle("-fx-background-color: #121212; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10; -fx-text-fill: #ffffff");
+                    dayLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: bold;");
+                }
+            }
             dayBoxes.put(date, dayBox);
 
             int col = i % 7;
@@ -644,7 +680,7 @@ public class HelloController {
 
     private void toggleTheme(Scene scene) {
         ObservableList<String> stylesheets = scene.getStylesheets();
-        // Opretter fulde stier for CSS-filerne
+
         String lightThemePath = getClass().getResource("/org/example/kmanage/maincss.css").toExternalForm();
         String darkThemePath = getClass().getResource("/org/example/kmanage/mainCssDark.css").toExternalForm();
 
@@ -653,15 +689,39 @@ public class HelloController {
             return;
         }
 
+
         if (stylesheets.contains(lightThemePath)) {
             // Skifter fra lys til mørk tema
             stylesheets.clear();
             stylesheets.add(darkThemePath);
+            darkMode = true;
+
         } else {
             // Skifter fra mørk til lys tema eller initialiserer lys tema
             stylesheets.clear();
             stylesheets.add(lightThemePath);
+            darkMode = false;
+
+        }
+        updateCalender();
+        updateSearchIcon(darkMode);
+    }
+    //ændre billeder(søge ikonet)
+    private void updateSearchIcon(boolean darkMode) {
+        String imagePath;
+
+
+        if (darkMode) {
+            imagePath = "/org/example/kmanage/soeg_hvid.png";
+        } else {
+            imagePath = "/org/example/kmanage/soeg.png";
+        }
+        try {
+            Image newImage = new Image(getClass().getResourceAsStream(imagePath));
+            personSearchButton.setImage(newImage);
+        } catch (NullPointerException e) {
+            System.err.println("Failed to load image from: " + imagePath);
+            e.printStackTrace();
         }
     }
-
 }
