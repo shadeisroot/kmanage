@@ -4,6 +4,7 @@ package org.example.kmanage.Controller;
 import javafx.collections.FXCollections;
 
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -58,9 +59,25 @@ public class HelloController {
     PlistDAO pdi = new PlistDAOimp();
     private ObservableList<Profile> profiles = pdi.getprofile();
 
+    public void logout(ActionEvent actionEvent) {
+
+        UserSession.getInstance(null).cleanUserSession();
+        Stage stage = (Stage) plist.getScene().getWindow();
 
 
     private enum ViewMode { DAG, UGE, MÅNED }
+
+        //start the main class
+        Main main = new Main();
+        try {
+            main.start(stage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            stage.close();
+        }
+    }
+    
+
     private ViewMode currentViewMode = ViewMode.UGE;
 
     @FXML
@@ -121,7 +138,38 @@ public class HelloController {
         plistc1.setCellValueFactory(new PropertyValueFactory<>("name"));
         plistc2.setCellValueFactory(new PropertyValueFactory<>("position"));
         plistc3.setCellValueFactory(new PropertyValueFactory<>("department"));;
+
+        plist.setRowFactory(tv -> new TableRow<Profile>() {
+            @Override
+            protected void updateItem(Profile item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    switch (item.getDepartment()) {
+                        case "Tønder Bibliotekerne":
+                            setStyle("-fx-background-color: lightblue;");
+                            break;
+                        case "Tønder Kulturskole":
+                            setStyle("-fx-background-color: lightgreen;");
+                            break;
+                        case "Tønder Medborgerhus":
+                            setStyle("-fx-background-color: lightyellow;");
+                            break;
+                        case "Schweizerhalle":
+                            setStyle("-fx-background-color: lightpink;");
+                            break;
+                        default:
+                            setStyle("");
+                            break;
+                    }
+                }
+            }
+        });
         plist.setItems(profiles);
+
+
     }
 
 
