@@ -58,7 +58,7 @@ public class HelloController {
 
     PlistDAO pdi = new PlistDAOimp();
     private ObservableList<Profile> profiles = pdi.getprofile();
-    private enum ViewMode { DAG, UGE, MÅNED }
+    private enum ViewMode { DAG, UGE, MÅNED } //test
 
     public void logout(ActionEvent actionEvent) {
 
