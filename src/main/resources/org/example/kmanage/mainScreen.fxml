@@ -13,24 +13,24 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ScrollPane?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.kmanage.Controller.HelloController">
     <children>
         <Button fx:id="notButton" layoutX="150.0" layoutY="50.0" mnemonicParsing="false" onAction="#notButtonPressed" text="Noti" />
         <HBox layoutX="70.0" layoutY="154.0" spacing="20">
-            <children>
-                <TableView fx:id="plist" prefHeight="402.0" prefWidth="200.0">
-                    <columns>
-                        <TableColumn fx:id="plistc1" prefWidth="75.0" text="Name" />
-                        <TableColumn fx:id="plistc2" prefWidth="75.0" text="Position" />
-                        <TableColumn fx:id="plistc3" prefWidth="75.0" text="Department" />
-                    </columns>
-                </TableView>
-                <GridPane fx:id="calendarGrid">
-                    <children>
-
-                    </children>
+            <TableView fx:id="plist" prefHeight="402.0" prefWidth="200.0">
+                <columns>
+                    <TableColumn fx:id="plistc1" prefWidth="75.0" text="Name" />
+                    <TableColumn fx:id="plistc2" prefWidth="75.0" text="Position" />
+                    <TableColumn fx:id="plistc3" prefWidth="75.0" text="Department" />
+                </columns>
+            </TableView>
+            <ScrollPane fitToWidth="true" prefHeight="402.0" prefWidth="700.0">
+                <GridPane fx:id="calendarGrid" prefHeight="600.0" prefWidth="680.0">
+                    <!-- Kalender data og logik implementeres her -->
                 </GridPane>
-            </children>
+            </ScrollPane>
         </HBox>
         <Button fx:id="opretButton" layoutX="150.0" layoutY="700.0" mnemonicParsing="false" onAction="#opretButtonPressed" text="Opret" />
         <Label layoutX="600.0" layoutY="50.0" text="NAVN PÅ SIDE" />
@@ -45,13 +45,14 @@
         <Button layoutX="600.0" layoutY="700.0" mnemonicParsing="false" text="Min kalender" />
         <Button fx:id="zoomOut" layoutX="1097.0" layoutY="700.0" mnemonicParsing="false" onAction="#zoomOutPressed" text="zoom ud" />
         <Button fx:id="zoomInd" layoutX="1001.0" layoutY="700.0" mnemonicParsing="false" onAction="#zoomIndPressed" text="zoom ind" />
-      <Button fx:id="tilbageButton" layoutX="317.0" layoutY="129.0" mnemonicParsing="false" onAction="#tilbageButtonPressed" text="&lt;" />
-      <Button fx:id="fremButton" layoutX="342.0" layoutY="129.0" mnemonicParsing="false" onAction="#fremButtonPressed" text="&gt;" />
+      <Button fx:id="tilbageButton" layoutX="278.0" layoutY="117.0" mnemonicParsing="false" onAction="#tilbageButtonPressed" text="&lt;" />
+      <Button fx:id="fremButton" layoutX="1142.0" layoutY="117.0" mnemonicParsing="false" onAction="#fremButtonPressed" text="&gt;" />
       <TextField fx:id="personSearchField" layoutX="70.0" layoutY="117.0" onAction="#personSearchField" />
       <ImageView fx:id="personSearchButton" fitHeight="26.0" fitWidth="25.0" layoutX="220.0" layoutY="117.0" onMouseClicked="#personSearchButtonPressed" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@soeg.png" />
          </image>
       </ImageView>
+        <Label fx:id="calendarInfoLabel" layoutX="716.0" layoutY="121.0" text=" " style="-fx-font-size: 20px; -fx-font-weight: bold;" />
     </children>
 </AnchorPane>
