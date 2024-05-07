@@ -28,7 +28,7 @@
             <items>
                 <MenuItem mnemonicParsing="false" text="Rediger profil" />
                 <MenuItem mnemonicParsing="false" text="Skift tema " onAction="#handleToggleTheme"/>
-                <MenuItem mnemonicParsing="false" text="Log ud" />
+                <MenuItem mnemonicParsing="false" text="Log ud" onAction="#logout"/>
             </items>
         </MenuButton>
 
