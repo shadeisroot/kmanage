@@ -62,12 +62,14 @@ public class HelloController {
     private Label calendarInfoLabel;
     @FXML
     private ImageView personSearchButton;
+    @FXML
+    private DatePicker datePicker;
     private LocalDate currentDate = LocalDate.now();
 
     PlistDAO pdi = new PlistDAOimp();
     Notification not = new Notification();
     private ObservableList<Profile> profiles = pdi.getprofile();
-
+  
     private enum ViewMode {DAG, UGE, MÅNED} //test
 
     private ViewMode currentViewMode = ViewMode.UGE;
@@ -88,6 +90,7 @@ public class HelloController {
         filterplist();
         doubleclickeventplist();
     }
+
 
 
     private boolean darkMode = false;
@@ -122,6 +125,12 @@ public class HelloController {
                     alert.setContentText("Name: " + profile.getName() + "\n" +
                             "Position: " + profile.getPosition() + "\n" +
                             "Department: " + profile.getDepartment());
+
+    public void initialize() {
+        weekView();
+        initializeplist();
+        updateCalender(LocalDate.now());
+    }
 
                     // Tilføj en knap til at invitere brugeren
                     ButtonType invitebutton = new ButtonType("invite" , ButtonBar.ButtonData.OK_DONE);
@@ -256,7 +265,8 @@ public class HelloController {
         notifi(not.showMessages());
     }
 
-    private void updateCalender() {
+    private void updateCalender(LocalDate date) {
+        currentDate = date;
         calendarGrid.getChildren().clear();
 
         switch (currentViewMode) {
@@ -481,7 +491,7 @@ public class HelloController {
             currentViewMode = ViewMode.MÅNED;
         }
 
-        updateCalender();
+        updateCalender(currentDate);
     }
 
 
@@ -492,7 +502,7 @@ public class HelloController {
             currentViewMode = ViewMode.DAG;
         }
 
-        updateCalender();
+        updateCalender(currentDate);
     }
 
     public void tilbageButtonPressed(ActionEvent event) {
@@ -507,7 +517,7 @@ public class HelloController {
                 currentDate = currentDate.minusMonths(1);
                 break;
         }
-        updateCalender();
+        updateCalender(currentDate);
     }
 
     public void fremButtonPressed(ActionEvent event) {
@@ -522,7 +532,7 @@ public class HelloController {
                 currentDate = currentDate.plusMonths(1);
                 break;
         }
-        updateCalender();
+        updateCalender(currentDate);
     }
 
     public TableView<Profile> initializecreatenewtable(){
@@ -646,7 +656,7 @@ public class HelloController {
             project.setNotes(notesField.getText());
             files.forEach(project::addFiles);
             projects.add(project);
-            updateCalender();
+            updateCalender(currentDate);
             stage.close();
         });
 
@@ -672,6 +682,16 @@ public class HelloController {
 
     }
 
+    public void datePickerPressed(ActionEvent event) {
+        if (datePicker.getValue() != null) {
+            LocalDate selectedDate = datePicker.getValue();
+            navigateToSelectedDate(selectedDate);
+        }
+    }
+
+    private void navigateToSelectedDate(LocalDate date) {
+        updateCalender(date);
+    }
 
 
 
@@ -703,7 +723,7 @@ public class HelloController {
             darkMode = false;
 
         }
-        updateCalender();
+        updateCalender(currentDate);
         updateSearchIcon(darkMode);
     }
     //ændre billeder(søge ikonet)
