@@ -86,7 +86,7 @@ public class HelloController {
     public void initialize() {
         weekView();
         initializeplist();
-        updateCalender();
+        updateCalender(LocalDate.now());
         filterplist();
         doubleclickeventplist();
     }
@@ -126,11 +126,7 @@ public class HelloController {
                             "Position: " + profile.getPosition() + "\n" +
                             "Department: " + profile.getDepartment());
 
-    public void initialize() {
-        weekView();
-        initializeplist();
-        updateCalender(LocalDate.now());
-    }
+
 
                     // Tilføj en knap til at invitere brugeren
                     ButtonType invitebutton = new ButtonType("invite" , ButtonBar.ButtonData.OK_DONE);
