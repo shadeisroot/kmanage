@@ -1,0 +1,29 @@
+.date-picker {
+    -fx-background-color: #1976D2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+    -fx-padding: 5 14;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 3, 0.0, 0, 1); /* Mindre skygge */
+}
+
+.date-picker:hover {
+    -fx-background-color: #1565C0;
+}
+
+/* Style den nedtrækkende knap i date picker */
+.date-picker .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.date-picker .arrow {
+    -fx-background-color: white; /* Farve på pilen */
+}
+
+/* Style kalender popup'en */
+.date-picker .calendar-view {
+    -fx-background-color: #1976D2;
+
+}
