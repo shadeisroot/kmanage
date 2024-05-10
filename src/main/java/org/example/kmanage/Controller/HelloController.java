@@ -226,32 +226,44 @@ public class HelloController {
     public void notifi(List<String> messages) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Notification");
-        alert.setHeaderText("You have new notifications");
+        alert.setHeaderText("Her vises dine notifikationer");
 
-        // Opret en TextArea til at vise beskeder
+        // Opret TextArea til at vise beskeder
         TextArea textArea = new TextArea();
-        textArea.setEditable(false);  // Sørger for, at brugeren ikke kan redigere tekst
-        textArea.setWrapText(true);   // Aktiverer tekstombrydning
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
 
-        // Byg en streng af alle beskeder med linjeskift mellem hver besked
-        StringBuilder allMessages = new StringBuilder();
-        for (String message : messages) {
-            allMessages.append(message).append("\n");
+        if (not.isNotificationsEnabled()) {
+            // Hvis notifikationer er aktiveret, vis beskeder
+            textArea.setText(String.join("\n", messages));
+        } else {
+            // Hvis notifikationer er deaktiveret, vis en standardbesked
+            textArea.setText("Notifikationer er slukket");
         }
-        textArea.setText(allMessages.toString());
 
-        // Opret en ScrollPane og tilføj TextArea til den
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setContent(textArea);
-        textArea.setPrefWidth(100);
-        scrollPane.setFitToWidth(true);  // Sørger for at bredden tilpasses til TextArea
-        scrollPane.setPrefHeight(200);   // Sætter en foretrukken højde for ScrollPane
+        // ScrollPane for at gøre det muligt at rulle gennem beskederne
+        ScrollPane scrollPane = new ScrollPane(textArea);
+        scrollPane.setPrefWidth(400);
+        scrollPane.setPrefHeight(200);
 
-        // Sæt scrollPane som indhold i dialogvinduet
+        // CheckBox for at tænde/slukke for notifikationer
+        CheckBox checkBox = new CheckBox("Tænd for notifikationer");
+        checkBox.setSelected(not.isNotificationsEnabled());
+        checkBox.setOnAction(e -> {
+            not.setNotificationsEnabled(checkBox.isSelected());
+            // Opdater textArea baseret på brugerens valg
+            if (checkBox.isSelected()) {
+                textArea.setText(String.join("\n", messages));
+            } else {
+                textArea.setText("Notifikationer er slukket");
+            }
+        });
+
+        // VBox til at organisere ScrollPane og CheckBox
+        VBox contentBox = new VBox(10, scrollPane, checkBox);
         DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setContent(scrollPane);
-        dialogPane.getStylesheets().add
-                (Main.class.getResource("notiStyle.css").toExternalForm());
+        dialogPane.setContent(contentBox);
+        dialogPane.getStylesheets().add(Main.class.getResource("notiStyle.css").toExternalForm());
         dialogPane.getStyleClass().add("alert");
 
         alert.showAndWait();

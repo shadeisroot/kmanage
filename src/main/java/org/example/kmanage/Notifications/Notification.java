@@ -9,6 +9,7 @@ import java.util.List;
 public class Notification {
     private List<String> messages = new ArrayList<>();
     NotifiDAO ndi = new NotifiDAOimp();
+    private boolean notificationsEnabled = true;
 
     public void addMessage(String message){
         messages.add(message);
@@ -27,8 +28,16 @@ public class Notification {
         System.out.println("virker ikke endnu");
     }
 
-    public List showMessages(){
+    public List<String> showMessages(){
         messages = ndi.getNotifications();
         return messages;
+    }
+
+    public boolean isNotificationsEnabled(){
+        return notificationsEnabled;
+    }
+
+    public void setNotificationsEnabled(boolean notificationsEnabled) {
+        this.notificationsEnabled = notificationsEnabled;
     }
 }
