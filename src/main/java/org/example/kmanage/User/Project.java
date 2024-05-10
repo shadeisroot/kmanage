@@ -1,5 +1,8 @@
 package org.example.kmanage.User;
 
+import org.example.kmanage.Controller.HelloController;
+import org.example.kmanage.Notifications.Notification;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,14 +11,17 @@ public class Project {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
+    private User owner;
     private String notes;
     private List<String> files;
+    private boolean knockRequest = false;
 
 
-    public Project(String name, LocalDate startDate, LocalDate endDate) {
+    public Project(String name, LocalDate startDate, LocalDate endDate, User owner) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.owner = owner;
         this.notes = "";
         this.files = new ArrayList<>();
     }
@@ -62,5 +68,16 @@ public class Project {
 
     public void removeFiles(String files) {
         this.files.remove(files);
+    }
+
+    public boolean isKnockRequest(){
+        return knockRequest;
+    }
+
+    public void requestKnock(User user){
+        this.knockRequest = true;
+        Notification notification = new Notification();
+        notification.addMessage( user.getUsername() + " har banket på til projektet: " + name);
+        System.out.println("banke på til " + name);
     }
 }

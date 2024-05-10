@@ -325,6 +325,7 @@ public class HelloController {
             if (!project.getStartDate().isAfter(today) && !project.getEndDate().isBefore(today)) {
                 Label projectLabel = new Label(project.getName());
                 projectLabel.setStyle("-fx-background-color: lightblue; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
 
                 VBox projectBox = new VBox(projectLabel);
                 projectBox.setPadding(new Insets(2));
@@ -394,6 +395,7 @@ public class HelloController {
 
                     VBox projectBox = new VBox(new Label(project.getName()));
                     projectBox.setStyle("-fx-background-color: lightblue; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                    projectBox.setOnMouseClicked(event -> showProjectInfo(project));
 
                     GridPane.setConstraints(projectBox, startCol, rowForProject, endCol - startCol + 1, 1);
                     GridPane.setFillWidth(projectBox, true);
@@ -472,6 +474,7 @@ public class HelloController {
                 if (dayBox != null) {
                     Label projectLabel = new Label(project.getName());
                     projectLabel.setStyle("-fx-background-color: lightblue; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                    projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
                     dayBox.getChildren().add(projectLabel);
                 }
             }
@@ -610,6 +613,7 @@ public class HelloController {
         return profileTable;
     }
 
+    //oprettelse af projekter
     public void opretButtonPressed(ActionEvent event) {
         Stage stage = new Stage();
         GridPane pane = new GridPane();
@@ -648,7 +652,8 @@ public class HelloController {
         });
 
         opretButton.setOnAction(e -> {
-            Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue());
+            User loggedInUser = UserSession.getInstance(null).getUser();
+            Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue(), loggedInUser);
             project.setNotes(notesField.getText());
             files.forEach(project::addFiles);
             projects.add(project);
@@ -662,6 +667,40 @@ public class HelloController {
         stage.setScene(scene);
         stage.show();
     }
+
+    private void showProjectInfo(Project project) {
+        Stage infoStage = new Stage();
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(10));
+        layout.setAlignment(Pos.CENTER_LEFT);
+
+        Label nameLabel = new Label("Projektnavn: " + project.getName());
+        Label startLabel = new Label("Startdato: " + project.getStartDate().toString());
+        Label endLabel = new Label("Slutdato: " + project.getEndDate().toString());
+        Label notesLabel = new Label("Noter: " + project.getNotes());
+
+        // Håndtering af projektets filer
+        Label filesLabel = new Label("Filer:");
+        VBox filesList = new VBox(5);
+        for (String file : project.getFiles()) {
+            filesList.getChildren().add(new Label(file));
+        }
+
+        Button knockButton = new Button("Banke på");
+        knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
+
+
+        layout.getChildren().addAll(nameLabel, startLabel, endLabel, notesLabel, filesLabel, filesList, knockButton);
+
+        Scene scene = new Scene(layout);
+        infoStage.setTitle("Projektinformation");
+        infoStage.setScene(scene);
+        infoStage.sizeToScene();
+        infoStage.show();
+    }
+
+
+
     @FXML
     private void handleToggleTheme(ActionEvent event) {
         Scene scene = ((MenuItem)event.getSource()).getParentPopup().getOwnerWindow().getScene();
