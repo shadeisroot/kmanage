@@ -79,6 +79,8 @@ public class HelloController {
 
     User loggedInUser = UserSession.getInstance(null).getUser();
 
+    private boolean darkMode = false;
+
 
     //-------------------------------------------------------------------------------
 
@@ -93,7 +95,7 @@ public class HelloController {
 
 
 
-    private boolean darkMode = false;
+
 
     public void logout(ActionEvent actionEvent) {
 

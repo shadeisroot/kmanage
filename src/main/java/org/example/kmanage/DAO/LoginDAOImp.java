@@ -34,7 +34,7 @@ public class LoginDAOImp implements LoginDAO{
             }
             User user = new User(rs.getString("Username"), new Permissions(rs.getInt("id"),
                     rs.getString("name")), new Profile(rs.getString("Navn"), rs.getString("Stilling"),
-                    rs.getString("Afdeling")));
+                    rs.getString("Afdeling"), rs.getInt("userid")));
             return user;
         } catch (SQLException e) {
             System.out.println("Error" + e);

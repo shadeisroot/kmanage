@@ -25,7 +25,7 @@ public class PlistDAOimp implements PlistDAO {
                 PreparedStatement ps = con.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
-                    Profile profile = new Profile(rs.getString("Navn"), rs.getString("Stilling"), rs.getString("Afdeling"));
+                    Profile profile = new Profile(rs.getString("Navn"), rs.getString("Stilling"), rs.getString("Afdeling"), rs.getInt("userid"));
                     profiles.add(profile);
                 }
             } catch (SQLException e) {

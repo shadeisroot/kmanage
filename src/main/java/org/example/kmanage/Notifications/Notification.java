@@ -10,10 +10,15 @@ public class Notification {
     private List<String> messages = new ArrayList<>();
     NotifiDAO ndi = new NotifiDAOimp();
     private boolean notificationsEnabled = true;
-
+//adds message to all users
     public void addMessage(String message){
         messages.add(message);
-        ndi.addNotification(message);
+        ndi.addallNotification(message);
+    }
+    //sends message to a specific user
+    public void addtoMessage(String message, int to_id){
+        messages.add(message);
+        ndi.addtoNotification(message, to_id);
     }
 
     public void removeMessage(String message){

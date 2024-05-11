@@ -4,7 +4,9 @@ import java.util.List;
 
 public interface NotifiDAO {
 
-    void addNotification(String message);
+    void addallNotification(String message);
+
+    void addtoNotification(String message, int to_id);
 
     List<String> getNotifications();
 }

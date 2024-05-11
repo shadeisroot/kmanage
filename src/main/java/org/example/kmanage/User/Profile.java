@@ -4,11 +4,22 @@ public class Profile {
     private String name;
     private String Position;
     private String Department;
+    private int id;
 
-    public Profile(String name, String Position, String Department) {
+    public Profile(String name, String Position, String Department, int id) {
         this.name = name;
         this.Position = Position;
         this.Department = Department;
+        this.id = id;
+
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override
