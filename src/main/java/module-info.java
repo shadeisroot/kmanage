@@ -3,6 +3,7 @@ module org.example.kmanage {
     requires javafx.fxml;
     requires java.sql;
     requires java.prefs;
+    requires java.desktop;
 
 
     opens org.example.kmanage to javafx.fxml;
