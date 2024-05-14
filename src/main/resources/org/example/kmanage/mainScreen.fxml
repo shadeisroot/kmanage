@@ -51,5 +51,7 @@
             <Point3D />
          </rotationAxis></DatePicker>
       <Button fx:id="todayButton" layoutX="416.0" layoutY="117.0" mnemonicParsing="false" onAction="#todayButtonPressed" text="I dag" />
+      <Button fx:id="adduserbutton" layoutX="70.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#Adduser" text="Tilføj Bruger" />
+      <Button fx:id="removeuserbutton" layoutX="186.0" layoutY="556.0" mnemonicParsing="false" onMouseClicked="#removeUser" prefHeight="25.0" prefWidth="81.0" text="Fjern Bruger" />
     </children>
 </AnchorPane>

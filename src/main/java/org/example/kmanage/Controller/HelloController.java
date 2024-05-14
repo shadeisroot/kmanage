@@ -6,14 +6,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,14 +20,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.example.kmanage.DAO.EditprofileDAO;
-import org.example.kmanage.DAO.EditprofileDAOImp;
 import org.example.kmanage.DAO.PlistDAO;
 import org.example.kmanage.DAO.PlistDAOimp;
+import org.example.kmanage.DAO.ProfileDAO;
+import org.example.kmanage.DAO.ProfileDAOImp;
 import org.example.kmanage.Main;
 import org.example.kmanage.Notifications.Notification;
 import org.example.kmanage.User.Profile;
@@ -39,12 +34,11 @@ import org.example.kmanage.User.Project;
 import org.example.kmanage.User.User;
 import org.example.kmanage.User.UserSession;
 
+import javax.swing.*;
 import java.io.File;
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -56,6 +50,8 @@ import java.util.*;
 public class HelloController {
 
     public TextField personSearchField;
+    public Button adduserbutton;
+    public Button removeuserbutton;
     private ObservableList<Project> projects = FXCollections.observableArrayList();
     public TableView plist;
     public TableColumn plistc1;
@@ -73,10 +69,8 @@ public class HelloController {
 
     PlistDAO pdi = new PlistDAOimp();
     Notification not = new Notification();
-    EditprofileDAO edi = new EditprofileDAOImp();
+    ProfileDAO edi = new ProfileDAOImp();
     private ObservableList<Profile> profiles = pdi.getprofile();
-
-
 
 
     private enum ViewMode {DAG, UGE, MÅNED} //test
@@ -100,16 +94,97 @@ public class HelloController {
         updateCalender(LocalDate.now());
         filterplist();
         doubleclickeventplist();
+        initializebutton();
+
     }
 
-    public void refreshplist(){
+    public void initializebutton() {
+        if (loggedInUser.getPermissions().getId() != 1) {
+            adduserbutton.setVisible(false);
+            removeuserbutton.setVisible(false);
+        }
+        ;
+    }
+
+    public void refreshplist() {
         profiles = pdi.getprofile();
         plist.setItems(profiles);
     }
 
 
+    public void Adduser(MouseEvent mouseEvent) {
+        Stage addUserStage = new Stage();
+
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(25, 25, 25, 25));
+
+        TextField usernameField = new TextField();
+        grid.add(new Label("Username:"), 0, 0);
+        grid.add(usernameField, 1, 0);
+
+        PasswordField passwordField = new PasswordField();
+        grid.add(new Label("Password:"), 0, 1);
+        grid.add(passwordField, 1, 1);
+
+        TextField Navnfield = new TextField();
+        grid.add(new Label("Navn:"), 0, 2);
+        grid.add(Navnfield, 1, 2);
+
+        TextField StillingField = new TextField();
+        grid.add(new Label("Stilling:"), 0, 3);
+        grid.add(StillingField, 1, 3);
+
+        TextField AfdelingField = new TextField();
+        grid.add(new Label("Afdeling:"), 0, 4);
+        grid.add(AfdelingField, 1, 4);
+
+        ComboBox<String> roleComboBox = new ComboBox<>();
+        roleComboBox.getItems().addAll("admin", "user");
+        grid.add(new Label("Role:"), 0, 5);
+        grid.add(roleComboBox, 1, 5);
 
 
+        Button addButton = new Button("Add User");
+        grid.add(addButton, 1, 6);
+
+        addButton.setOnAction(e -> {
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+            String role = roleComboBox.getValue();
+            String navn = Navnfield.getText();
+            String Stilling = StillingField.getText();
+            String Afdeling = AfdelingField.getText();
+            int roleId = "admin".equals(role) ? 1 : 3;
+            try {
+                edi.addEmployee(navn, Stilling, Afdeling);
+                int id = edi.getUserid(navn, Stilling, Afdeling);
+                edi.createLogin(username, password, roleId, id);
+                refreshplist();
+
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            // TODO: Add code here to handle the new user data
+
+            // Close the window after the user is added
+            addUserStage.close();
+        });
+
+        // Create a Scene with the GridPane and set it on the Stage
+        Scene scene = new Scene(grid, 300, 300);
+        addUserStage.setScene(scene);
+
+        // Show the Stage
+        addUserStage.show();
+    }
+
+    public void removeUser(MouseEvent mouseEvent) {
+
+    }
 
     public void logout(ActionEvent actionEvent) {
 
