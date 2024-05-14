@@ -69,7 +69,8 @@ public class HelloController {
     PlistDAO pdi = new PlistDAOimp();
     Notification not = new Notification();
     private ObservableList<Profile> profiles = pdi.getprofile();
-  
+
+
     private enum ViewMode {DAG, UGE, MÅNED} //test
 
     private ViewMode currentViewMode = ViewMode.UGE;
@@ -122,20 +123,20 @@ public class HelloController {
                 Profile profile = (Profile) plist.getSelectionModel().getSelectedItem();
                 if (profile != null) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Profile Information");
+                    alert.setTitle("Profil Information");
                     alert.setHeaderText("Profile: " + profile.getName());
-                    alert.setContentText("Name: " + profile.getName() + "\n" +
+                    alert.setContentText("Navn: " + profile.getName() + "\n" +
                             "Position: " + profile.getPosition() + "\n" +
-                            "Department: " + profile.getDepartment());
+                            "Afdeling: " + profile.getDepartment());
 
 
 
                     // Tilføj en knap til at invitere brugeren
-                    ButtonType invitebutton = new ButtonType("invite" , ButtonBar.ButtonData.OK_DONE);
+                    ButtonType invitebutton = new ButtonType("inviter" , ButtonBar.ButtonData.OK_DONE);
                     alert.getButtonTypes().add(invitebutton);
                     Button inviteButtonNode = (Button) alert.getDialogPane().lookupButton(invitebutton);
                     inviteButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
-                        System.out.println("Invite button clicked for profile: " + profile.getName());
+                        System.out.println("Invite knap klikket for profil: " + profile.getName());
                         event2.consume(); // This prevents the alert from closing
                     });
 
@@ -225,9 +226,9 @@ public class HelloController {
     }
 
 
-    public void notifi(List<String> messages) {
+    public void notifi(List<String> messages) { //virker kun hvis du er logged in med en profil
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Notification");
+        alert.setTitle("Notifikationer");
         alert.setHeaderText("Her vises dine notifikationer");
 
         // Opret TextArea til at vise beskeder
@@ -243,7 +244,7 @@ public class HelloController {
             textArea.setText("Notifikationer er slukket");
         }
 
-        // ScrollPane for at gøre det muligt at rulle gennem beskederne
+        // ScrollPane
         ScrollPane scrollPane = new ScrollPane(textArea);
         scrollPane.setPrefWidth(400);
         scrollPane.setPrefHeight(200);
@@ -294,6 +295,7 @@ public class HelloController {
 
     private void dayView(){
         calendarGrid.getChildren().clear();
+        calendarInfoLabel.setText(" ");
 
         // Gemmer dagens dato til sammenligning
         LocalDate today = LocalDate.now();
@@ -551,9 +553,9 @@ public class HelloController {
     public TableView<Profile> initializecreatenewtable(){
         // Create a TableView for profiles
         TableView<Profile> profileTable = new TableView<>();
-        TableColumn<Profile, String> nameColumn = new TableColumn<>("Name");
+        TableColumn<Profile, String> nameColumn = new TableColumn<>("Navn");
         TableColumn<Profile, String> positionColumn = new TableColumn<>("Position");
-        TableColumn<Profile, String> departmentColumn = new TableColumn<>("Department");
+        TableColumn<Profile, String> departmentColumn = new TableColumn<>("Afdeling");
 
         // Set cell value factories
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -570,18 +572,18 @@ public class HelloController {
                 Profile profile = (Profile) profileTable.getSelectionModel().getSelectedItem();
                 if (profile != null) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Profile Information");
-                    alert.setHeaderText("Profile: " + profile.getName());
-                    alert.setContentText("Name: " + profile.getName() + "\n" +
+                    alert.setTitle("Profil Information");
+                    alert.setHeaderText("Profil: " + profile.getName());
+                    alert.setContentText("Navn: " + profile.getName() + "\n" +
                             "Position: " + profile.getPosition() + "\n" +
-                            "Department: " + profile.getDepartment());
+                            "Afdeling: " + profile.getDepartment());
 
                     // Tilføj en knap til at invitere brugeren
                     ButtonType invitebutton = new ButtonType("invite" , ButtonBar.ButtonData.OK_DONE);
                     alert.getButtonTypes().add(invitebutton);
                     Button inviteButtonNode = (Button) alert.getDialogPane().lookupButton(invitebutton);
                     inviteButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
-                        System.out.println("Invite button clicked for profile: " + profile.getName());
+                        System.out.println("Inviter knap blev trykket for profilen: " + profile.getName());
                         event2.consume(); // This prevents the alert from closing
                     });
 
@@ -639,7 +641,14 @@ public class HelloController {
         TextField nameField = new TextField();
         DatePicker startDatePick = new DatePicker();
         DatePicker endDatePick = new DatePicker();
-        TextField notesField = new TextField();
+        TextArea notesArea = new TextArea();
+        notesArea.setPromptText("Noter kan skrives her");
+        notesArea.setWrapText(true);
+        notesArea.setPrefRowCount(4);
+        notesArea.setPrefColumnCount(20);
+        notesArea.setPrefHeight(100);
+
+
         Button addFilesButton = new Button("Vedhæft fil");
         Button opretButton = new Button("Opret projekt");
 
@@ -651,7 +660,7 @@ public class HelloController {
         pane.add(new Label("Slut dato"), 0, 2);
         pane.add(endDatePick, 1, 2);
         pane.add(new Label("Noter:"), 0, 3);
-        pane.add(notesField, 1, 3);
+        pane.add(notesArea, 1, 3);
         pane.add(initializecreatenewtable(), 1, 4);
         pane.add(addFilesButton, 1, 5);
         pane.add(opretButton, 1, 6);
@@ -668,7 +677,7 @@ public class HelloController {
         opretButton.setOnAction(e -> {
             User loggedInUser = UserSession.getInstance(null).getUser();
             Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue(), loggedInUser);
-            project.setNotes(notesField.getText());
+            project.setNotes(notesArea.getText());
             files.forEach(project::addFiles);
             projects.add(project);
             updateCalender(currentDate);
@@ -721,15 +730,13 @@ public class HelloController {
         toggleTheme(scene);
     }
 
-    //søgefelter
+    public void todayButtonPressed(ActionEvent event) {
+        currentDate = LocalDate.now();
 
-    public void personSearchField(ActionEvent event) {
-
+        updateCalender(currentDate);
     }
 
-    public void personSearchButtonPressed(MouseEvent mouseEvent) {
 
-    }
 
     public void datePickerPressed(ActionEvent event) {
         if (datePicker.getValue() != null) {
@@ -754,7 +761,7 @@ public class HelloController {
         String darkThemePath = getClass().getResource("/org/example/kmanage/mainCssDark.css").toExternalForm();
 
         if (lightThemePath == null || darkThemePath == null) {
-            System.err.println("Din tråd til css'erne er forkert gg");
+            System.err.println("Din tråd til css er forkert");
             return;
         }
 
@@ -789,7 +796,7 @@ public class HelloController {
             Image newImage = new Image(getClass().getResourceAsStream(imagePath));
             personSearchButton.setImage(newImage);
         } catch (NullPointerException e) {
-            System.err.println("Failed to load image from: " + imagePath);
+            System.err.println("Kan ikke loade billede: " + imagePath);
             e.printStackTrace();
         }
     }
