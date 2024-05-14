@@ -27,6 +27,8 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.example.kmanage.DAO.EditprofileDAO;
+import org.example.kmanage.DAO.EditprofileDAOImp;
 import org.example.kmanage.DAO.PlistDAO;
 import org.example.kmanage.DAO.PlistDAOimp;
 import org.example.kmanage.Main;
@@ -38,6 +40,7 @@ import org.example.kmanage.User.UserSession;
 
 import java.io.File;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -68,7 +71,10 @@ public class HelloController {
 
     PlistDAO pdi = new PlistDAOimp();
     Notification not = new Notification();
+    EditprofileDAO edi = new EditprofileDAOImp();
     private ObservableList<Profile> profiles = pdi.getprofile();
+
+
 
 
     private enum ViewMode {DAG, UGE, MÅNED} //test
@@ -94,6 +100,11 @@ public class HelloController {
         doubleclickeventplist();
     }
 
+    public void refreshplist(){
+        profiles = pdi.getprofile();
+        plist.setItems(profiles);
+    }
+
 
 
 
@@ -115,8 +126,50 @@ public class HelloController {
     }
 
 
+    public void Editprofile(ActionEvent actionEvent) {
+        if (loggedInUser.getPermissions().equals("admin"));
+        {
+            Stage stage = new Stage();
+            GridPane pane = new GridPane();
+            pane.setAlignment(Pos.CENTER);
+            pane.setHgap(10);
+            pane.setVgap(10);
+            pane.setPadding(new Insets(25, 25, 25, 25));
 
+            TextField nameField = new TextField();
+            nameField.setText(loggedInUser.getProfile().getName());
+            TextField positionField = new TextField();
+            positionField.setText(loggedInUser.getProfile().getPosition());
+            TextField departmentField = new TextField();
+            departmentField.setText(loggedInUser.getProfile().getDepartment());
+            Button editbutton = new Button("Ændre profil");
 
+            pane.add(new Label("Navn:"), 0, 0);
+            pane.add(nameField, 1, 0);
+            pane.add(new Label("Position:"), 0, 1);
+            pane.add(positionField, 1, 1);
+            pane.add(new Label("Afdeling"), 0, 2);
+            pane.add(departmentField, 1, 2);
+            pane.add(editbutton, 1, 3);
+
+            editbutton.setOnAction(e -> {
+                loggedInUser.getProfile().setName(nameField.getText());
+                loggedInUser.getProfile().setPosition(positionField.getText());
+                loggedInUser.getProfile().setDepartment(departmentField.getText());
+                try {
+                    edi.editprofile(nameField.getText(), positionField.getText(), departmentField.getText(), loggedInUser.getProfile().getId());
+                    refreshplist();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                stage.close();
+            });
+
+            Scene scene = new Scene(pane);
+            stage.setScene(scene);
+            stage.show();
+        }
+    }
     public void doubleclickeventplist(){
         plist.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getClickCount() == 2) {
