@@ -15,7 +15,7 @@ public class HelloApplication extends Application {
         stage.setResizable(false);
         scene.getStylesheets().add
                 (Main.class.getResource("maincss.css").toExternalForm());
-        stage.setTitle("Hello!");
+        stage.setTitle("");
         stage.setScene(scene);
         stage.show();
     }

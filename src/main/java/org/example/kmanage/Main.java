@@ -18,10 +18,13 @@ import org.example.kmanage.DAO.LoginDAO;
 import org.example.kmanage.DAO.LoginDAOImp;
 import org.example.kmanage.User.User;
 import org.example.kmanage.User.UserSession;
+import java.util.prefs.Preferences;
+
 
 //taken from https://www.javaguides.net/2022/11/javafx-login-form-validation-example.html
 public class Main extends Application {
     private LoginDAO ldi = new LoginDAOImp();
+    private Preferences prefs = Preferences.userNodeForPackage(Main.class);
 
     public static void main(String[] args) {
         launch(args);
@@ -30,7 +33,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         //sætter scene op grid spacing
-        primaryStage.setTitle("JavaFX Login Example");
+        primaryStage.setTitle("XX Login");
         GridPane grid = new GridPane();
         primaryStage.setResizable(false);
         grid.setAlignment(Pos.CENTER);
@@ -51,7 +54,7 @@ public class Main extends Application {
         TextField userTextField = new TextField();
         grid.add(userTextField, 1, 1);
 
-        Label pw = new Label("Password:");
+        Label pw = new Label("Kode:");
         grid.add(pw, 0, 2);
 
         PasswordField passwordBox = new PasswordField();
@@ -61,8 +64,15 @@ public class Main extends Application {
         CheckBox rememberMeCheckBox = new CheckBox("Husk mig");
         grid.add(rememberMeCheckBox, 1, 3);
 
+        String savedUserEmail = prefs.get("userEmail", "");
+        if (!savedUserEmail.isEmpty()) {
+            userTextField.setText(savedUserEmail);
+            rememberMeCheckBox.setSelected(true);
+        }
+
+
         //Login in knap
-        Button btn = new Button("Sign in");
+        Button btn = new Button("Log ind");
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().add(btn);
@@ -87,12 +97,18 @@ public class Main extends Application {
 
                 String username = userTextField.getText().toString();
                 String password = passwordBox.getText().toString();
+                boolean rememberMe = rememberMeCheckBox.isSelected();
 
                 User loggedInUser = ldi.checkLogin(username, password);
 
                 //håndter om login er vellykket eller fejlet
                 if (loggedInUser != null) {
-                    infoBox("Login Successful! Logged in as " + loggedInUser.getUsername() , null, "Success");
+                    if (rememberMe) {
+                        prefs.put("userEmail", username);
+                    } else {
+                        prefs.remove("userEmail");
+                    }
+                    infoBox("Du logger nu ind som " + loggedInUser.getUsername() , null, "Det virkede");
                     primaryStage.close();
                     UserSession.getInstance(loggedInUser);
 
@@ -106,13 +122,13 @@ public class Main extends Application {
                         exception.printStackTrace();
                     }
                 } else {
-                    infoBox("Please enter correct Email and Password", null, "Failed");
+                    infoBox("Skriv en gyldig email eller kode", null, "Fejlede");
                 }
             }
         });
 
         //sætter scenen og viser vindue (login)
-        Scene scene = new Scene(grid, 700, 500);
+        Scene scene = new Scene(grid, 300, 300);
         scene.getStylesheets().add
                 (Main.class.getResource("login.css").toExternalForm());
         primaryStage.setScene(scene);
