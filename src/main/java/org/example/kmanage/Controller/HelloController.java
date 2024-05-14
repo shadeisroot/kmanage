@@ -14,6 +14,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -40,6 +41,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -638,9 +640,12 @@ public class HelloController {
         pane.setVgap(10);
         pane.setPadding(new Insets(25, 25, 25, 25));
 
+
         TextField nameField = new TextField();
         DatePicker startDatePick = new DatePicker();
         DatePicker endDatePick = new DatePicker();
+
+
         TextArea notesArea = new TextArea();
         notesArea.setPromptText("Noter kan skrives her");
         notesArea.setWrapText(true);
@@ -661,7 +666,9 @@ public class HelloController {
         pane.add(endDatePick, 1, 2);
         pane.add(new Label("Noter:"), 0, 3);
         pane.add(notesArea, 1, 3);
-        pane.add(initializecreatenewtable(), 1, 4);
+        Node newTable = initializecreatenewtable();
+        pane.add(newTable, 2, 0);
+        GridPane.setRowSpan(newTable, 7);
         pane.add(addFilesButton, 1, 5);
         pane.add(opretButton, 1, 6);
 
