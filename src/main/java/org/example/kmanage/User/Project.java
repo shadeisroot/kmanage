@@ -6,13 +6,15 @@ import org.example.kmanage.Notifications.Notification;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Project {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
-    private LocalDate eventDate;
-    private User owner;
+
+    private int owner;
+
     private String notes;
     private String location;
     private List<String> files;
@@ -20,14 +22,23 @@ public class Project {
 
 
 
-    public Project(String name, LocalDate startDate, LocalDate endDate, LocalDate eventDate, User owner) {
+    public int getOwner() {
+        return owner;
+    }
+
+    public void setOwner(int owner) {
+        this.owner = owner;
+    }
+
+    public Project(String name, LocalDate startDate, LocalDate endDate, int owner, String notes) {
+
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.eventDate = eventDate;
         this.owner = owner;
-        this.notes = "";
         this.location = "";
+        this.notes = notes;
         this.files = new ArrayList<>();
     }
 
