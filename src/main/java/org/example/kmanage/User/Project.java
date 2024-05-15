@@ -16,6 +16,7 @@ public class Project {
     private int owner;
 
     private String notes;
+    private String location;
     private List<String> files;
     private boolean knockRequest = false;
 
@@ -36,6 +37,7 @@ public class Project {
         this.endDate = endDate;
         this.eventDate = eventDate;
         this.owner = owner;
+        this.location = "";
         this.notes = notes;
         this.files = new ArrayList<>();
     }
@@ -78,6 +80,14 @@ public class Project {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public List<String> getFiles() {
