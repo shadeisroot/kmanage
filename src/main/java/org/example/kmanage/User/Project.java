@@ -12,6 +12,7 @@ public class Project {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
+    private LocalDate eventDate;
 
     private int owner;
 
@@ -21,16 +22,7 @@ public class Project {
     private boolean knockRequest = false;
 
 
-
-    public int getOwner() {
-        return owner;
-    }
-
-    public void setOwner(int owner) {
-        this.owner = owner;
-    }
-
-    public Project(String name, LocalDate startDate, LocalDate endDate, int owner, String notes) {
+    public Project(String name, LocalDate startDate, LocalDate endDate, LocalDate eventDate, int owner, String notes) {
 
         this.name = name;
         this.startDate = startDate;
@@ -80,6 +72,14 @@ public class Project {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public int getOwner() {
+        return owner;
+    }
+
+    public void setOwner(int owner) {
+        this.owner = owner;
     }
 
     public String getLocation() {

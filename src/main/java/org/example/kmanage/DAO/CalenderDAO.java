@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public interface CalenderDAO {
-    void addEvent(String name, String start, String end, int id, String notes) throws Exception;
+    void addEvent(String name, String start, String end, String event, int id, String notes) throws Exception;
 
     ObservableList<Project> getevents();
 }
