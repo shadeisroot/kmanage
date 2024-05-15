@@ -776,10 +776,20 @@ public class HelloController {
         pane.setVgap(10);
         pane.setPadding(new Insets(25, 25, 25, 25));
 
-
         TextField nameField = new TextField();
         DatePicker startDatePick = new DatePicker();
         DatePicker endDatePick = new DatePicker();
+        DatePicker eventDatePick = new DatePicker();
+        startDatePick.setEditable(false);
+        endDatePick.setEditable(false);
+
+        TextField meetingNameField = new TextField();
+        DatePicker meetingDatePick = new DatePicker();
+        meetingDatePick.setEditable(false);
+        ComboBox<String> meetingTimeComboBox = new ComboBox<>();
+        meetingTimeComboBox.getItems().addAll("08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+                "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
+                "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30");
 
 
         TextArea notesArea = new TextArea();
@@ -787,10 +797,11 @@ public class HelloController {
         notesArea.setWrapText(true);
         notesArea.setPrefRowCount(4);
         notesArea.setPrefColumnCount(20);
-        notesArea.setPrefHeight(100);
+        notesArea.setPrefHeight(200);
 
 
         Button addFilesButton = new Button("Vedhæft fil");
+        Button addMeetingButton = new Button("Tilføj møde");
         Button opretButton = new Button("Opret projekt");
 
 
@@ -800,13 +811,22 @@ public class HelloController {
         pane.add(startDatePick, 1, 1);
         pane.add(new Label("Slut dato"), 0, 2);
         pane.add(endDatePick, 1, 2);
-        pane.add(new Label("Noter:"), 0, 3);
-        pane.add(notesArea, 1, 3);
+        pane.add(new Label("Dato for begivenhed"), 0, 3);
+        pane.add(eventDatePick,1,3);
+        pane.add(new Label("Noter:"), 0, 4);
+        pane.add(notesArea, 1, 4);
+        pane.add(new Label("Møde Navn:"), 0, 5);
+        pane.add(meetingNameField, 1, 5);
+        pane.add(new Label("Møde Dato:"), 0, 6);
+        pane.add(meetingDatePick, 1, 6);
+        pane.add(new Label("Møde Tid:"), 0, 7);
+        pane.add(meetingTimeComboBox, 1, 7);
         Node newTable = initializecreatenewtable();
         pane.add(newTable, 2, 0);
-        GridPane.setRowSpan(newTable, 7);
-        pane.add(addFilesButton, 1, 5);
-        pane.add(opretButton, 1, 6);
+        GridPane.setRowSpan(newTable, 8);
+        pane.add(addMeetingButton, 1, 8);
+        pane.add(addFilesButton, 1, 9);
+        pane.add(opretButton, 1, 10);
 
         List<String> files = new ArrayList<>();
         addFilesButton.setOnAction(e -> {
@@ -817,8 +837,18 @@ public class HelloController {
             }
         });
 
+        addMeetingButton.setOnAction(e -> {
+            String formattedDate = meetingDatePick.getValue().format(DateTimeFormatter.ofPattern("dd-MM-yyyy |"));
+            String meetingInfo = "Møde: " + meetingNameField.getText() + " | " + formattedDate + " " + meetingTimeComboBox.getValue();
+            notesArea.appendText(meetingInfo + "\n");
+            meetingNameField.clear();
+            meetingDatePick.setValue(null);
+            meetingTimeComboBox.getSelectionModel().clearSelection();
+        });
+
         opretButton.setOnAction(e -> {
             User loggedInUser = UserSession.getInstance(null).getUser();
+
             Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue(), loggedInUser.getProfile().getId(), notesArea.getText());
             try {
                 cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes());
@@ -846,6 +876,7 @@ public class HelloController {
         Label nameLabel = new Label("Projektnavn: " + project.getName());
         Label startLabel = new Label("Startdato: " + project.getStartDate().toString());
         Label endLabel = new Label("Slutdato: " + project.getEndDate().toString());
+        Label eventDayLabel = new Label("Dato for begivenhed:" + project.getEventDate().toString());
         Label notesLabel = new Label("Noter: " + project.getNotes());
 
         // Håndtering af projektets filer
@@ -859,7 +890,7 @@ public class HelloController {
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
 
-        layout.getChildren().addAll(nameLabel, startLabel, endLabel, notesLabel, filesLabel, filesList, knockButton);
+        layout.getChildren().addAll(nameLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList, knockButton);
 
         Scene scene = new Scene(layout);
         infoStage.setTitle("Projektinformation");
