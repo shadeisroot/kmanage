@@ -167,9 +167,6 @@ public class HelloController {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-
-            // TODO: Add code here to handle the new user data
-
             // Close the window after the user is added
             addUserStage.close();
         });
@@ -183,7 +180,15 @@ public class HelloController {
     }
 
     public void removeUser(MouseEvent mouseEvent) {
-
+        Profile profile = (Profile) plist.getSelectionModel().getSelectedItem();
+        if (profile != null) {
+            try {;
+                edi.removeEmployee(profile.getId());
+                refreshplist();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     public void logout(ActionEvent actionEvent) {
