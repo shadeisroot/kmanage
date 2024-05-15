@@ -23,10 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.example.kmanage.DAO.PlistDAO;
-import org.example.kmanage.DAO.PlistDAOimp;
-import org.example.kmanage.DAO.ProfileDAO;
-import org.example.kmanage.DAO.ProfileDAOImp;
+import org.example.kmanage.DAO.*;
 import org.example.kmanage.Main;
 import org.example.kmanage.Notifications.Notification;
 import org.example.kmanage.User.Profile;
@@ -66,7 +63,7 @@ public class HelloController {
     @FXML
     private DatePicker datePicker;
     private LocalDate currentDate = LocalDate.now();
-
+    CalenderDAO cdi = new CalenderDAOimp();
     PlistDAO pdi = new PlistDAOimp();
     Notification not = new Notification();
     ProfileDAO edi = new ProfileDAOImp();
@@ -88,13 +85,14 @@ public class HelloController {
     //-------------------------------------------------------------------------------
 
 
-    public void initialize() {
+    public void initialize() throws Exception {
         weekView();
         initializeplist();
         updateCalender(LocalDate.now());
         filterplist();
         doubleclickeventplist();
         initializebutton();
+        initializeevents();
 
     }
 
@@ -106,6 +104,11 @@ public class HelloController {
         ;
     }
 
+
+    public void initializeevents() throws Exception {
+        projects = cdi.getevents();
+        updateCalender(currentDate);
+    }
     public void refreshplist() {
         profiles = pdi.getprofile();
         plist.setItems(profiles);
@@ -816,9 +819,12 @@ public class HelloController {
 
         opretButton.setOnAction(e -> {
             User loggedInUser = UserSession.getInstance(null).getUser();
-            Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue(), loggedInUser);
-            project.setNotes(notesArea.getText());
-            files.forEach(project::addFiles);
+            Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue(), loggedInUser.getProfile().getId(), notesArea.getText());
+            try {
+                cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             projects.add(project);
             updateCalender(currentDate);
             stage.close();
