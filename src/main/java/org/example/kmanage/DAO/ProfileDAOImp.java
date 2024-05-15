@@ -57,4 +57,20 @@ public class ProfileDAOImp implements ProfileDAO {
         ps.setInt(4, uid);
         ps.executeUpdate();
     }
+
+    public void removeEmployee(int userid) throws SQLException {
+
+        // SQL statement to delete from dbo.login
+        String sqlLogin = "DELETE FROM dbo.Login WHERE uid = ?";
+        PreparedStatement psLogin = con.prepareStatement(sqlLogin);
+        psLogin.setInt(1, userid);
+        psLogin.executeUpdate();
+
+        // SQL statement to delete from dbo.employee
+        String sqlEmployee = "DELETE FROM dbo.employee WHERE userid = ?";
+        PreparedStatement psEmployee = con.prepareStatement(sqlEmployee);
+        psEmployee.setInt(1, userid);
+        psEmployee.executeUpdate();
+
+    }
 }

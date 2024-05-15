@@ -12,4 +12,6 @@ public interface ProfileDAO {
     void createLogin( String username, String password, int pid, int uid) throws SQLException;
 
     int getUserid(String Navn, String Stilling, String Afdeling) throws SQLException;
+
+    void removeEmployee(int userid) throws SQLException;
 }
