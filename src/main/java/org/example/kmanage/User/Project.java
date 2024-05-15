@@ -11,16 +11,19 @@ public class Project {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
+    private LocalDate eventDate;
     private User owner;
     private String notes;
     private List<String> files;
     private boolean knockRequest = false;
 
 
-    public Project(String name, LocalDate startDate, LocalDate endDate, User owner) {
+
+    public Project(String name, LocalDate startDate, LocalDate endDate, LocalDate eventDate, User owner) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.eventDate = eventDate;
         this.owner = owner;
         this.notes = "";
         this.files = new ArrayList<>();
@@ -48,6 +51,14 @@ public class Project {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public LocalDate getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(LocalDate eventDate) {
+        this.eventDate = eventDate;
     }
 
     public String getNotes() {
