@@ -22,7 +22,7 @@ public class Project {
     private boolean knockRequest = false;
 
 
-    public Project(String name, LocalDate startDate, LocalDate endDate, LocalDate eventDate, int owner, String notes) {
+    public Project(String name, LocalDate startDate, LocalDate endDate, int owner, String notes,  LocalDate eventDate) {
 
         this.name = name;
         this.startDate = startDate;

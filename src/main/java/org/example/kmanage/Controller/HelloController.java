@@ -476,7 +476,7 @@ public class HelloController {
 
         int projectRow = 1;
         for (Project project : projects) {
-            if (!project.getStartDate().isAfter(today) && !project.getEndDate().isBefore(today)) {
+            if (!currentDate.isBefore(project.getStartDate()) && !currentDate.isAfter(project.getEndDate())) {
                 Label projectLabel = new Label(project.getName());
                 projectLabel.setStyle("-fx-background-color: lightblue; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
                 projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
@@ -485,11 +485,17 @@ public class HelloController {
                 projectBox.setPadding(new Insets(2));
                 projectBox.setStyle("-fx-background-color: lightblue; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
                 calendarGrid.add(projectBox, 0, projectRow++);
+
+                // Check if today is the eventDate and highlight it
+                if (currentDate.equals(project.getEventDate())) {
+                    projectLabel.setStyle("-fx-background-color: #0077CC; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.9;");
+                    projectLabel.setText(project.getName() + " (Event)");
+                }
             }
         }
     }
 
-    private void weekView(){
+    private void weekView() {
         calendarGrid.getChildren().clear();
 
         // Definerer dagens dato, ugens start og slut
@@ -538,22 +544,36 @@ public class HelloController {
 
             //Viser projekter, der spænder over den aktuelle dato
             for (Project project : projects) {
+                int rowForProject = projectRowMap.getOrDefault(project.getName(), nextAvailableRow);
+                if (!projectRowMap.containsKey(project.getName())) {
+                    projectRowMap.put(project.getName(), nextAvailableRow++);
+                }
+
+                //projekt (den lyse blå)
                 if (!project.getStartDate().isAfter(date) && !project.getEndDate().isBefore(date)) {
                     int startCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getStartDate());
                     int endCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getEndDate());
-                    int rowForProject = projectRowMap.getOrDefault(project.getName(), nextAvailableRow);
-
-                    if (!projectRowMap.containsKey(project.getName())) {
-                        projectRowMap.put(project.getName(), nextAvailableRow++);
-                    }
+                    startCol = Math.max(startCol, 0);
+                    endCol = Math.min(endCol, 6);
 
                     VBox projectBox = new VBox(new Label(project.getName()));
                     projectBox.setStyle("-fx-background-color: lightblue; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
                     projectBox.setOnMouseClicked(event -> showProjectInfo(project));
-
                     GridPane.setConstraints(projectBox, startCol, rowForProject, endCol - startCol + 1, 1);
                     GridPane.setFillWidth(projectBox, true);
                     calendarGrid.getChildren().add(projectBox);
+                }
+
+                //eventdate box
+                if (project.getEventDate() != null && (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate()) >= 0 && (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate()) <= 6) {
+                    int eventCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate());
+
+                    VBox eventBox = new VBox(new Label(project.getName() + " (Event)"));
+                    eventBox.setStyle("-fx-background-color: #ffffff; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7; ");
+                    eventBox.setOnMouseClicked(event -> showProjectInfo(project));
+                    GridPane.setConstraints(eventBox, eventCol, rowForProject, 1, 1);
+                    GridPane.setFillWidth(eventBox, true);
+                    calendarGrid.getChildren().add(eventBox);
                 }
             }
         }
@@ -631,6 +651,15 @@ public class HelloController {
                     projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
                     dayBox.getChildren().add(projectLabel);
                 }
+            }
+
+            // Highlight eventDate with a distinct style or add a special marker
+            if (project.getEventDate() != null && dayBoxes.containsKey(project.getEventDate())) {
+                VBox eventDayBox = dayBoxes.get(project.getEventDate());
+                Label eventLabel = new Label("Event: " + project.getName());
+                eventLabel.setStyle("-fx-background-color: #0077CC; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                eventLabel.setOnMouseClicked(event -> showProjectInfo(project));
+                eventDayBox.getChildren().add(eventLabel);
             }
         }
     }
@@ -869,13 +898,13 @@ public class HelloController {
 
         opretButton.setOnAction(e -> {
             User loggedInUser = UserSession.getInstance(null).getUser();
-            Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue(), eventDatePick.getValue(), loggedInUser.getProfile().getId(), notesArea.getText());
+            Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue(), loggedInUser.getProfile().getId(), notesArea.getText(), eventDatePick.getValue());
             project.setLocation(locationField.getText());
             project.setNotes(notesArea.getText());
             files.forEach(project::addFiles);
 
             try {
-                cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), project.getEventDate().toString(), loggedInUser.getProfile().getId(), project.getNotes());
+                cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
