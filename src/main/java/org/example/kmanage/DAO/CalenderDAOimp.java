@@ -33,7 +33,7 @@ public class CalenderDAOimp implements CalenderDAO{
         ps.setInt(4, id);
         ps.setString(5, notes);
         ps.setString(6, event);
-        ps.setString(6, meeting);
+        ps.setString(7, meeting);
         ps.executeUpdate();
     }
 
@@ -61,4 +61,37 @@ public class CalenderDAOimp implements CalenderDAO{
         }
         return projects;
     }
-}
+
+    public int getprojectid(String name, String startdate, String enddate, int owner, String notes, String eventdate, String meetingdate) {
+        try {
+            String sql = "SELECT id from dbo.projects WHERE name = ? AND startdate = ? AND enddate = ? AND owner = ? AND notes = ? AND eventdate = ? AND meetingdate = ? ";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, name);
+            ps.setString(2, startdate);
+            ps.setString(3, enddate);
+            ps.setInt(4, owner);
+            ps.setString(5, notes);
+            ps.setString(6, eventdate);
+            ps.setString(7, meetingdate);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                return id;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error" + e);
+        }
+    }
+
+        public void addProjectMember(int id, int memberid){
+            try {
+                String sql = "INSERT INTO dbo.ProjectUSER (Project_ID, Member_ID) VALUES (?, ?)";
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, id);
+                ps.setInt(2, memberid);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println("Error" + e);
+            }
+        }
+    }

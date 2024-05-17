@@ -21,6 +21,9 @@ public class Project {
     private List<String> files;
     private boolean knockRequest = false;
 
+    private List<Profile> members;
+
+
 
     public Project(String name, LocalDate startDate, LocalDate endDate, int owner, String notes,  LocalDate eventDate, LocalDate meetingDate) {
 
@@ -49,6 +52,14 @@ public class Project {
 
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
+    }
+
+    public List<Profile> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Profile> members) {
+        this.members = members;
     }
 
     public LocalDate getEndDate() {
