@@ -22,6 +22,9 @@ public class Project {
 
     private boolean knockRequest = false;
 
+    private List<Profile> members;
+
+
 
     public Project(String name, LocalDate startDate, LocalDate endDate, int owner, String notes,  LocalDate eventDate, List<LocalDate> meetingDates) {
 
@@ -50,6 +53,14 @@ public class Project {
 
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
+    }
+
+    public List<Profile> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Profile> members) {
+        this.members = members;
     }
 
     public LocalDate getEndDate() {

@@ -11,4 +11,9 @@ public interface CalenderDAO {
     void addEvent(String name, String start, String end, int id, String notes, String event, String meeting) throws Exception;
 
     ObservableList<Project> getevents();
-}
+
+    int getprojectid(String name, String startdate, String enddate, int owner, String notes, String eventdate, String meetingdate);
+
+
+    void addProjectMember(int id, int memberid);
+    }

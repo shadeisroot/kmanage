@@ -1059,9 +1059,24 @@ public class HelloController {
             project.setLocation(locationField.getText());
             project.setNotes(notesArea.getText());
             files.forEach(project::addFiles);
+
+            List<Profile> members = new ArrayList<>();
+
+            // Iterate over the items in the targettable and add each item to the members list
+            for (Object profile : targettable.getItems()) {
+                members.add((Profile) profile);
+            }
+
+            project.setMembers(members);
+
+
             try {
                 cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDate().toString());
-
+                int id = cdi.getprojectid(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDate().toString());
+                System.out.println(id);
+                for (Profile member : members) {
+                    cdi.addProjectMember(id, member.getId());
+                }
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
