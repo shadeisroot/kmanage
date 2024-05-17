@@ -898,13 +898,13 @@ public class HelloController {
 
         opretButton.setOnAction(e -> {
             User loggedInUser = UserSession.getInstance(null).getUser();
-            Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue(), loggedInUser.getProfile().getId(), notesArea.getText(), eventDatePick.getValue());
+            Project project = new Project(nameField.getText(), startDatePick.getValue(), endDatePick.getValue(), loggedInUser.getProfile().getId(), notesArea.getText(), eventDatePick.getValue(), meetingDatePick.getValue());
             project.setLocation(locationField.getText());
             project.setNotes(notesArea.getText());
             files.forEach(project::addFiles);
 
             try {
-                cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString());
+                cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDate().toString());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
