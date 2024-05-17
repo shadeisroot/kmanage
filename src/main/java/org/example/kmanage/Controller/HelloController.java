@@ -18,7 +18,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -109,6 +112,7 @@ public class HelloController {
         projects = cdi.getevents();
         updateCalender(currentDate);
     }
+
     public void refreshplist() {
         profiles = pdi.getprofile();
         plist.setItems(profiles);
@@ -185,7 +189,8 @@ public class HelloController {
     public void removeUser(MouseEvent mouseEvent) {
         Profile profile = (Profile) plist.getSelectionModel().getSelectedItem();
         if (profile != null) {
-            try {;
+            try {
+                ;
                 edi.removeEmployee(profile.getId());
                 refreshplist();
             } catch (SQLException ex) {
@@ -212,7 +217,7 @@ public class HelloController {
 
 
     public void Editprofile(ActionEvent actionEvent) {
-        if (loggedInUser.getPermissions().equals("admin"));
+        if (loggedInUser.getPermissions().equals("admin")) ;
         {
             Stage stage = new Stage();
             GridPane pane = new GridPane();
@@ -255,7 +260,8 @@ public class HelloController {
             stage.show();
         }
     }
-    public void doubleclickeventplist(){
+
+    public void doubleclickeventplist() {
         plist.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getClickCount() == 2) {
                 Profile profile = (Profile) plist.getSelectionModel().getSelectedItem();
@@ -268,9 +274,8 @@ public class HelloController {
                             "Afdeling: " + profile.getDepartment());
 
 
-
                     // Tilføj en knap til at invitere brugeren
-                    ButtonType invitebutton = new ButtonType("inviter" , ButtonBar.ButtonData.OK_DONE);
+                    ButtonType invitebutton = new ButtonType("inviter", ButtonBar.ButtonData.OK_DONE);
                     alert.getButtonTypes().add(invitebutton);
                     Button inviteButtonNode = (Button) alert.getDialogPane().lookupButton(invitebutton);
                     inviteButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
@@ -281,12 +286,10 @@ public class HelloController {
                     alert.showAndWait();
                 }
 
-                }
+            }
 
-            });
-        }
-
-
+        });
+    }
 
 
     public void initializeplist() {
@@ -409,6 +412,7 @@ public class HelloController {
 
         alert.showAndWait();
     }
+
     @FXML
     private void notButtonPressed(ActionEvent event) {
         notifi(not.showMessages());
@@ -431,7 +435,7 @@ public class HelloController {
         }
     }
 
-    private void dayView(){
+    private void dayView() {
         calendarGrid.getChildren().clear();
         calendarInfoLabel.setText(" ");
 
@@ -612,7 +616,7 @@ public class HelloController {
             if (date.isBefore(firstDayOfMonth) || date.isAfter(lastDayOfMonth)) {
                 dayBox.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
             } else if (date.equals(today)) {
-                dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;-fx-text-fill: #121212" );
+                dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;-fx-text-fill: #121212");
             }
 
 
@@ -622,11 +626,11 @@ public class HelloController {
 
             if (darkMode) {
                 if (date.isEqual(today)) {
-                    dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10" );
-                    dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold" );
+                    dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10");
+                    dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold");
                 } else if (date.isBefore(firstDayOfMonth) || date.isAfter(lastDayOfMonth)) {
                     dayBox.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
-                    dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold" );
+                    dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold");
                 } else {
                     dayBox.setStyle("-fx-background-color: #121212; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10; -fx-text-fill: #ffffff");
                     dayLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: bold;");
@@ -717,7 +721,27 @@ public class HelloController {
         updateCalender(currentDate);
     }
 
-    public TableView<Profile> initializecreatenewtable(){
+
+    public TableView<Profile> targettable() {
+        TableView<Profile> targetTable = new TableView<>();
+        TableColumn<Profile, String> nameColumn = new TableColumn<>("Name");
+        TableColumn<Profile, String> positionColumn = new TableColumn<>("Position");
+        TableColumn<Profile, String> departmentColumn = new TableColumn<>("Department");
+
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
+        departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
+
+        targetTable.getColumns().add(nameColumn);
+        targetTable.getColumns().add(positionColumn);
+        targetTable.getColumns().add(departmentColumn);
+
+
+
+        return targetTable;
+    }
+
+    public TableView<Profile> initializecreatenewtable() {
         // Create a TableView for profiles
         TableView<Profile> profileTable = new TableView<>();
         TableColumn<Profile, String> nameColumn = new TableColumn<>("Navn");
@@ -734,6 +758,7 @@ public class HelloController {
         profileTable.getColumns().add(positionColumn);
         profileTable.getColumns().add(departmentColumn);
 
+
         profileTable.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getClickCount() == 2) {
                 Profile profile = (Profile) profileTable.getSelectionModel().getSelectedItem();
@@ -746,7 +771,7 @@ public class HelloController {
                             "Afdeling: " + profile.getDepartment());
 
                     // Tilføj en knap til at invitere brugeren
-                    ButtonType invitebutton = new ButtonType("invite" , ButtonBar.ButtonData.OK_DONE);
+                    ButtonType invitebutton = new ButtonType("invite", ButtonBar.ButtonData.OK_DONE);
                     alert.getButtonTypes().add(invitebutton);
                     Button inviteButtonNode = (Button) alert.getDialogPane().lookupButton(invitebutton);
                     inviteButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
@@ -760,7 +785,6 @@ public class HelloController {
             }
 
         });
-
 
         profileTable.setRowFactory(tv -> new TableRow<Profile>() {
             @Override
@@ -862,7 +886,7 @@ public class HelloController {
         pane.add(new Label("Slut dato"), 0, 3);
         pane.add(endDatePick, 1, 3);
         pane.add(new Label("Dato for begivenhed"), 0, 4);
-        pane.add(eventDatePick,1,4);
+        pane.add(eventDatePick, 1, 4);
         pane.add(new Label("Noter:"), 0, 5);
         pane.add(notesArea, 1, 5);
         pane.add(new Label("Møde Navn:"), 0, 6);
@@ -871,9 +895,12 @@ public class HelloController {
         pane.add(meetingDatePick, 1, 7);
         pane.add(new Label("Møde Tid:"), 0, 8);
         pane.add(meetingTimeComboBox, 1, 8);
-        Node newTable = initializecreatenewtable();
-        pane.add(newTable, 2, 0);
-        GridPane.setRowSpan(newTable, 9);
+        TableView Membertableview = initializecreatenewtable();
+        pane.add(Membertableview, 2, 0);
+        GridPane.setRowSpan(Membertableview, 9);
+        TableView targettable = targettable();
+        pane.add(targettable, 3, 0);
+        GridPane.setRowSpan(targettable, 9);
         pane.add(addMeetingButton, 1, 9);
         pane.add(addFilesButton, 1, 10);
         pane.add(opretButton, 1, 11);
@@ -885,6 +912,56 @@ public class HelloController {
             if (selectedFile != null) {
                 files.add(selectedFile.getName());
             }
+        });
+
+        targettable.setRowFactory(ts -> {
+            TableRow<Profile> row = new TableRow<>();
+            row.setOnDragDetected(tt -> {
+                if (!row.isEmpty()) {
+                    Dragboard db = row.startDragAndDrop(TransferMode.COPY);
+                    ClipboardContent cc = new ClipboardContent();
+                    cc.putString(Integer.toString(row.getIndex()));
+                    db.setContent(cc);
+                    targettable.getItems().remove( row.getItem());
+                    event.consume();
+                }
+            });
+            return row;
+        });
+
+
+
+        Membertableview.setRowFactory(tv -> {
+            TableRow<Profile> row = new TableRow<>();
+            row.setOnDragDetected(tt -> {
+                if (!row.isEmpty()) {
+                    Dragboard db = row.startDragAndDrop(TransferMode.COPY);
+                    ClipboardContent cc = new ClipboardContent();
+                    cc.putString(Integer.toString(row.getIndex()));
+                    db.setContent(cc);
+                    event.consume();
+                }
+            });
+            return row;
+        });
+
+        targettable.setOnDragOver(tv -> {
+            if (tv.getDragboard().hasString()) {
+                tv.acceptTransferModes(TransferMode.COPY);
+            }
+        });
+
+        targettable.setOnDragDropped(tv -> {
+            Dragboard db = tv.getDragboard();
+            if (db.hasString()) {
+                int index = Integer.parseInt(db.getString());
+                Profile profile = (Profile) Membertableview.getItems().get(index);
+                targettable.getItems().add(profile);
+                tv.setDropCompleted(true);
+            } else {
+                tv.setDropCompleted(false);
+            }
+            event.consume();
         });
 
         addMeetingButton.setOnAction(e -> {
@@ -903,8 +980,10 @@ public class HelloController {
             project.setNotes(notesArea.getText());
             files.forEach(project::addFiles);
 
+
             try {
                 cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDate().toString());
+
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
