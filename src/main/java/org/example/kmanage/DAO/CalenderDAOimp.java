@@ -63,6 +63,7 @@ public class CalenderDAOimp implements CalenderDAO{
     }
 
     public int getprojectid(String name, String startdate, String enddate, int owner, String notes, String eventdate, String meetingdate) {
+        int id = -1;
         try {
             String sql = "SELECT id from dbo.projects WHERE name = ? AND startdate = ? AND enddate = ? AND owner = ? AND notes = ? AND eventdate = ? AND meetingdate = ? ";
             PreparedStatement ps = con.prepareStatement(sql);
@@ -75,12 +76,13 @@ public class CalenderDAOimp implements CalenderDAO{
             ps.setString(7, meetingdate);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                int id = rs.getInt("id");
-                return id;
+                id = rs.getInt("id");
+
             }
         } catch (SQLException e) {
             System.out.println("Error" + e);
         }
+        return id;
     }
 
         public void addProjectMember(int id, int memberid){
