@@ -6,6 +6,7 @@ import org.example.kmanage.User.Project;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,11 +52,15 @@ public class CalenderDAOimp implements CalenderDAO{
 
                 String dateString4 = rs.getString("meetingdates");
                 if (dateString4 != null) {
+                    dateString4 = dateString4.replace("[", "").replace("]", ""); // Fjern parenteser
                     for (String dateStr : dateString4.split(",")) {
-                        meetingDates.add(LocalDate.parse(dateStr.trim()));
+                        try {
+                            meetingDates.add(LocalDate.parse(dateStr.trim()));
+                        } catch (DateTimeParseException e) {
+                            System.out.println("Fejl ved parsing af dato: " + e.getMessage());
+                        }
                     }
                 }
-
                 LocalDate date = LocalDate.parse(dateString);
                 LocalDate date2 = LocalDate.parse(dateString2);
                 LocalDate date3 = LocalDate.parse(dateString3);

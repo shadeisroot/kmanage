@@ -1046,11 +1046,6 @@ public class HelloController {
                 return; // Stopper yderligere eksekvering hvis de nødvendige felter ikke er udfyldt
             }
 
-            // Kun tilføje en mødedato, hvis den er valgt
-            if (meetingDatePick.getValue() != null) {
-                meetingDates.add(meetingDatePick.getValue());
-            }
-
             Project project = new Project(
                     projectName, startDate, endDate, loggedInUser.getProfile().getId(),
                     notesArea.getText(), eventDate, meetingDates
@@ -1068,7 +1063,6 @@ public class HelloController {
 
             project.setMembers(members);
 
-
             try {
                 cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
                 int id = cdi.getprojectid(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
@@ -1079,7 +1073,7 @@ public class HelloController {
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-          
+
             projects.add(project);
             updateCalender(currentDate);
             stage.close();
