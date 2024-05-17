@@ -1060,7 +1060,7 @@ public class HelloController {
             project.setNotes(notesArea.getText());
             files.forEach(project::addFiles);
             try {
-                cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDate().toString());
+                cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
 
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
