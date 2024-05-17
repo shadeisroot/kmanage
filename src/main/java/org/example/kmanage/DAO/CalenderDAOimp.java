@@ -47,12 +47,20 @@ public class CalenderDAOimp implements CalenderDAO{
                 String dateString = rs.getString("startdate");
                 String dateString2 = rs.getString("enddate");
                 String dateString3 = rs.getString("eventdate");
-                String dateString4 = rs.getString("meetingdate");
+                List<LocalDate> meetingDates = new ArrayList<>();
+
+                String dateString4 = rs.getString("meetingdates");
+                if (dateString4 != null) {
+                    for (String dateStr : dateString4.split(",")) {
+                        meetingDates.add(LocalDate.parse(dateStr.trim()));
+                    }
+                }
+
                 LocalDate date = LocalDate.parse(dateString);
                 LocalDate date2 = LocalDate.parse(dateString2);
                 LocalDate date3 = LocalDate.parse(dateString3);
-                LocalDate date4 = LocalDate.parse(dateString4);
-                Project project = new Project(rs.getString("name"), date, date2, rs.getInt("owner"), rs.getString("notes"), date3, date4);
+
+                Project project = new Project(rs.getString("name"), date, date2, rs.getInt("owner"), rs.getString("notes"), date3, meetingDates);
 
                 projects.add(project);
             }

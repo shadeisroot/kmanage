@@ -29,4 +29,11 @@
     -fx-background-color: #1565C0;
 }
 
+.striped-background {
+    -fx-background-color: linear-gradient(from 45% 0% to 55% 100%, repeat, lightgray 0%, lightgray 25%, white 25%, white 50%, lightgray 50%, lightgray 75%, white 75%, white 100%);
+    -fx-background-size: 40px 40px;
+    -fx-padding: 5;
+    -fx-border-color: black;
+    -fx-opacity: 0.7;
+}
 

@@ -13,26 +13,27 @@ public class Project {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDate eventDate;
-    private LocalDate meetingDate;
+    private List<LocalDate> meetingDates;
     private int owner;
 
     private String notes;
     private String location;
     private List<String> files;
+
     private boolean knockRequest = false;
 
 
-    public Project(String name, LocalDate startDate, LocalDate endDate, int owner, String notes,  LocalDate eventDate, LocalDate meetingDate) {
+    public Project(String name, LocalDate startDate, LocalDate endDate, int owner, String notes,  LocalDate eventDate, List<LocalDate> meetingDates) {
 
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.eventDate = eventDate;
-        this.meetingDate = meetingDate;
         this.owner = owner;
         this.location = "";
         this.notes = notes;
         this.files = new ArrayList<>();
+        this.meetingDates = meetingDates;
     }
 
     public String getName() {
@@ -67,12 +68,16 @@ public class Project {
         this.eventDate = eventDate;
     }
 
-    public LocalDate getMeetingDate() {
-        return meetingDate;
+    public List<LocalDate> getMeetingDates() {
+        return meetingDates;
     }
 
-    public void setMeetingDate(LocalDate meetingDate) {
-        this.meetingDate = meetingDate;
+    public void setMeetingDatess(List<LocalDate> meetingDates) {
+        this.meetingDates = meetingDates;
+    }
+
+    public void addMeetingDates(LocalDate meetingDates) {
+        this.meetingDates.add(meetingDates);
     }
 
     public String getNotes() {
@@ -82,6 +87,7 @@ public class Project {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
 
     public int getOwner() {
         return owner;
