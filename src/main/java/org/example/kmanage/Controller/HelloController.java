@@ -1029,7 +1029,7 @@ public class HelloController {
                 String meetingInfo = "Møde: " + meetingNameField.getText() + " | " + meetingDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + " " + meetingTimeComboBox.getValue();
                 notesArea.appendText(meetingInfo + "\n");
                 meetingNameField.clear();
-                meetingDatePick.setValue(null);
+                meetingDatePick.setValue(LocalDate.now());
                 meetingTimeComboBox.getSelectionModel().clearSelection();
             }
         });
@@ -1071,8 +1071,8 @@ public class HelloController {
 
 
             try {
-                cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDate().toString());
-                int id = cdi.getprojectid(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDate().toString());
+                cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
+                int id = cdi.getprojectid(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
                 System.out.println(id);
                 for (Profile member : members) {
                     cdi.addProjectMember(id, member.getId());
