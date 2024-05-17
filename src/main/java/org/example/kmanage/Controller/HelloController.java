@@ -1029,7 +1029,7 @@ public class HelloController {
                 String meetingInfo = "Møde: " + meetingNameField.getText() + " | " + meetingDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + " " + meetingTimeComboBox.getValue();
                 notesArea.appendText(meetingInfo + "\n");
                 meetingNameField.clear();
-                meetingDatePick.setValue(null);
+                meetingDatePick.setValue(LocalDate.now());
                 meetingTimeComboBox.getSelectionModel().clearSelection();
             }
         });

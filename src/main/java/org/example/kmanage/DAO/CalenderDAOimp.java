@@ -33,7 +33,7 @@ public class CalenderDAOimp implements CalenderDAO{
         ps.setInt(4, id);
         ps.setString(5, notes);
         ps.setString(6, event);
-        ps.setString(6, meeting);
+        ps.setString(7, meeting);
         ps.executeUpdate();
     }
 
