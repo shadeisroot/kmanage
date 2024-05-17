@@ -13,7 +13,7 @@ public class Project {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDate eventDate;
-
+    private LocalDate meetingDate;
     private int owner;
 
     private String notes;
@@ -22,12 +22,13 @@ public class Project {
     private boolean knockRequest = false;
 
 
-    public Project(String name, LocalDate startDate, LocalDate endDate, int owner, String notes,  LocalDate eventDate) {
+    public Project(String name, LocalDate startDate, LocalDate endDate, int owner, String notes,  LocalDate eventDate, LocalDate meetingDate) {
 
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.eventDate = eventDate;
+        this.meetingDate = meetingDate;
         this.owner = owner;
         this.location = "";
         this.notes = notes;
@@ -64,6 +65,14 @@ public class Project {
 
     public void setEventDate(LocalDate eventDate) {
         this.eventDate = eventDate;
+    }
+
+    public LocalDate getMeetingDate() {
+        return meetingDate;
+    }
+
+    public void setMeetingDate(LocalDate meetingDate) {
+        this.meetingDate = meetingDate;
     }
 
     public String getNotes() {

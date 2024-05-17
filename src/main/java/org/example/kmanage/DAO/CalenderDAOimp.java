@@ -24,8 +24,8 @@ public class CalenderDAOimp implements CalenderDAO{
     }
 
 
-    public void addEvent(String name, String start, String end, int id, String notes, String event) throws SQLException {
-        String sql = "INSERT INTO dbo.projects (name, startdate, enddate, owner, notes, eventdate) VALUES (?, ?, ?, ?, ?, ?)";
+    public void addEvent(String name, String start, String end, int id, String notes, String event, String meeting) throws SQLException {
+        String sql = "INSERT INTO dbo.projects (name, startdate, enddate, owner, notes, eventdate, meetingdate) VALUES (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = con.prepareStatement(sql);
         ps.setString(1, name);
         ps.setString(2, start);
@@ -33,6 +33,7 @@ public class CalenderDAOimp implements CalenderDAO{
         ps.setInt(4, id);
         ps.setString(5, notes);
         ps.setString(6, event);
+        ps.setString(6, meeting);
         ps.executeUpdate();
     }
 
@@ -46,10 +47,12 @@ public class CalenderDAOimp implements CalenderDAO{
                 String dateString = rs.getString("startdate");
                 String dateString2 = rs.getString("enddate");
                 String dateString3 = rs.getString("eventdate");
+                String dateString4 = rs.getString("meetingdate");
                 LocalDate date = LocalDate.parse(dateString);
                 LocalDate date2 = LocalDate.parse(dateString2);
                 LocalDate date3 = LocalDate.parse(dateString3);
-                Project project = new Project(rs.getString("name"), date, date2, rs.getInt("owner"), rs.getString("notes"), date3);
+                LocalDate date4 = LocalDate.parse(dateString4);
+                Project project = new Project(rs.getString("name"), date, date2, rs.getInt("owner"), rs.getString("notes"), date3, date4);
 
                 projects.add(project);
             }
