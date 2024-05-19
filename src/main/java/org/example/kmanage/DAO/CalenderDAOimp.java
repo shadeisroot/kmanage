@@ -75,27 +75,21 @@ public class CalenderDAOimp implements CalenderDAO{
         return projects;
     }
 
-    public int getprojectid(String name, String startdate, String enddate, int owner, String notes, String eventdate, String meetingdates) {
-        int id = -1;
-        try {
-            String sql = "SELECT id from dbo.projects WHERE name = ? AND startdate = ? AND enddate = ? AND owner = ? AND notes = ? AND eventdate = ? AND meetingdates = ? ";
+    public int getprojectid(String name, String startdate, String enddate, int owner, String notes, String eventdate, String meetingdates) throws SQLException {
+            String sql = "SELECT id from dbo.projects WHERE name = ? AND startdate = ? AND enddate = ? AND owner = ? AND eventdate = ? AND meetingdates = ? ";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, name);
             ps.setString(2, startdate);
             ps.setString(3, enddate);
             ps.setInt(4, owner);
-            ps.setString(5, notes);
-            ps.setString(6, eventdate);
-            ps.setString(7, meetingdates);
+            ps.setString(5, eventdate);
+            ps.setString(6, meetingdates);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                id = rs.getInt("id");
-
+            if (rs.next()) {
+                return rs.getInt("id");
+            } else {
+                throw new SQLException("Failed to retrieve projectid");
             }
-        } catch (SQLException e) {
-            System.out.println("Error" + e);
-        }
-        return id;
     }
 
         public void addProjectMember(int id, int memberid){
