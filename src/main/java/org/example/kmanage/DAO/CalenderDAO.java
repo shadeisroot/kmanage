@@ -4,6 +4,7 @@ import javafx.collections.ObservableList;
 import org.example.kmanage.User.Project;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -12,7 +13,7 @@ public interface CalenderDAO {
 
     ObservableList<Project> getevents();
 
-    int getprojectid(String name, String startdate, String enddate, int owner, String notes, String eventdate, String meetingdate);
+    int getprojectid(String name, String startdate, String enddate, int owner, String notes, String eventdate, String meetingdate) throws SQLException;
 
 
     void addProjectMember(int id, int memberid);
