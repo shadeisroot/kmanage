@@ -10,7 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,46 +18,28 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.example.kmanage.Classes.Createproject;
-import org.example.kmanage.Classes.DayView;
-import org.example.kmanage.Classes.Monthview;
-import org.example.kmanage.Classes.Weekview;
+import org.example.kmanage.Classes.*;
 import org.example.kmanage.DAO.*;
 import org.example.kmanage.Main;
 import org.example.kmanage.Notifications.Notification;
 import org.example.kmanage.User.*;
-
-import javax.swing.*;
-import java.io.File;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.time.temporal.ChronoUnit;
+
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
-
 public class HelloController {
 
-    public TextField personSearchField;
-    public Button adduserbutton;
-    public Button removeuserbutton;
-    private ObservableList<Project> projects = FXCollections.observableArrayList();
-    public TableView plist;
-    public TableColumn plistc1;
-    public TableColumn plistc2;
-    public TableColumn plistc3;
     @FXML
     private GridPane calendarGrid = new GridPane();
     @FXML
@@ -66,33 +48,33 @@ public class HelloController {
     private ImageView personSearchButton;
     @FXML
     private DatePicker datePicker;
+    @FXML
+    private Button zoomInd, zoomOut, opretButton;
+    public TextField personSearchField;
+    public Button adduserbutton;
+    public Button removeuserbutton;
+    public TableView plist;
+    public TableColumn plistc1;
+    public TableColumn plistc2;
+    public TableColumn plistc3;
+    private boolean darkMode = false;
     private LocalDate currentDate = LocalDate.now();
     CalenderDAO cdi = new CalenderDAOimp();
     PlistDAO pdi = new PlistDAOimp();
     Notification not = new Notification();
     ProfileDAO edi = new ProfileDAOImp();
+    User loggedInUser = UserSession.getInstance(null).getUser();
     private ObservableList<Profile> profiles = pdi.getprofile();
-
-
+    private ObservableList<Project> projects = FXCollections.observableArrayList();
     private enum ViewMode {DAG, UGE, MÅNED} //test
-
     private ViewMode currentViewMode = ViewMode.UGE;
 
-    @FXML
-    private Button zoomInd, zoomOut, opretButton;
-
-    User loggedInUser = UserSession.getInstance(null).getUser();
-
-    private boolean darkMode = false;
-    private DayView dayView;
-    private Weekview weekView;
-    private Monthview monthView;
 
     //-------------------------------------------------------------------------------
 
 
     public void initialize() throws Exception {
-        setWeekView(new Weekview(this));
+        weekView();
         initializeplist();
         updateCalender(LocalDate.now());
         filterplist();
@@ -102,28 +84,13 @@ public class HelloController {
 
     }
 
-    public void setDayView(DayView dayView) {
-        this.dayView = dayView;
+    public LocalDate getCurrentDate() {
+        return currentDate;
     }
-    public void setWeekView(Weekview weekView) {
-        this.weekView = weekView;
-    }
-    public void setMonthView(Monthview monthView) {
-        this.monthView = monthView;
-    }
+
+
     public ObservableList<Project> getProjects() {
         return projects;
-    }
-    public boolean isDarkMode() {
-        return darkMode;
-    }
-
-    public GridPane getCalendarGrid() {
-        return calendarGrid;
-    }
-
-    public Label getCalendarInfoLabel() {
-        return calendarInfoLabel;
     }
 
     public void initializebutton() {
@@ -147,70 +114,7 @@ public class HelloController {
 
 
     public void Adduser(MouseEvent mouseEvent) {
-        Stage addUserStage = new Stage();
-
-        GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(25, 25, 25, 25));
-
-        TextField usernameField = new TextField();
-        grid.add(new Label("Username:"), 0, 0);
-        grid.add(usernameField, 1, 0);
-
-        PasswordField passwordField = new PasswordField();
-        grid.add(new Label("Password:"), 0, 1);
-        grid.add(passwordField, 1, 1);
-
-        TextField Navnfield = new TextField();
-        grid.add(new Label("Navn:"), 0, 2);
-        grid.add(Navnfield, 1, 2);
-
-        TextField StillingField = new TextField();
-        grid.add(new Label("Stilling:"), 0, 3);
-        grid.add(StillingField, 1, 3);
-
-        TextField AfdelingField = new TextField();
-        grid.add(new Label("Afdeling:"), 0, 4);
-        grid.add(AfdelingField, 1, 4);
-
-        ComboBox<String> roleComboBox = new ComboBox<>();
-        roleComboBox.getItems().addAll("admin", "user");
-        grid.add(new Label("Role:"), 0, 5);
-        grid.add(roleComboBox, 1, 5);
-
-
-        Button addButton = new Button("Add User");
-        grid.add(addButton, 1, 6);
-
-        addButton.setOnAction(e -> {
-            String username = usernameField.getText();
-            String password = passwordField.getText();
-            String role = roleComboBox.getValue();
-            String navn = Navnfield.getText();
-            String Stilling = StillingField.getText();
-            String Afdeling = AfdelingField.getText();
-            int roleId = "admin".equals(role) ? 1 : 3;
-            try {
-                edi.addEmployee(navn, Stilling, Afdeling);
-                int id = edi.getUserid(navn, Stilling, Afdeling);
-                edi.createLogin(username, password, roleId, id);
-                refreshplist();
-
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-            // Close the window after the user is added
-            addUserStage.close();
-        });
-
-        // Create a Scene with the GridPane and set it on the Stage
-        Scene scene = new Scene(grid, 300, 300);
-        addUserStage.setScene(scene);
-
-        // Show the Stage
-        addUserStage.show();
+        Adduser adduser = new Adduser(mouseEvent);
     }
 
     public void removeUser(MouseEvent mouseEvent) {
@@ -246,45 +150,8 @@ public class HelloController {
     public void Editprofile(ActionEvent actionEvent) {
         if (loggedInUser.getPermissions().equals("admin")) ;
         {
-            Stage stage = new Stage();
-            GridPane pane = new GridPane();
-            pane.setAlignment(Pos.CENTER);
-            pane.setHgap(10);
-            pane.setVgap(10);
-            pane.setPadding(new Insets(25, 25, 25, 25));
-
-            TextField nameField = new TextField();
-            nameField.setText(loggedInUser.getProfile().getName());
-            TextField positionField = new TextField();
-            positionField.setText(loggedInUser.getProfile().getPosition());
-            TextField departmentField = new TextField();
-            departmentField.setText(loggedInUser.getProfile().getDepartment());
-            Button editbutton = new Button("Ændre profil");
-
-            pane.add(new Label("Navn:"), 0, 0);
-            pane.add(nameField, 1, 0);
-            pane.add(new Label("Position:"), 0, 1);
-            pane.add(positionField, 1, 1);
-            pane.add(new Label("Afdeling"), 0, 2);
-            pane.add(departmentField, 1, 2);
-            pane.add(editbutton, 1, 3);
-
-            editbutton.setOnAction(e -> {
-                loggedInUser.getProfile().setName(nameField.getText());
-                loggedInUser.getProfile().setPosition(positionField.getText());
-                loggedInUser.getProfile().setDepartment(departmentField.getText());
-                try {
-                    edi.editprofile(nameField.getText(), positionField.getText(), departmentField.getText(), loggedInUser.getProfile().getId());
-                    refreshplist();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                stage.close();
-            });
-
-            Scene scene = new Scene(pane);
-            stage.setScene(scene);
-            stage.show();
+            Editprofile editprofile = new Editprofile(actionEvent);
+            refreshplist();
         }
     }
 
@@ -451,13 +318,13 @@ public class HelloController {
 
         switch (currentViewMode) {
             case DAG:
-                setDayView(new DayView(this));
+                dayView();
                 break;
             case UGE:
-                setWeekView(new Weekview(this));
+                weekView();
                 break;
             case MÅNED:
-                setMonthView(new Monthview(this));
+                monthView();
                 break;
         }
     }
@@ -758,4 +625,299 @@ public class HelloController {
             e.printStackTrace();
         }
     }
+
+
+    private void dayView() {
+        calendarGrid.getChildren().clear();
+        calendarInfoLabel.setText(" ");
+
+        // Gemmer dagens dato til sammenligning
+        LocalDate today = LocalDate.now();
+
+        // Opbygger viewet for den aktuelle dag
+        VBox dayBox = new VBox();
+        dayBox.setSpacing(10);
+        dayBox.setPrefHeight(25);
+        dayBox.setPrefWidth(840);
+        dayBox.setAlignment(Pos.CENTER);
+        dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-border-color: #121212; -fx-border-width: 1; -fx-padding: 20;");
+
+        // Formaterer og viser datoen
+        String dayName = currentDate.getDayOfWeek().getDisplayName(TextStyle.FULL_STANDALONE, new Locale("da", "DK"));
+        String formattedDate = currentDate.format(DateTimeFormatter.ofPattern("EEEE, d. MMMM yyyy", new Locale("da", "DK")));
+
+        Label dayLabel = new Label(dayName);
+        dayLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
+
+        Label dateLabel = new Label(formattedDate);
+        dateLabel.setStyle("-fx-text-fill: #666666; -fx-font-size: 16px;");
+
+        dayBox.getChildren().addAll(dayLabel, dateLabel);
+
+        if (darkMode) {
+            dayBox.setStyle("-fx-background-color: #121212; -fx-text-fill: #ffffff; -fx-border-color: #cccccc; -fx-border-width: 1;");
+            dateLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 16px; ");
+        } else {
+            dayBox.setStyle("-fx-background-color: #ffffff; -fx-text-fill: #000000; -fx-border-color: #121212; -fx-border-width: 1;");
+        }
+
+        //highlighter dagen i dag
+        if (currentDate.equals(today)) {
+            dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffdd55; -fx-border-color: #121212; -fx-border-width: 1; -fx-padding: 20;");
+            dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-size: 18px;");
+            dateLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold; -fx-font-size: 16px;");
+        }
+
+        calendarGrid.add(dayBox, 0, 0);
+
+        int projectRow = 1;
+        for (Project project : projects) {
+            boolean isProjectActiveToday = !currentDate.isBefore(project.getStartDate()) && !currentDate.isAfter(project.getEndDate());
+            boolean isEventDay = currentDate.equals(project.getEventDate());
+
+            if (isProjectActiveToday || isEventDay) {
+                Label projectLabel = new Label(project.getName());
+                projectLabel.getStyleClass().add("striped-background");
+                projectLabel.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
+
+                VBox projectBox = new VBox(projectLabel);
+                projectBox.setPadding(new Insets(2));
+                projectBox.getStyleClass().add("striped-background");
+                projectBox.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                calendarGrid.add(projectBox, 0, projectRow++);
+
+                if (isEventDay) {
+                    projectLabel.setStyle("-fx-background-color: #0077CC; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.9;");
+                    projectLabel.setText("Event for " + project.getName());
+                    projectLabel.setOnMouseClicked(event -> showEventInfo(project));
+                }
+
+                // Check og highlight mødedatoer
+                if (project.getMeetingDates() != null && project.getMeetingDates().contains(currentDate)) {
+                    projectLabel.setStyle("-fx-background-color: #FF6347; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.9;");
+                    projectLabel.setText("Møde til " + project.getName());
+                    projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
+                }
+            }
+        }
+    }
+
+    private void weekView() {
+        calendarGrid.getChildren().clear();
+
+        // Definerer dagens dato, ugens start og slut
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+        TemporalField woy = WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear();
+        int week = currentDate.get(woy);
+        calendarInfoLabel.setText("Uge: " + week);
+
+        // Sporer rækkenummeret tilgængeligt for nye projektopslag
+        Map<String, Integer> projectRowMap = new HashMap<>();
+        int nextAvailableRow = 1;
+
+
+        // Løkke igennem hver dag i ugen
+        for (int i = 0; i < 7; i++) {
+            LocalDate date = startOfWeek.plusDays(i);
+            VBox dayBox = new VBox();
+            dayBox.setSpacing(0);
+            dayBox.setPrefHeight(25);
+            dayBox.setPrefWidth(120);
+            dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-padding: 10;");
+
+            String dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, new Locale("da", "DK"));
+            String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM yyyy", new Locale("da", "DK")));
+
+            Label dayLabel = new Label(dayName);
+            dayLabel.setStyle("-fx-font-weight: bold;");
+
+            Label dateLabel = new Label(formattedDate);
+            dateLabel.setStyle("-fx-text-fill: #666666;");
+
+            dayBox.getChildren().addAll(dayLabel, dateLabel);
+
+            if (date.equals(today)) {
+                dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
+                dayLabel.setStyle("-fx-text-fill: #121212");
+                dateLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold");
+            } else if (darkMode) {
+                dayBox.setStyle("-fx-background-color: #121212; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10; -fx-text-fill: #ffffff");
+                dateLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: bold;");
+            }
+
+            calendarGrid.add(dayBox, i, 0);
+
+            //Viser projekter, der spænder over den aktuelle dato
+            for (Project project : projects) {
+                int rowForProject = projectRowMap.getOrDefault(project.getName(), nextAvailableRow);
+                if (!projectRowMap.containsKey(project.getName())) {
+                    projectRowMap.put(project.getName(), nextAvailableRow++);
+                }
+
+                // Vis projekter
+                if (!project.getStartDate().isAfter(date) && !project.getEndDate().isBefore(date)) {
+                    int startCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getStartDate());
+                    int endCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getEndDate());
+                    startCol = Math.max(startCol, 0);
+                    endCol = Math.min(endCol, 6);
+
+                    VBox projectBox = new VBox(new Label(project.getName()));
+                    projectBox.getStyleClass().add("striped-background");
+                    projectBox.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                    projectBox.setOnMouseClicked(event -> showProjectInfo(project));
+                    GridPane.setConstraints(projectBox, startCol, rowForProject, endCol - startCol + 1, 1);
+                    GridPane.setFillWidth(projectBox, true);
+                    calendarGrid.getChildren().add(projectBox);
+                }
+
+                // Vis eventdatoer
+                if (project.getEventDate() != null && (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate()) >= 0 && (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate()) <= 6) {
+                    int eventCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate());
+
+                    VBox eventBox = new VBox(new Label("Event for " + project.getName()));
+                    eventBox.setStyle("-fx-background-color: #ffffff; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                    eventBox.setOnMouseClicked(event -> showEventInfo(project));
+                    GridPane.setConstraints(eventBox, eventCol, rowForProject, 1, 1);
+                    GridPane.setFillWidth(eventBox, true);
+                    calendarGrid.getChildren().add(eventBox);
+                }
+
+                // Vis møder
+                if (project.getMeetingDates() != null) {
+                    for (LocalDate meetingDate : project.getMeetingDates()) {
+                        if (!meetingDate.isBefore(startOfWeek) && !meetingDate.isAfter(startOfWeek.plusDays(6))) {
+                            int meetingCol = (int) ChronoUnit.DAYS.between(startOfWeek, meetingDate);
+
+                            VBox meetingBox = new VBox(new Label("Møde for " + project.getName()));
+                            meetingBox.setStyle("-fx-background-color: #FF6347; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                            meetingBox.setOnMouseClicked(event -> showProjectInfo(project));
+                            GridPane.setConstraints(meetingBox, meetingCol, rowForProject, 1, 1);
+                            GridPane.setFillWidth(meetingBox, true);
+                            calendarGrid.getChildren().add(meetingBox);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void monthView() {
+        calendarGrid.getChildren().clear();
+
+        LocalDate today = LocalDate.now();
+        LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
+        LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
+        YearMonth yearMonth = YearMonth.from(currentDate);
+        int daysInMonth = yearMonth.lengthOfMonth();
+        DayOfWeek startDayOfWeek = firstDayOfMonth.getDayOfWeek();
+        int startCol = (startDayOfWeek.getValue() - 1) % 7;
+        LocalDate gridStartDate = firstDayOfMonth.minusDays(startCol);
+        int totalDays = daysInMonth + startCol;
+        totalDays += (7 - (totalDays % 7)) % 7;
+
+        String monthYear = currentDate.format(DateTimeFormatter.ofPattern("MMMM yyyy", new Locale("da", "DK")));
+        calendarInfoLabel.setText("Måned: " + monthYear);
+
+        Map<LocalDate, VBox> dayBoxes = new HashMap<>();
+
+        for (int i = 0; i < totalDays; i++) {
+            LocalDate date = gridStartDate.plusDays(i);
+            String dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, new Locale("da", "DK"));
+            String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM", new Locale("da", "DK")));
+
+            VBox dayBox = new VBox();
+            dayBox.setSpacing(5);
+            dayBox.setPrefWidth(120);
+            dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-padding: 10;");
+
+
+            if (date.isBefore(firstDayOfMonth) || date.isAfter(lastDayOfMonth)) {
+                dayBox.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
+            } else if (date.equals(today)) {
+                dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;-fx-text-fill: #121212");
+            }
+
+
+            Label dayLabel = new Label(dayName + " " + formattedDate);
+            dayLabel.setStyle("-fx-font-weight: bold;");
+            dayBox.getChildren().add(dayLabel);
+
+            if (darkMode) {
+                if (date.isEqual(today)) {
+                    dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10");
+                    dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold");
+                } else if (date.isBefore(firstDayOfMonth) || date.isAfter(lastDayOfMonth)) {
+                    dayBox.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
+                    dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold");
+                } else {
+                    dayBox.setStyle("-fx-background-color: #121212; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10; -fx-text-fill: #ffffff");
+                    dayLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: bold;");
+                }
+            }
+            dayBoxes.put(date, dayBox);
+
+            int col = i % 7;
+            int row = i / 7;
+            calendarGrid.add(dayBox, col, row);
+        }
+
+
+        for (Project project : projects) {
+            LocalDate startDate = project.getStartDate();
+            LocalDate endDate = project.getEndDate();
+
+            Set<LocalDate> specialDays = new HashSet<>();
+
+
+            if (project.getEventDate() != null && dayBoxes.containsKey(project.getEventDate())) {
+                specialDays.add(project.getEventDate());
+            }
+            if (project.getMeetingDates() != null) {
+                for (LocalDate meetingDate : project.getMeetingDates()) {
+                    if (dayBoxes.containsKey(meetingDate)) {
+                        specialDays.add(meetingDate);
+                    }
+                }
+            }
+
+
+            for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+                if (!specialDays.contains(date)) {  // Kun tilføj hvis datoen ikke er en speciel dag
+                    VBox dayBox = dayBoxes.get(date);
+                    if (dayBox != null) {
+                        Label projectLabel = new Label(project.getName());
+                        projectLabel.getStyleClass().add("striped-background");
+                        projectLabel.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                        projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
+                        dayBox.getChildren().add(projectLabel);
+                    }
+                }
+            }
+
+            // Highlight eventDate with a distinct style or add a special marker
+            if (project.getEventDate() != null && dayBoxes.containsKey(project.getEventDate())) {
+                VBox eventDayBox = dayBoxes.get(project.getEventDate());
+                Label eventLabel = new Label("Event for " + project.getName());
+                eventLabel.setStyle("-fx-background-color: #0077CC; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                eventLabel.setOnMouseClicked(event -> showEventInfo(project));
+                eventDayBox.getChildren().add(eventLabel);
+            }
+
+            if (project.getMeetingDates() != null) {
+                for (LocalDate meetingDate : project.getMeetingDates()) {
+                    if (dayBoxes.containsKey(meetingDate)) {
+                        VBox meetingDayBox = dayBoxes.get(meetingDate);
+                        Label meetingLabel = new Label("Møde for " + project.getName());
+                        meetingLabel.setStyle("-fx-background-color: #FF6347; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                        meetingLabel.setOnMouseClicked(event -> showProjectInfo(project));
+                        meetingDayBox.getChildren().add(meetingLabel);
+                    }
+                }
+            }
+        }
+    }
+
 }
