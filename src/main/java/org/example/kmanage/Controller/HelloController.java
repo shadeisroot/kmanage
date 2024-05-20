@@ -27,6 +27,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.kmanage.Classes.Createproject;
+import org.example.kmanage.Classes.DayView;
+import org.example.kmanage.Classes.Monthview;
+import org.example.kmanage.Classes.Weekview;
 import org.example.kmanage.DAO.*;
 import org.example.kmanage.Main;
 import org.example.kmanage.Notifications.Notification;
@@ -56,9 +59,9 @@ public class HelloController {
     public TableColumn plistc2;
     public TableColumn plistc3;
     @FXML
-    private GridPane calendarGrid;
+    private GridPane calendarGrid = new GridPane();
     @FXML
-    private Label calendarInfoLabel;
+    private Label calendarInfoLabel = new Label();
     @FXML
     private ImageView personSearchButton;
     @FXML
@@ -81,13 +84,15 @@ public class HelloController {
     User loggedInUser = UserSession.getInstance(null).getUser();
 
     private boolean darkMode = false;
-
+    private DayView dayView;
+    private Weekview weekView;
+    private Monthview monthView;
 
     //-------------------------------------------------------------------------------
 
 
     public void initialize() throws Exception {
-        weekView();
+        setWeekView(new Weekview(this));
         initializeplist();
         updateCalender(LocalDate.now());
         filterplist();
@@ -95,6 +100,30 @@ public class HelloController {
         initializebutton();
         initializeevents();
 
+    }
+
+    public void setDayView(DayView dayView) {
+        this.dayView = dayView;
+    }
+    public void setWeekView(Weekview weekView) {
+        this.weekView = weekView;
+    }
+    public void setMonthView(Monthview monthView) {
+        this.monthView = monthView;
+    }
+    public ObservableList<Project> getProjects() {
+        return projects;
+    }
+    public boolean isDarkMode() {
+        return darkMode;
+    }
+
+    public GridPane getCalendarGrid() {
+        return calendarGrid;
+    }
+
+    public Label getCalendarInfoLabel() {
+        return calendarInfoLabel;
     }
 
     public void initializebutton() {
@@ -422,309 +451,17 @@ public class HelloController {
 
         switch (currentViewMode) {
             case DAG:
-                dayView();
+                setDayView(new DayView(this));
                 break;
             case UGE:
-                weekView();
+                setWeekView(new Weekview(this));
                 break;
             case MÅNED:
-                monthView();
+                setMonthView(new Monthview(this));
                 break;
         }
     }
 
-    private void dayView() {
-        calendarGrid.getChildren().clear();
-        calendarInfoLabel.setText(" ");
-
-        // Gemmer dagens dato til sammenligning
-        LocalDate today = LocalDate.now();
-
-        // Opbygger viewet for den aktuelle dag
-        VBox dayBox = new VBox();
-        dayBox.setSpacing(10);
-        dayBox.setPrefHeight(25);
-        dayBox.setPrefWidth(840);
-        dayBox.setAlignment(Pos.CENTER);
-        dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-border-color: #121212; -fx-border-width: 1; -fx-padding: 20;");
-
-        // Formaterer og viser datoen
-        String dayName = currentDate.getDayOfWeek().getDisplayName(TextStyle.FULL_STANDALONE, new Locale("da", "DK"));
-        String formattedDate = currentDate.format(DateTimeFormatter.ofPattern("EEEE, d. MMMM yyyy", new Locale("da", "DK")));
-
-        Label dayLabel = new Label(dayName);
-        dayLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
-
-        Label dateLabel = new Label(formattedDate);
-        dateLabel.setStyle("-fx-text-fill: #666666; -fx-font-size: 16px;");
-
-        dayBox.getChildren().addAll(dayLabel, dateLabel);
-
-        if (darkMode) {
-            dayBox.setStyle("-fx-background-color: #121212; -fx-text-fill: #ffffff; -fx-border-color: #cccccc; -fx-border-width: 1;");
-            dateLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 16px; ");
-        } else {
-            dayBox.setStyle("-fx-background-color: #ffffff; -fx-text-fill: #000000; -fx-border-color: #121212; -fx-border-width: 1;");
-        }
-
-        //highlighter dagen i dag
-        if (currentDate.equals(today)) {
-            dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffdd55; -fx-border-color: #121212; -fx-border-width: 1; -fx-padding: 20;");
-            dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-size: 18px;");
-            dateLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold; -fx-font-size: 16px;");
-        }
-
-        calendarGrid.add(dayBox, 0, 0);
-
-        int projectRow = 1;
-        for (Project project : projects) {
-            boolean isProjectActiveToday = !currentDate.isBefore(project.getStartDate()) && !currentDate.isAfter(project.getEndDate());
-            boolean isEventDay = currentDate.equals(project.getEventDate());
-
-            if (isProjectActiveToday || isEventDay) {
-                Label projectLabel = new Label(project.getName());
-                projectLabel.getStyleClass().add("striped-background");
-                projectLabel.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
-                projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
-
-                VBox projectBox = new VBox(projectLabel);
-                projectBox.setPadding(new Insets(2));
-                projectBox.getStyleClass().add("striped-background");
-                projectBox.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
-                calendarGrid.add(projectBox, 0, projectRow++);
-
-                if (isEventDay) {
-                    projectLabel.setStyle("-fx-background-color: #0077CC; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.9;");
-                    projectLabel.setText("Event for " + project.getName());
-                    projectLabel.setOnMouseClicked(event -> showEventInfo(project));
-                }
-
-                // Check og highlight mødedatoer
-                if (project.getMeetingDates() != null && project.getMeetingDates().contains(currentDate)) {
-                    projectLabel.setStyle("-fx-background-color: #FF6347; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.9;");
-                    projectLabel.setText("Møde til " + project.getName());
-                    projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
-                }
-            }
-        }
-    }
-
-    private void weekView() {
-        calendarGrid.getChildren().clear();
-
-        // Definerer dagens dato, ugens start og slut
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
-        LocalDate endOfWeek = startOfWeek.plusDays(6);
-        TemporalField woy = WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear();
-        int week = currentDate.get(woy);
-        calendarInfoLabel.setText("Uge: " + week);
-
-        // Sporer rækkenummeret tilgængeligt for nye projektopslag
-        Map<String, Integer> projectRowMap = new HashMap<>();
-        int nextAvailableRow = 1;
-
-
-        // Løkke igennem hver dag i ugen
-        for (int i = 0; i < 7; i++) {
-            LocalDate date = startOfWeek.plusDays(i);
-            VBox dayBox = new VBox();
-            dayBox.setSpacing(0);
-            dayBox.setPrefHeight(25);
-            dayBox.setPrefWidth(120);
-            dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-padding: 10;");
-
-            String dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, new Locale("da", "DK"));
-            String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM yyyy", new Locale("da", "DK")));
-
-            Label dayLabel = new Label(dayName);
-            dayLabel.setStyle("-fx-font-weight: bold;");
-
-            Label dateLabel = new Label(formattedDate);
-            dateLabel.setStyle("-fx-text-fill: #666666;");
-
-            dayBox.getChildren().addAll(dayLabel, dateLabel);
-
-            if (date.equals(today)) {
-                dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
-                dayLabel.setStyle("-fx-text-fill: #121212");
-                dateLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold");
-            } else if (darkMode) {
-                dayBox.setStyle("-fx-background-color: #121212; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10; -fx-text-fill: #ffffff");
-                dateLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: bold;");
-            }
-
-            calendarGrid.add(dayBox, i, 0);
-
-            //Viser projekter, der spænder over den aktuelle dato
-            for (Project project : projects) {
-                int rowForProject = projectRowMap.getOrDefault(project.getName(), nextAvailableRow);
-                if (!projectRowMap.containsKey(project.getName())) {
-                    projectRowMap.put(project.getName(), nextAvailableRow++);
-                }
-
-                // Vis projekter
-                if (!project.getStartDate().isAfter(date) && !project.getEndDate().isBefore(date)) {
-                    int startCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getStartDate());
-                    int endCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getEndDate());
-                    startCol = Math.max(startCol, 0);
-                    endCol = Math.min(endCol, 6);
-
-                    VBox projectBox = new VBox(new Label(project.getName()));
-                    projectBox.getStyleClass().add("striped-background");
-                    projectBox.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
-                    projectBox.setOnMouseClicked(event -> showProjectInfo(project));
-                    GridPane.setConstraints(projectBox, startCol, rowForProject, endCol - startCol + 1, 1);
-                    GridPane.setFillWidth(projectBox, true);
-                    calendarGrid.getChildren().add(projectBox);
-                }
-
-                // Vis eventdatoer
-                if (project.getEventDate() != null && (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate()) >= 0 && (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate()) <= 6) {
-                    int eventCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate());
-
-                    VBox eventBox = new VBox(new Label("Event for " + project.getName()));
-                    eventBox.setStyle("-fx-background-color: #ffffff; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
-                    eventBox.setOnMouseClicked(event -> showEventInfo(project));
-                    GridPane.setConstraints(eventBox, eventCol, rowForProject, 1, 1);
-                    GridPane.setFillWidth(eventBox, true);
-                    calendarGrid.getChildren().add(eventBox);
-                }
-
-                // Vis møder
-                if (project.getMeetingDates() != null) {
-                    for (LocalDate meetingDate : project.getMeetingDates()) {
-                        if (!meetingDate.isBefore(startOfWeek) && !meetingDate.isAfter(startOfWeek.plusDays(6))) {
-                            int meetingCol = (int) ChronoUnit.DAYS.between(startOfWeek, meetingDate);
-
-                            VBox meetingBox = new VBox(new Label("Møde for " + project.getName()));
-                            meetingBox.setStyle("-fx-background-color: #FF6347; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
-                            meetingBox.setOnMouseClicked(event -> showProjectInfo(project));
-                            GridPane.setConstraints(meetingBox, meetingCol, rowForProject, 1, 1);
-                            GridPane.setFillWidth(meetingBox, true);
-                            calendarGrid.getChildren().add(meetingBox);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void monthView() {
-        calendarGrid.getChildren().clear();
-
-        LocalDate today = LocalDate.now();
-        LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
-        LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
-        YearMonth yearMonth = YearMonth.from(currentDate);
-        int daysInMonth = yearMonth.lengthOfMonth();
-        DayOfWeek startDayOfWeek = firstDayOfMonth.getDayOfWeek();
-        int startCol = (startDayOfWeek.getValue() - 1) % 7;
-        LocalDate gridStartDate = firstDayOfMonth.minusDays(startCol);
-        int totalDays = daysInMonth + startCol;
-        totalDays += (7 - (totalDays % 7)) % 7;
-
-        String monthYear = currentDate.format(DateTimeFormatter.ofPattern("MMMM yyyy", new Locale("da", "DK")));
-        calendarInfoLabel.setText("Måned: " + monthYear);
-
-        Map<LocalDate, VBox> dayBoxes = new HashMap<>();
-
-        for (int i = 0; i < totalDays; i++) {
-            LocalDate date = gridStartDate.plusDays(i);
-            String dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, new Locale("da", "DK"));
-            String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM", new Locale("da", "DK")));
-
-            VBox dayBox = new VBox();
-            dayBox.setSpacing(5);
-            dayBox.setPrefWidth(120);
-            dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-padding: 10;");
-
-
-            if (date.isBefore(firstDayOfMonth) || date.isAfter(lastDayOfMonth)) {
-                dayBox.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
-            } else if (date.equals(today)) {
-                dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;-fx-text-fill: #121212");
-            }
-
-
-            Label dayLabel = new Label(dayName + " " + formattedDate);
-            dayLabel.setStyle("-fx-font-weight: bold;");
-            dayBox.getChildren().add(dayLabel);
-
-            if (darkMode) {
-                if (date.isEqual(today)) {
-                    dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10");
-                    dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold");
-                } else if (date.isBefore(firstDayOfMonth) || date.isAfter(lastDayOfMonth)) {
-                    dayBox.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
-                    dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold");
-                } else {
-                    dayBox.setStyle("-fx-background-color: #121212; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10; -fx-text-fill: #ffffff");
-                    dayLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: bold;");
-                }
-            }
-            dayBoxes.put(date, dayBox);
-
-            int col = i % 7;
-            int row = i / 7;
-            calendarGrid.add(dayBox, col, row);
-        }
-
-
-        for (Project project : projects) {
-            LocalDate startDate = project.getStartDate();
-            LocalDate endDate = project.getEndDate();
-
-            Set<LocalDate> specialDays = new HashSet<>();
-
-
-            if (project.getEventDate() != null && dayBoxes.containsKey(project.getEventDate())) {
-                specialDays.add(project.getEventDate());
-            }
-            if (project.getMeetingDates() != null) {
-                for (LocalDate meetingDate : project.getMeetingDates()) {
-                    if (dayBoxes.containsKey(meetingDate)) {
-                        specialDays.add(meetingDate);
-                    }
-                }
-            }
-
-
-            for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-                if (!specialDays.contains(date)) {  // Kun tilføj hvis datoen ikke er en speciel dag
-                    VBox dayBox = dayBoxes.get(date);
-                    if (dayBox != null) {
-                        Label projectLabel = new Label(project.getName());
-                        projectLabel.getStyleClass().add("striped-background");
-                        projectLabel.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
-                        projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
-                        dayBox.getChildren().add(projectLabel);
-                    }
-                }
-            }
-
-            // Highlight eventDate with a distinct style or add a special marker
-            if (project.getEventDate() != null && dayBoxes.containsKey(project.getEventDate())) {
-                VBox eventDayBox = dayBoxes.get(project.getEventDate());
-                Label eventLabel = new Label("Event for " + project.getName());
-                eventLabel.setStyle("-fx-background-color: #0077CC; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
-                eventLabel.setOnMouseClicked(event -> showEventInfo(project));
-                eventDayBox.getChildren().add(eventLabel);
-            }
-
-            if (project.getMeetingDates() != null) {
-                for (LocalDate meetingDate : project.getMeetingDates()) {
-                    if (dayBoxes.containsKey(meetingDate)) {
-                        VBox meetingDayBox = dayBoxes.get(meetingDate);
-                        Label meetingLabel = new Label("Møde for " + project.getName());
-                        meetingLabel.setStyle("-fx-background-color: #FF6347; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
-                        meetingLabel.setOnMouseClicked(event -> showProjectInfo(project));
-                        meetingDayBox.getChildren().add(meetingLabel);
-                    }
-                }
-            }
-        }
-    }
 
     public void addProject(Project project) {
         this.projects.add(project);
@@ -887,7 +624,7 @@ public class HelloController {
         Createproject createproject = new Createproject(event);
     }
 
-    private void showProjectInfo(Project project) {
+    public void showProjectInfo(Project project) {
         Stage infoStage = new Stage();
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
@@ -920,7 +657,7 @@ public class HelloController {
         infoStage.show();
     }
 
-    private void showEventInfo(Project project){
+    public void showEventInfo(Project project){
         Stage infoStage = new Stage();
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
