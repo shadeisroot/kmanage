@@ -10,7 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,68 +18,56 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.example.kmanage.Classes.*;
 import org.example.kmanage.DAO.*;
 import org.example.kmanage.Main;
 import org.example.kmanage.Notifications.Notification;
 import org.example.kmanage.User.*;
-
-import javax.swing.*;
-import java.io.File;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.time.temporal.ChronoUnit;
+
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
-
 public class HelloController {
 
-    public TextField personSearchField;
-    public Button adduserbutton;
-    public Button removeuserbutton;
-    private ObservableList<Project> projects = FXCollections.observableArrayList();
-    public TableView plist;
-    public TableColumn plistc1;
-    public TableColumn plistc2;
-    public TableColumn plistc3;
     @FXML
-    private GridPane calendarGrid;
+    private GridPane calendarGrid = new GridPane();
     @FXML
-    private Label calendarInfoLabel;
+    private Label calendarInfoLabel = new Label();
     @FXML
     private ImageView personSearchButton;
     @FXML
     private DatePicker datePicker;
+    @FXML
+    private Button zoomInd, zoomOut, opretButton;
+    public TextField personSearchField;
+    public Button adduserbutton;
+    public Button removeuserbutton;
+    public TableView plist;
+    public TableColumn plistc1;
+    public TableColumn plistc2;
+    public TableColumn plistc3;
+    private boolean darkMode = false;
     private LocalDate currentDate = LocalDate.now();
     CalenderDAO cdi = new CalenderDAOimp();
     PlistDAO pdi = new PlistDAOimp();
     Notification not = new Notification();
     ProfileDAO edi = new ProfileDAOImp();
-    private ObservableList<Profile> profiles = pdi.getprofile();
-
-
-    private enum ViewMode {DAG, UGE, MÅNED} //test
-
-    private ViewMode currentViewMode = ViewMode.UGE;
-
-    @FXML
-    private Button zoomInd, zoomOut, opretButton;
-
     User loggedInUser = UserSession.getInstance(null).getUser();
-
-    private boolean darkMode = false;
+    private ObservableList<Profile> profiles = pdi.getprofile();
+    private ObservableList<Project> projects = FXCollections.observableArrayList();
+    private enum ViewMode {DAG, UGE, MÅNED} //test
+    private ViewMode currentViewMode = ViewMode.UGE;
 
 
     //-------------------------------------------------------------------------------
@@ -94,6 +82,15 @@ public class HelloController {
         initializebutton();
         initializeevents();
 
+    }
+
+    public LocalDate getCurrentDate() {
+        return currentDate;
+    }
+
+
+    public ObservableList<Project> getProjects() {
+        return projects;
     }
 
     public void initializebutton() {
@@ -117,70 +114,7 @@ public class HelloController {
 
 
     public void Adduser(MouseEvent mouseEvent) {
-        Stage addUserStage = new Stage();
-
-        GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(25, 25, 25, 25));
-
-        TextField usernameField = new TextField();
-        grid.add(new Label("Username:"), 0, 0);
-        grid.add(usernameField, 1, 0);
-
-        PasswordField passwordField = new PasswordField();
-        grid.add(new Label("Password:"), 0, 1);
-        grid.add(passwordField, 1, 1);
-
-        TextField Navnfield = new TextField();
-        grid.add(new Label("Navn:"), 0, 2);
-        grid.add(Navnfield, 1, 2);
-
-        TextField StillingField = new TextField();
-        grid.add(new Label("Stilling:"), 0, 3);
-        grid.add(StillingField, 1, 3);
-
-        TextField AfdelingField = new TextField();
-        grid.add(new Label("Afdeling:"), 0, 4);
-        grid.add(AfdelingField, 1, 4);
-
-        ComboBox<String> roleComboBox = new ComboBox<>();
-        roleComboBox.getItems().addAll("admin", "user");
-        grid.add(new Label("Role:"), 0, 5);
-        grid.add(roleComboBox, 1, 5);
-
-
-        Button addButton = new Button("Add User");
-        grid.add(addButton, 1, 6);
-
-        addButton.setOnAction(e -> {
-            String username = usernameField.getText();
-            String password = passwordField.getText();
-            String role = roleComboBox.getValue();
-            String navn = Navnfield.getText();
-            String Stilling = StillingField.getText();
-            String Afdeling = AfdelingField.getText();
-            int roleId = "admin".equals(role) ? 1 : 3;
-            try {
-                edi.addEmployee(navn, Stilling, Afdeling);
-                int id = edi.getUserid(navn, Stilling, Afdeling);
-                edi.createLogin(username, password, roleId, id);
-                refreshplist();
-
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-            // Close the window after the user is added
-            addUserStage.close();
-        });
-
-        // Create a Scene with the GridPane and set it on the Stage
-        Scene scene = new Scene(grid, 300, 300);
-        addUserStage.setScene(scene);
-
-        // Show the Stage
-        addUserStage.show();
+        Adduser adduser = new Adduser(mouseEvent);
     }
 
     public void removeUser(MouseEvent mouseEvent) {
@@ -216,45 +150,8 @@ public class HelloController {
     public void Editprofile(ActionEvent actionEvent) {
         if (loggedInUser.getPermissions().equals("admin")) ;
         {
-            Stage stage = new Stage();
-            GridPane pane = new GridPane();
-            pane.setAlignment(Pos.CENTER);
-            pane.setHgap(10);
-            pane.setVgap(10);
-            pane.setPadding(new Insets(25, 25, 25, 25));
-
-            TextField nameField = new TextField();
-            nameField.setText(loggedInUser.getProfile().getName());
-            TextField positionField = new TextField();
-            positionField.setText(loggedInUser.getProfile().getPosition());
-            TextField departmentField = new TextField();
-            departmentField.setText(loggedInUser.getProfile().getDepartment());
-            Button editbutton = new Button("Ændre profil");
-
-            pane.add(new Label("Navn:"), 0, 0);
-            pane.add(nameField, 1, 0);
-            pane.add(new Label("Position:"), 0, 1);
-            pane.add(positionField, 1, 1);
-            pane.add(new Label("Afdeling"), 0, 2);
-            pane.add(departmentField, 1, 2);
-            pane.add(editbutton, 1, 3);
-
-            editbutton.setOnAction(e -> {
-                loggedInUser.getProfile().setName(nameField.getText());
-                loggedInUser.getProfile().setPosition(positionField.getText());
-                loggedInUser.getProfile().setDepartment(departmentField.getText());
-                try {
-                    edi.editprofile(nameField.getText(), positionField.getText(), departmentField.getText(), loggedInUser.getProfile().getId());
-                    refreshplist();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                stage.close();
-            });
-
-            Scene scene = new Scene(pane);
-            stage.setScene(scene);
-            stage.show();
+            Editprofile editprofile = new Editprofile(actionEvent);
+            refreshplist();
         }
     }
 
@@ -431,6 +328,304 @@ public class HelloController {
                 break;
         }
     }
+
+
+    public void addProject(Project project) {
+        this.projects.add(project);
+    }
+
+    // knappe events
+
+    public void zoomOutPressed(ActionEvent event) {
+        if (currentViewMode == ViewMode.DAG) {
+            currentViewMode = ViewMode.UGE;
+        } else if (currentViewMode == ViewMode.UGE) {
+            currentViewMode = ViewMode.MÅNED;
+        }
+
+        updateCalender(currentDate);
+    }
+
+
+    public void zoomIndPressed(ActionEvent event) {
+        if (currentViewMode == ViewMode.MÅNED) {
+            currentViewMode = ViewMode.UGE;
+        } else if (currentViewMode == ViewMode.UGE) {
+            currentViewMode = ViewMode.DAG;
+        }
+
+        updateCalender(currentDate);
+    }
+
+    public void tilbageButtonPressed(ActionEvent event) {
+        switch (currentViewMode) {
+            case DAG:
+                currentDate = currentDate.minusDays(1);
+                break;
+            case UGE:
+                currentDate = currentDate.minusWeeks(1);
+                break;
+            case MÅNED:
+                currentDate = currentDate.minusMonths(1);
+                break;
+        }
+        updateCalender(currentDate);
+    }
+
+    public void fremButtonPressed(ActionEvent event) {
+        switch (currentViewMode) {
+            case DAG:
+                currentDate = currentDate.plusDays(1);
+                break;
+            case UGE:
+                currentDate = currentDate.plusWeeks(1);
+                break;
+            case MÅNED:
+                currentDate = currentDate.plusMonths(1);
+                break;
+        }
+        updateCalender(currentDate);
+    }
+
+
+    public TableView<Profile> targettable() {
+        TableView<Profile> targetTable = new TableView<>();
+        TableColumn<Profile, String> nameColumn = new TableColumn<>("Name");
+        TableColumn<Profile, String> positionColumn = new TableColumn<>("Position");
+        TableColumn<Profile, String> departmentColumn = new TableColumn<>("Department");
+
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
+        departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
+
+        targetTable.getColumns().add(nameColumn);
+        targetTable.getColumns().add(positionColumn);
+        targetTable.getColumns().add(departmentColumn);
+
+
+
+        return targetTable;
+    }
+
+    public TableView<Profile> initializecreatenewtable() {
+        // Create a TableView for profiles
+        TableView<Profile> profileTable = new TableView<>();
+        TableColumn<Profile, String> nameColumn = new TableColumn<>("Navn");
+        TableColumn<Profile, String> positionColumn = new TableColumn<>("Position");
+        TableColumn<Profile, String> departmentColumn = new TableColumn<>("Afdeling");
+
+        // Set cell value factories
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
+        departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
+
+        // Add columns to the table
+        profileTable.getColumns().add(nameColumn);
+        profileTable.getColumns().add(positionColumn);
+        profileTable.getColumns().add(departmentColumn);
+
+
+        profileTable.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (event.getClickCount() == 2) {
+                Profile profile = (Profile) profileTable.getSelectionModel().getSelectedItem();
+                if (profile != null) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Profil Information");
+                    alert.setHeaderText("Profil: " + profile.getName());
+                    alert.setContentText("Navn: " + profile.getName() + "\n" +
+                            "Position: " + profile.getPosition() + "\n" +
+                            "Afdeling: " + profile.getDepartment());
+
+                    // Tilføj en knap til at invitere brugeren
+                    ButtonType invitebutton = new ButtonType("invite", ButtonBar.ButtonData.OK_DONE);
+                    alert.getButtonTypes().add(invitebutton);
+                    Button inviteButtonNode = (Button) alert.getDialogPane().lookupButton(invitebutton);
+                    inviteButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
+                        System.out.println("Inviter knap blev trykket for profilen: " + profile.getName());
+                        event2.consume(); // This prevents the alert from closing
+                    });
+
+                    alert.showAndWait();
+                }
+
+            }
+
+        });
+
+        profileTable.setRowFactory(tv -> new TableRow<Profile>() {
+            @Override
+            protected void updateItem(Profile item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    switch (item.getDepartment()) {
+                        case "Tønder Bibliotekerne":
+                            setStyle("-fx-background-color: lightblue;");
+                            break;
+                        case "Tønder Kulturskole":
+                            setStyle("-fx-background-color: lightgreen;");
+                            break;
+                        case "Tønder Medborgerhus":
+                            setStyle("-fx-background-color: lightyellow;");
+                            break;
+                        case "Schweizerhalle":
+                            setStyle("-fx-background-color: lightpink;");
+                            break;
+                        default:
+                            setStyle("");
+                            break;
+                    }
+                }
+            }
+        });
+
+        // Set data to the table
+        profileTable.setItems(profiles);
+        return profileTable;
+    }
+
+    //oprettelse af projekter
+    public void opretButtonPressed(ActionEvent event) {
+        Createproject createproject = new Createproject(event);
+    }
+
+    public void showProjectInfo(Project project) {
+        Stage infoStage = new Stage();
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(10));
+        layout.setAlignment(Pos.CENTER_LEFT);
+
+        Label nameLabel = new Label("Projektnavn: " + project.getName());
+        Label locationLabel = new Label("Lokation: " + project.getLocation());
+        Label startLabel = new Label("Startdato: " + project.getStartDate().toString());
+        Label endLabel = new Label("Slutdato: " + project.getEndDate().toString());
+        Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
+        Label notesLabel = new Label("Noter: " + project.getNotes());
+
+        // Håndtering af projektets filer
+        Label filesLabel = new Label("Filer:");
+        VBox filesList = new VBox(5);
+        for (String file : project.getFiles()) {
+            filesList.getChildren().add(new Label(file));
+        }
+
+        Button knockButton = new Button("Banke på");
+        knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
+
+
+        layout.getChildren().addAll(nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList, knockButton);
+
+        Scene scene = new Scene(layout);
+        infoStage.setTitle("Projektinformation");
+        infoStage.setScene(scene);
+        infoStage.sizeToScene();
+        infoStage.show();
+    }
+
+    public void showEventInfo(Project project){
+        Stage infoStage = new Stage();
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(10));
+        layout.setAlignment(Pos.CENTER_LEFT);
+
+        Label nameLabel = new Label("Projektnavn: " + project.getName());
+        Label locationLabel = new Label("Lokation: " + project.getLocation());
+        Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
+        Label notesLabel = new Label("Noter: " + project.getNotes());
+        Label personLabel = new Label("Disse personer: " + "deltager at dette event");
+
+        Button knockButton = new Button("Banke på");
+        knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
+
+        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel, personLabel, knockButton);
+
+
+        Scene scene = new Scene(layout);
+        infoStage.setTitle("Eventinformation");
+        infoStage.setScene(scene);
+        infoStage.sizeToScene();
+        infoStage.show();
+    }
+
+    @FXML
+    private void handleToggleTheme(ActionEvent event) {
+        Scene scene = ((MenuItem)event.getSource()).getParentPopup().getOwnerWindow().getScene();
+        toggleTheme(scene);
+    }
+
+    public void todayButtonPressed(ActionEvent event) {
+        currentDate = LocalDate.now();
+
+        updateCalender(currentDate);
+    }
+
+
+
+    public void datePickerPressed(ActionEvent event) {
+        if (datePicker.getValue() != null) {
+            LocalDate selectedDate = datePicker.getValue();
+            navigateToSelectedDate(selectedDate);
+        }
+    }
+
+    private void navigateToSelectedDate(LocalDate date) {
+        updateCalender(date);
+    }
+
+
+
+
+    //skift tema
+
+    private void toggleTheme(Scene scene) {
+        ObservableList<String> stylesheets = scene.getStylesheets();
+
+        String lightThemePath = getClass().getResource("/org/example/kmanage/maincss.css").toExternalForm();
+        String darkThemePath = getClass().getResource("/org/example/kmanage/mainCssDark.css").toExternalForm();
+
+        if (lightThemePath == null || darkThemePath == null) {
+            System.err.println("Din tråd til css er forkert");
+            return;
+        }
+
+
+        if (stylesheets.contains(lightThemePath)) {
+            // Skifter fra lys til mørk tema
+            stylesheets.clear();
+            stylesheets.add(darkThemePath);
+            darkMode = true;
+
+        } else {
+            // Skifter fra mørk til lys tema eller initialiserer lys tema
+            stylesheets.clear();
+            stylesheets.add(lightThemePath);
+            darkMode = false;
+
+        }
+        updateCalender(currentDate);
+        updateSearchIcon(darkMode);
+    }
+    //ændre billeder(søge ikonet)
+    private void updateSearchIcon(boolean darkMode) {
+        String imagePath;
+
+
+        if (darkMode) {
+            imagePath = "/org/example/kmanage/soeg_hvid.png";
+        } else {
+            imagePath = "/org/example/kmanage/soeg.png";
+        }
+        try {
+            Image newImage = new Image(getClass().getResourceAsStream(imagePath));
+            personSearchButton.setImage(newImage);
+        } catch (NullPointerException e) {
+            System.err.println("Kan ikke loade billede: " + imagePath);
+            e.printStackTrace();
+        }
+    }
+
 
     private void dayView() {
         calendarGrid.getChildren().clear();
@@ -725,499 +920,4 @@ public class HelloController {
         }
     }
 
-    // knappe events
-
-    public void zoomOutPressed(ActionEvent event) {
-        if (currentViewMode == ViewMode.DAG) {
-            currentViewMode = ViewMode.UGE;
-        } else if (currentViewMode == ViewMode.UGE) {
-            currentViewMode = ViewMode.MÅNED;
-        }
-
-        updateCalender(currentDate);
-    }
-
-
-    public void zoomIndPressed(ActionEvent event) {
-        if (currentViewMode == ViewMode.MÅNED) {
-            currentViewMode = ViewMode.UGE;
-        } else if (currentViewMode == ViewMode.UGE) {
-            currentViewMode = ViewMode.DAG;
-        }
-
-        updateCalender(currentDate);
-    }
-
-    public void tilbageButtonPressed(ActionEvent event) {
-        switch (currentViewMode) {
-            case DAG:
-                currentDate = currentDate.minusDays(1);
-                break;
-            case UGE:
-                currentDate = currentDate.minusWeeks(1);
-                break;
-            case MÅNED:
-                currentDate = currentDate.minusMonths(1);
-                break;
-        }
-        updateCalender(currentDate);
-    }
-
-    public void fremButtonPressed(ActionEvent event) {
-        switch (currentViewMode) {
-            case DAG:
-                currentDate = currentDate.plusDays(1);
-                break;
-            case UGE:
-                currentDate = currentDate.plusWeeks(1);
-                break;
-            case MÅNED:
-                currentDate = currentDate.plusMonths(1);
-                break;
-        }
-        updateCalender(currentDate);
-    }
-
-
-    public TableView<Profile> targettable() {
-        TableView<Profile> targetTable = new TableView<>();
-        TableColumn<Profile, String> nameColumn = new TableColumn<>("Name");
-        TableColumn<Profile, String> positionColumn = new TableColumn<>("Position");
-        TableColumn<Profile, String> departmentColumn = new TableColumn<>("Department");
-
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
-        departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
-
-        targetTable.getColumns().add(nameColumn);
-        targetTable.getColumns().add(positionColumn);
-        targetTable.getColumns().add(departmentColumn);
-
-
-
-        return targetTable;
-    }
-
-    public TableView<Profile> initializecreatenewtable() {
-        // Create a TableView for profiles
-        TableView<Profile> profileTable = new TableView<>();
-        TableColumn<Profile, String> nameColumn = new TableColumn<>("Navn");
-        TableColumn<Profile, String> positionColumn = new TableColumn<>("Position");
-        TableColumn<Profile, String> departmentColumn = new TableColumn<>("Afdeling");
-
-        // Set cell value factories
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
-        departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
-
-        // Add columns to the table
-        profileTable.getColumns().add(nameColumn);
-        profileTable.getColumns().add(positionColumn);
-        profileTable.getColumns().add(departmentColumn);
-
-
-        profileTable.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-            if (event.getClickCount() == 2) {
-                Profile profile = (Profile) profileTable.getSelectionModel().getSelectedItem();
-                if (profile != null) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Profil Information");
-                    alert.setHeaderText("Profil: " + profile.getName());
-                    alert.setContentText("Navn: " + profile.getName() + "\n" +
-                            "Position: " + profile.getPosition() + "\n" +
-                            "Afdeling: " + profile.getDepartment());
-
-                    // Tilføj en knap til at invitere brugeren
-                    ButtonType invitebutton = new ButtonType("invite", ButtonBar.ButtonData.OK_DONE);
-                    alert.getButtonTypes().add(invitebutton);
-                    Button inviteButtonNode = (Button) alert.getDialogPane().lookupButton(invitebutton);
-                    inviteButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
-                        System.out.println("Inviter knap blev trykket for profilen: " + profile.getName());
-                        event2.consume(); // This prevents the alert from closing
-                    });
-
-                    alert.showAndWait();
-                }
-
-            }
-
-        });
-
-        profileTable.setRowFactory(tv -> new TableRow<Profile>() {
-            @Override
-            protected void updateItem(Profile item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (item == null || empty) {
-                    setStyle("");
-                } else {
-                    switch (item.getDepartment()) {
-                        case "Tønder Bibliotekerne":
-                            setStyle("-fx-background-color: lightblue;");
-                            break;
-                        case "Tønder Kulturskole":
-                            setStyle("-fx-background-color: lightgreen;");
-                            break;
-                        case "Tønder Medborgerhus":
-                            setStyle("-fx-background-color: lightyellow;");
-                            break;
-                        case "Schweizerhalle":
-                            setStyle("-fx-background-color: lightpink;");
-                            break;
-                        default:
-                            setStyle("");
-                            break;
-                    }
-                }
-            }
-        });
-
-        // Set data to the table
-        profileTable.setItems(profiles);
-        return profileTable;
-    }
-
-    //oprettelse af projekter
-    public void opretButtonPressed(ActionEvent event) {
-        Stage stage = new Stage();
-        GridPane pane = new GridPane();
-        pane.setAlignment(Pos.CENTER);
-        pane.setHgap(10);
-        pane.setVgap(10);
-        pane.setPadding(new Insets(25, 25, 25, 25));
-
-        TextField nameField = new TextField();
-        nameField.setPromptText("Skriv Navn på projekt");
-        TextField locationField = new TextField();
-        locationField.setPromptText("Skriv lokation");
-        DatePicker startDatePick = new DatePicker();
-        startDatePick.setPromptText("Vælg Dato");
-        DatePicker endDatePick = new DatePicker();
-        endDatePick.setPromptText("Vælg Dato");
-        DatePicker eventDatePick = new DatePicker();
-        eventDatePick.setPromptText("Vælg Dato");
-        startDatePick.setEditable(false);
-        endDatePick.setEditable(false);
-
-        TextField meetingNameField = new TextField();
-        meetingNameField.setPromptText("Skriv overskrift til mødet");
-        DatePicker meetingDatePick = new DatePicker();
-        meetingDatePick.setPromptText("Vælg dato");
-        meetingDatePick.setEditable(false);
-        ComboBox<String> meetingTimeComboBox = new ComboBox<>();
-        meetingTimeComboBox.getItems().addAll("08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-                "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-                "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30");
-        meetingTimeComboBox.setPromptText("Vælg tidspunkt");
-
-        TextArea notesArea = new TextArea();
-        notesArea.setPromptText("Noter kan skrives her");
-        notesArea.setWrapText(true);
-        notesArea.setPrefRowCount(4);
-        notesArea.setPrefColumnCount(20);
-        notesArea.setPrefHeight(200);
-
-
-        Button addFilesButton = new Button("Vedhæft fil");
-        Button addMeetingButton = new Button("Tilføj møde");
-        Button opretButton = new Button("Opret projekt");
-        opretButton.setDisable(true);
-
-        startDatePick.valueProperty().addListener((obs, oldDate, newDate) -> {
-            opretButton.setDisable(endDatePick.getValue() == null || eventDatePick.getValue() == null || newDate == null);
-        });
-        endDatePick.valueProperty().addListener((obs, oldDate, newDate) -> {
-            opretButton.setDisable(startDatePick.getValue() == null || eventDatePick.getValue() == null || newDate == null);
-        });
-        eventDatePick.valueProperty().addListener((obs, oldDate, newDate) -> {
-            opretButton.setDisable(startDatePick.getValue() == null || endDatePick.getValue() == null || newDate == null);
-        });
-
-
-        pane.add(new Label("Navn:"), 0, 0);
-        pane.add(nameField, 1, 0);
-        pane.add(new Label("Lokation:"), 0, 1); // Tilføj label for lokation
-        pane.add(locationField, 1, 1);
-        pane.add(new Label("Start Dato:"), 0, 2);
-        pane.add(startDatePick, 1, 2);
-        pane.add(new Label("Slut dato"), 0, 3);
-        pane.add(endDatePick, 1, 3);
-        pane.add(new Label("Dato for begivenhed"), 0, 4);
-        pane.add(eventDatePick, 1, 4);
-        pane.add(new Label("Noter:"), 0, 5);
-        pane.add(notesArea, 1, 5);
-        pane.add(new Label("Møde Navn:"), 0, 6);
-        pane.add(meetingNameField, 1, 6);
-        pane.add(new Label("Møde Dato:"), 0, 7);
-        pane.add(meetingDatePick, 1, 7);
-        pane.add(new Label("Møde Tid:"), 0, 8);
-        pane.add(meetingTimeComboBox, 1, 8);
-        TableView Membertableview = initializecreatenewtable();
-        pane.add(Membertableview, 2, 0);
-        GridPane.setRowSpan(Membertableview, 9);
-        TableView targettable = targettable();
-        pane.add(targettable, 3, 0);
-        GridPane.setRowSpan(targettable, 9);
-        pane.add(addMeetingButton, 1, 9);
-        pane.add(addFilesButton, 1, 10);
-        pane.add(opretButton, 1, 11);
-
-        List<String> files = new ArrayList<>();
-        addFilesButton.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
-            File selectedFile = fileChooser.showOpenDialog(stage);
-            if (selectedFile != null) {
-                files.add(selectedFile.getName());
-            }
-        });
-        List<LocalDate> meetingDates = new ArrayList<>();
-
-        targettable.setRowFactory(ts -> {
-            TableRow<Profile> row = new TableRow<>();
-            row.setOnDragDetected(tt -> {
-                if (!row.isEmpty()) {
-                    Dragboard db = row.startDragAndDrop(TransferMode.COPY);
-                    ClipboardContent cc = new ClipboardContent();
-                    cc.putString(Integer.toString(row.getIndex()));
-                    db.setContent(cc);
-                    targettable.getItems().remove( row.getItem());
-                    event.consume();
-                }
-            });
-            return row;
-        });
-
-
-
-        Membertableview.setRowFactory(tv -> {
-            TableRow<Profile> row = new TableRow<>();
-            row.setOnDragDetected(tt -> {
-                if (!row.isEmpty()) {
-                    Dragboard db = row.startDragAndDrop(TransferMode.COPY);
-                    ClipboardContent cc = new ClipboardContent();
-                    cc.putString(Integer.toString(row.getIndex()));
-                    db.setContent(cc);
-                    event.consume();
-                }
-            });
-            return row;
-        });
-
-        targettable.setOnDragOver(tv -> {
-            if (tv.getDragboard().hasString()) {
-                tv.acceptTransferModes(TransferMode.COPY);
-            }
-        });
-
-        targettable.setOnDragDropped(tv -> {
-            Dragboard db = tv.getDragboard();
-            if (db.hasString()) {
-                int index = Integer.parseInt(db.getString());
-                Profile profile = (Profile) Membertableview.getItems().get(index);
-                targettable.getItems().add(profile);
-                tv.setDropCompleted(true);
-            } else {
-                tv.setDropCompleted(false);
-            }
-            event.consume();
-        });
-
-        addMeetingButton.setOnAction(e -> {
-            LocalDate meetingDate = meetingDatePick.getValue();
-            if (meetingDate != null) {
-                meetingDates.add(meetingDate); // Tilføj den valgte mødedato til listen
-                String meetingInfo = "Møde: " + meetingNameField.getText() + " | " + meetingDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + " " + meetingTimeComboBox.getValue();
-                notesArea.appendText(meetingInfo + "\n");
-                meetingNameField.clear();
-                meetingTimeComboBox.getSelectionModel().clearSelection();
-            }
-        });
-
-        opretButton.setOnAction(e -> {
-            User loggedInUser = UserSession.getInstance(null).getUser();
-            String projectName = nameField.getText();
-            LocalDate startDate = startDatePick.getValue();
-            LocalDate endDate = endDatePick.getValue();
-            LocalDate eventDate = eventDatePick.getValue();
-
-            if (startDate == null || endDate == null || projectName.isEmpty()) {
-                // Vis en fejlmeddelelse til brugeren eller returnér tidligt
-                System.out.println("Projektet skal have et navn og start- og slutdato.");
-                return; // Stopper yderligere eksekvering hvis de nødvendige felter ikke er udfyldt
-            }
-
-            Project project = new Project(
-                    projectName, startDate, endDate, loggedInUser.getProfile().getId(),
-                    notesArea.getText(), eventDate, meetingDates
-            );
-            project.setLocation(locationField.getText());
-            project.setNotes(notesArea.getText());
-            files.forEach(project::addFiles);
-
-            List<Profile> members = new ArrayList<>();
-
-            // Iterate over the items in the targettable and add each item to the members list
-            for (Object profile : targettable.getItems()) {
-                members.add((Profile) profile);
-            }
-
-            project.setMembers(members);
-
-            try {
-                cdi.addEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
-                int id = cdi.getprojectid(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
-                System.out.println(id);
-                for (Profile member : members) {
-                    cdi.addProjectMember(id, member.getId());
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-
-            projects.add(project);
-            updateCalender(currentDate);
-            stage.close();
-        });
-
-        Scene scene = new Scene(pane);
-        scene.getStylesheets().add
-                (Main.class.getResource("notiStyle.css").toExternalForm());
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    private void showProjectInfo(Project project) {
-        Stage infoStage = new Stage();
-        VBox layout = new VBox(10);
-        layout.setPadding(new Insets(10));
-        layout.setAlignment(Pos.CENTER_LEFT);
-
-        Label nameLabel = new Label("Projektnavn: " + project.getName());
-        Label locationLabel = new Label("Lokation: " + project.getLocation());
-        Label startLabel = new Label("Startdato: " + project.getStartDate().toString());
-        Label endLabel = new Label("Slutdato: " + project.getEndDate().toString());
-        Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
-        Label notesLabel = new Label("Noter: " + project.getNotes());
-
-        // Håndtering af projektets filer
-        Label filesLabel = new Label("Filer:");
-        VBox filesList = new VBox(5);
-        for (String file : project.getFiles()) {
-            filesList.getChildren().add(new Label(file));
-        }
-
-        Button knockButton = new Button("Banke på");
-        knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
-
-
-        layout.getChildren().addAll(nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList, knockButton);
-
-        Scene scene = new Scene(layout);
-        infoStage.setTitle("Projektinformation");
-        infoStage.setScene(scene);
-        infoStage.sizeToScene();
-        infoStage.show();
-    }
-
-    private void showEventInfo(Project project){
-        Stage infoStage = new Stage();
-        VBox layout = new VBox(10);
-        layout.setPadding(new Insets(10));
-        layout.setAlignment(Pos.CENTER_LEFT);
-
-        Label nameLabel = new Label("Projektnavn: " + project.getName());
-        Label locationLabel = new Label("Lokation: " + project.getLocation());
-        Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
-        Label notesLabel = new Label("Noter: " + project.getNotes());
-        Label personLabel = new Label("Disse personer: " + "deltager at dette event");
-
-        Button knockButton = new Button("Banke på");
-        knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
-
-        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel, personLabel, knockButton);
-
-
-        Scene scene = new Scene(layout);
-        infoStage.setTitle("Eventinformation");
-        infoStage.setScene(scene);
-        infoStage.sizeToScene();
-        infoStage.show();
-    }
-
-    @FXML
-    private void handleToggleTheme(ActionEvent event) {
-        Scene scene = ((MenuItem)event.getSource()).getParentPopup().getOwnerWindow().getScene();
-        toggleTheme(scene);
-    }
-
-    public void todayButtonPressed(ActionEvent event) {
-        currentDate = LocalDate.now();
-
-        updateCalender(currentDate);
-    }
-
-
-
-    public void datePickerPressed(ActionEvent event) {
-        if (datePicker.getValue() != null) {
-            LocalDate selectedDate = datePicker.getValue();
-            navigateToSelectedDate(selectedDate);
-        }
-    }
-
-    private void navigateToSelectedDate(LocalDate date) {
-        updateCalender(date);
-    }
-
-
-
-
-    //skift tema
-
-    private void toggleTheme(Scene scene) {
-        ObservableList<String> stylesheets = scene.getStylesheets();
-
-        String lightThemePath = getClass().getResource("/org/example/kmanage/maincss.css").toExternalForm();
-        String darkThemePath = getClass().getResource("/org/example/kmanage/mainCssDark.css").toExternalForm();
-
-        if (lightThemePath == null || darkThemePath == null) {
-            System.err.println("Din tråd til css er forkert");
-            return;
-        }
-
-
-        if (stylesheets.contains(lightThemePath)) {
-            // Skifter fra lys til mørk tema
-            stylesheets.clear();
-            stylesheets.add(darkThemePath);
-            darkMode = true;
-
-        } else {
-            // Skifter fra mørk til lys tema eller initialiserer lys tema
-            stylesheets.clear();
-            stylesheets.add(lightThemePath);
-            darkMode = false;
-
-        }
-        updateCalender(currentDate);
-        updateSearchIcon(darkMode);
-    }
-    //ændre billeder(søge ikonet)
-    private void updateSearchIcon(boolean darkMode) {
-        String imagePath;
-
-
-        if (darkMode) {
-            imagePath = "/org/example/kmanage/soeg_hvid.png";
-        } else {
-            imagePath = "/org/example/kmanage/soeg.png";
-        }
-        try {
-            Image newImage = new Image(getClass().getResourceAsStream(imagePath));
-            personSearchButton.setImage(newImage);
-        } catch (NullPointerException e) {
-            System.err.println("Kan ikke loade billede: " + imagePath);
-            e.printStackTrace();
-        }
-    }
 }
