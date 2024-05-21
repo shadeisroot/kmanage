@@ -686,16 +686,17 @@ public class HelloController {
                 projectBox.getStyleClass().add("striped-background");
                 projectBox.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
                 calendarGrid.add(projectBox, 0, projectRow++);
+                Profile ownerProfile = getProfileById(project.getOwner());
 
                 if (isEventDay) {
-                    projectLabel.setStyle("-fx-background-color: #0077CC; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.9;");
+                    projectLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                     projectLabel.setText("Event for " + project.getName());
                     projectLabel.setOnMouseClicked(event -> showEventInfo(project));
                 }
 
                 // Check og highlight mødedatoer
                 if (project.getMeetingDates() != null && project.getMeetingDates().contains(currentDate)) {
-                    projectLabel.setStyle("-fx-background-color: #FF6347; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.9;");
+                    projectLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                     projectLabel.setText("Møde til " + project.getName());
                     projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
                 }
@@ -898,12 +899,12 @@ public class HelloController {
                     }
                 }
             }
-
+            Profile ownerProfile = getProfileById(project.getOwner());
             // Highlight eventDate with a distinct style or add a special marker
             if (project.getEventDate() != null && dayBoxes.containsKey(project.getEventDate())) {
                 VBox eventDayBox = dayBoxes.get(project.getEventDate());
                 Label eventLabel = new Label("Event for " + project.getName());
-                eventLabel.setStyle("-fx-background-color: #0077CC; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                eventLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                 eventLabel.setOnMouseClicked(event -> showEventInfo(project));
                 eventDayBox.getChildren().add(eventLabel);
             }
@@ -913,7 +914,7 @@ public class HelloController {
                     if (dayBoxes.containsKey(meetingDate)) {
                         VBox meetingDayBox = dayBoxes.get(meetingDate);
                         Label meetingLabel = new Label("Møde for " + project.getName());
-                        meetingLabel.setStyle("-fx-background-color: #FF6347; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                        meetingLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                         meetingLabel.setOnMouseClicked(event -> showProjectInfo(project));
                         meetingDayBox.getChildren().add(meetingLabel);
                     }
