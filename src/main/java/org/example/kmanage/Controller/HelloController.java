@@ -524,6 +524,11 @@ public class HelloController {
         infoStage.show();
     }
 
+    public void editbutton(Project project){
+        Editproject editproject = new Editproject(project);
+        updateCalender(currentDate);
+    }
+
     public void showEventInfo(Project project){
         Stage infoStage = new Stage();
         VBox layout = new VBox(10);
@@ -535,11 +540,12 @@ public class HelloController {
         Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
         Label notesLabel = new Label("Noter: " + project.getNotes());
         Label personLabel = new Label("Disse personer: " + "deltager at dette event");
-
+        Button editButton = new Button("Rediger");
         Button knockButton = new Button("Banke på");
+        editButton.setOnAction(ea -> editbutton(project ));
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
-        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel, personLabel, knockButton);
+        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel, personLabel, editButton, knockButton);
 
 
         Scene scene = new Scene(layout);

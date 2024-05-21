@@ -103,4 +103,18 @@ public class CalenderDAOimp implements CalenderDAO{
                 System.out.println("Error" + e);
             }
         }
+
+        public void editEvent(String name, String start, String end, int id, String notes, String event, String meeting, int idofproject) throws SQLException {
+            String sql = "UPDATE dbo.projects SET name = ?, startdate = ?, enddate = ?, owner = ?, notes = ?, eventdate = ?, meetingdates = ? WHERE id = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, name);
+            ps.setString(2, start);
+            ps.setString(3, end);
+            ps.setInt(4, id);
+            ps.setString(5, notes);
+            ps.setString(6, event);
+            ps.setString(7, meeting);
+            ps.setInt(8, idofproject);
+            ps.executeUpdate();
+        }
     }
