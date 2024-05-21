@@ -218,13 +218,13 @@ public class Editproject {
 
             try {
                 cdi.editEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString(), id);
-/*
+
                 System.out.println(id);
                 for (Profile member : members) {
                     cdi.addProjectMember(id, member.getId());
                 }
 
- */
+
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
