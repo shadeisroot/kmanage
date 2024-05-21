@@ -10,8 +10,10 @@
     -fx-font-size: 12px;
     -fx-padding: 8 16;
     -fx-border-radius: 4;
+    -fx-border-color: #e0e0e0;
     -fx-background-radius: 4;
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+
 }
 
 .button:hover {
@@ -26,6 +28,7 @@
     -fx-font-size: 12px;
     -fx-padding: 8 16;
     -fx-border-radius: 4;
+    -fx-border-color: #e0e0e0;
     -fx-background-radius: 4;
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
 
@@ -49,6 +52,9 @@
     -fx-background-color: #0057b8;
     -fx-text-fill: #ffffff;
 }
+.table-cell {
+    -fx-text-fill: #000000;
+}
 
 .text-field, .text-area {
     -fx-background-color: #333333;
@@ -60,37 +66,37 @@
 }
 
 .scroll-pane {
-    -fx-background-color: #121212; /* Samme som root baggrundsfarve */
-    -fx-border-color: transparent; /* Fjerner standardrammen */
+    -fx-background-color: #121212;
+    -fx-border-color: transparent;
+    -fx-border-color: #e0e0e0;
 }
 
 .scroll-pane .viewport {
-    -fx-background-color: transparent; /* Gør viewporten gennemsigtig så den ikke viser en anden baggrundsfarve */
+    -fx-background-color: transparent;
 }
 
 .scroll-bar {
-    -fx-background-color: #333333; /* Mørkere farve for scrollbars for bedre synlighed */
-    -fx-background-radius: 4; /* Afrundede hjørner for scrollbars */
+    -fx-background-color: #333333;
 }
 
 .scroll-bar:vertical .thumb {
-    -fx-background-color: #555555; /* Farve på selve scrollbar "thumb" */
+    -fx-background-color: #555555;
     -fx-background-insets: 2, 2, 2, 2;
     -fx-background-radius: 4;
 }
 
 .scroll-bar:horizontal .thumb {
-    -fx-background-color: #555555; /* Farve på vandret scrollbar "thumb" */
+    -fx-background-color: #555555;
     -fx-background-insets: 2, 2, 2, 2;
     -fx-background-radius: 4;
 }
 
 .scroll-bar:vertical:hover .thumb, .scroll-bar:horizontal:hover .thumb {
-    -fx-background-color: #777777; /* Lysere farve for scrollbar thumb når musen er over */
+    -fx-background-color: #777777;
 }
 
 .scroll-bar .increment-button, .scroll-bar .decrement-button {
-    -fx-background-color: #333333; /* Farve til knapperne for at rulle op og ned */
+    -fx-background-color: #333333;
 }
 
 .vbox {
