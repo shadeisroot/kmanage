@@ -312,7 +312,7 @@ public class HelloController {
         notifi(not.showMessages());
     }
 
-    private void updateCalender(LocalDate date) {
+    public void updateCalender(LocalDate date) {
         currentDate = date;
         calendarGrid.getChildren().clear();
 
@@ -488,7 +488,7 @@ public class HelloController {
 
     //oprettelse af projekter
     public void opretButtonPressed(ActionEvent event) {
-        Createproject createproject = new Createproject(event);
+        Createproject createproject = new Createproject(event, this);
     }
 
     public void showProjectInfo(Project project) {
@@ -686,16 +686,17 @@ public class HelloController {
                 projectBox.getStyleClass().add("striped-background");
                 projectBox.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
                 calendarGrid.add(projectBox, 0, projectRow++);
+                Profile ownerProfile = getProfileById(project.getOwner());
 
                 if (isEventDay) {
-                    projectLabel.setStyle("-fx-background-color: #0077CC; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.9;");
+                    projectLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                     projectLabel.setText("Event for " + project.getName());
                     projectLabel.setOnMouseClicked(event -> showEventInfo(project));
                 }
 
                 // Check og highlight mødedatoer
                 if (project.getMeetingDates() != null && project.getMeetingDates().contains(currentDate)) {
-                    projectLabel.setStyle("-fx-background-color: #FF6347; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.9;");
+                    projectLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                     projectLabel.setText("Møde til " + project.getName());
                     projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
                 }
@@ -776,9 +777,10 @@ public class HelloController {
                 // Vis eventdatoer
                 if (project.getEventDate() != null && (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate()) >= 0 && (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate()) <= 6) {
                     int eventCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getEventDate());
+                    Profile ownerProfile = getProfileById(project.getOwner());
 
                     VBox eventBox = new VBox(new Label("Event for " + project.getName()));
-                    eventBox.setStyle("-fx-background-color: #ffffff; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                    eventBox.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
                     eventBox.setOnMouseClicked(event -> showEventInfo(project));
                     GridPane.setConstraints(eventBox, eventCol, rowForProject, 1, 1);
                     GridPane.setFillWidth(eventBox, true);
@@ -790,9 +792,10 @@ public class HelloController {
                     for (LocalDate meetingDate : project.getMeetingDates()) {
                         if (!meetingDate.isBefore(startOfWeek) && !meetingDate.isAfter(startOfWeek.plusDays(6))) {
                             int meetingCol = (int) ChronoUnit.DAYS.between(startOfWeek, meetingDate);
+                            Profile ownerProfile = getProfileById(project.getOwner());
 
                             VBox meetingBox = new VBox(new Label("Møde for " + project.getName()));
-                            meetingBox.setStyle("-fx-background-color: #FF6347; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                            meetingBox.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                             meetingBox.setOnMouseClicked(event -> showProjectInfo(project));
                             GridPane.setConstraints(meetingBox, meetingCol, rowForProject, 1, 1);
                             GridPane.setFillWidth(meetingBox, true);
@@ -896,12 +899,12 @@ public class HelloController {
                     }
                 }
             }
-
+            Profile ownerProfile = getProfileById(project.getOwner());
             // Highlight eventDate with a distinct style or add a special marker
             if (project.getEventDate() != null && dayBoxes.containsKey(project.getEventDate())) {
                 VBox eventDayBox = dayBoxes.get(project.getEventDate());
                 Label eventLabel = new Label("Event for " + project.getName());
-                eventLabel.setStyle("-fx-background-color: #0077CC; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                eventLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                 eventLabel.setOnMouseClicked(event -> showEventInfo(project));
                 eventDayBox.getChildren().add(eventLabel);
             }
@@ -911,7 +914,7 @@ public class HelloController {
                     if (dayBoxes.containsKey(meetingDate)) {
                         VBox meetingDayBox = dayBoxes.get(meetingDate);
                         Label meetingLabel = new Label("Møde for " + project.getName());
-                        meetingLabel.setStyle("-fx-background-color: #FF6347; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                        meetingLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                         meetingLabel.setOnMouseClicked(event -> showProjectInfo(project));
                         meetingDayBox.getChildren().add(meetingLabel);
                     }
@@ -920,4 +923,31 @@ public class HelloController {
         }
     }
 
+    private String getColorForProfile(Profile profile) {
+        if (profile == null) {
+            return "#FFFFFF";
+        }
+
+        switch (profile.getDepartment()) {
+            case "Tønder Bibliotekerne":
+                return "lightblue";
+            case "Tønder Kulturskole":
+                return "lightgreen";
+            case "Tønder Medborgerhus":
+                return "lightyellow";
+            case "Schweizerhalle":
+                return "lightpink";
+            default:
+                return "#FFFFFF";
+        }
+    }
+
+    private Profile getProfileById(int id) {
+        for (Profile profile : profiles) {
+            if (profile.getId() == id) {
+                return profile;
+            }
+        }
+        return null;
+    }
 }

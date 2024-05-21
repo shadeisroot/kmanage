@@ -1,7 +1,6 @@
 package org.example.kmanage.Classes;
 
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -25,13 +24,13 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class Createproject {
     CalenderDAO cdi = new CalenderDAOimp();
     HelloController hdi = new HelloController();
-    public Createproject(ActionEvent event) {
+    public Createproject(ActionEvent event, HelloController hdi) {
+        this.hdi = hdi;
         Stage stage = new Stage();
         GridPane pane = new GridPane();
         pane.setAlignment(Pos.CENTER);
@@ -228,7 +227,9 @@ public class Createproject {
             }
 
             hdi.addProject(project);
+            hdi.updateCalender(hdi.getCurrentDate());
             stage.close();
+
         });
 
         Scene scene = new Scene(pane);
