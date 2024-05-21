@@ -30,14 +30,17 @@ import java.util.List;
 public class Editproject {
     CalenderDAO cdi = new CalenderDAOimp();
     HelloController hdi = new HelloController();
-
-    public Editproject(Project project) {
+    private LocalDate currentDate = LocalDate.now();
+    public Editproject(Project project) throws SQLException {
         Stage stage = new Stage();
         GridPane pane = new GridPane();
         pane.setAlignment(Pos.CENTER);
         pane.setHgap(10);
         pane.setVgap(10);
         pane.setPadding(new Insets(25, 25, 25, 25));
+
+        User loggedInUser = UserSession.getInstance(null).getUser();
+        int id = cdi.getprojectid(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
 
         TextField nameField = new TextField();
         nameField.setPromptText("Skriv Navn på projekt");
@@ -191,7 +194,7 @@ public class Editproject {
         });
 
         opretButton.setOnAction(e -> {
-            User loggedInUser = UserSession.getInstance(null).getUser();
+
 
 
             project.setName(nameField.getText());
@@ -214,7 +217,6 @@ public class Editproject {
             project.setMembers(members);
 
             try {
-                int id = cdi.getprojectid(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
                 cdi.editEvent(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString(), id);
 /*
                 System.out.println(id);
@@ -227,8 +229,7 @@ public class Editproject {
                 throw new RuntimeException(ex);
             }
 
-
-                ;
+            hdi.updateCalender(currentDate);
                 stage.close();
             });
 
