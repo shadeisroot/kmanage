@@ -689,14 +689,14 @@ public class HelloController {
                 Profile ownerProfile = getProfileById(project.getOwner());
 
                 if (isEventDay) {
-                    projectLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                    projectLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                     projectLabel.setText("Event for " + project.getName());
                     projectLabel.setOnMouseClicked(event -> showEventInfo(project));
                 }
 
                 // Check og highlight mødedatoer
                 if (project.getMeetingDates() != null && project.getMeetingDates().contains(currentDate)) {
-                    projectLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                    projectLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                     projectLabel.setText("Møde til " + project.getName());
                     projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
                 }
@@ -767,7 +767,13 @@ public class HelloController {
 
                     VBox projectBox = new VBox(new Label(project.getName()));
                     projectBox.getStyleClass().add("striped-background");
-                    projectBox.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                    String projectBoxStyle = "-fx-padding: 5; -fx-opacity: 0.7;";
+                    if (darkMode) {
+                        projectBoxStyle += "-fx-background-color: #444444; -fx-text-fill: #ffffff; -fx-border-color: white; -fx-font-weight: bold;";
+                    } else {
+                        projectBoxStyle += "-fx-border-color: black;";
+                    }
+                    projectBox.setStyle(projectBoxStyle);
                     projectBox.setOnMouseClicked(event -> showProjectInfo(project));
                     GridPane.setConstraints(projectBox, startCol, rowForProject, endCol - startCol + 1, 1);
                     GridPane.setFillWidth(projectBox, true);
@@ -780,7 +786,13 @@ public class HelloController {
                     Profile ownerProfile = getProfileById(project.getOwner());
 
                     VBox eventBox = new VBox(new Label("Event for " + project.getName()));
-                    eventBox.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
+                    String eventBoxStyle = "-fx-padding: 5; -fx-opacity: 0.7;";
+                    if (darkMode) {
+                        eventBoxStyle += "-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-text-fill: #ffffff; -fx-border-color: white; -fx-font-weight: bold;";
+                    } else {
+                        eventBoxStyle += "-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-border-color: black;";
+                    }
+                    eventBox.setStyle(eventBoxStyle);
                     eventBox.setOnMouseClicked(event -> showEventInfo(project));
                     GridPane.setConstraints(eventBox, eventCol, rowForProject, 1, 1);
                     GridPane.setFillWidth(eventBox, true);
@@ -795,7 +807,14 @@ public class HelloController {
                             Profile ownerProfile = getProfileById(project.getOwner());
 
                             VBox meetingBox = new VBox(new Label("Møde for " + project.getName()));
-                            meetingBox.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+
+                            String meetingBoxStyle = "-fx-padding: 5; -fx-opacity: 0.8;";
+                            if (darkMode) {
+                                meetingBoxStyle += "-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-text-fill: #ffffff; -fx-border-color: white; -fx-font-weight: bold;";
+                            } else {
+                                meetingBoxStyle += "-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-border-color: black;";
+                            }
+                            meetingBox.setStyle(meetingBoxStyle);
                             meetingBox.setOnMouseClicked(event -> showProjectInfo(project));
                             GridPane.setConstraints(meetingBox, meetingCol, rowForProject, 1, 1);
                             GridPane.setFillWidth(meetingBox, true);
@@ -904,7 +923,7 @@ public class HelloController {
             if (project.getEventDate() != null && dayBoxes.containsKey(project.getEventDate())) {
                 VBox eventDayBox = dayBoxes.get(project.getEventDate());
                 Label eventLabel = new Label("Event for " + project.getName());
-                eventLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                eventLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                 eventLabel.setOnMouseClicked(event -> showEventInfo(project));
                 eventDayBox.getChildren().add(eventLabel);
             }
@@ -914,7 +933,7 @@ public class HelloController {
                     if (dayBoxes.containsKey(meetingDate)) {
                         VBox meetingDayBox = dayBoxes.get(meetingDate);
                         Label meetingLabel = new Label("Møde for " + project.getName());
-                        meetingLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
+                        meetingLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                         meetingLabel.setOnMouseClicked(event -> showProjectInfo(project));
                         meetingDayBox.getChildren().add(meetingLabel);
                     }
@@ -923,22 +942,22 @@ public class HelloController {
         }
     }
 
-    private String getColorForProfile(Profile profile) {
+    private String getColorForProfile(Profile profile, boolean darkMode) {
         if (profile == null) {
-            return "#FFFFFF";
+            return darkMode ? "#333333" : "#FFFFFF";
         }
 
         switch (profile.getDepartment()) {
             case "Tønder Bibliotekerne":
-                return "lightblue";
+                return darkMode ? "#4a90e2" : "lightblue";
             case "Tønder Kulturskole":
-                return "lightgreen";
+                return darkMode ? "#3e7c47" : "lightgreen";
             case "Tønder Medborgerhus":
-                return "lightyellow";
+                return darkMode ? "#d8b52a" : "lightyellow";
             case "Schweizerhalle":
-                return "lightpink";
+                return darkMode ? "#cc7a85" : "lightpink";
             default:
-                return "#FFFFFF";
+                return darkMode ? "#333333" : "#FFFFFF";
         }
     }
 

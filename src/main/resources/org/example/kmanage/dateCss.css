@@ -6,23 +6,23 @@
     -fx-padding: 5 14;
     -fx-border-radius: 2;
     -fx-background-radius: 2;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 3, 0.0, 0, 1); /* Mindre skygge */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 3, 0.0, 0, 1);
 }
 
 .date-picker:hover {
     -fx-background-color: #1565C0;
 }
 
-/* Style den nedtrækkende knap i date picker */
+
 .date-picker .arrow-button {
     -fx-background-color: transparent;
 }
 
 .date-picker .arrow {
-    -fx-background-color: white; /* Farve på pilen */
+    -fx-background-color: white;
 }
 
-/* Style kalender popup'en */
+
 .date-picker .calendar-view {
     -fx-background-color: #1976D2;
 
