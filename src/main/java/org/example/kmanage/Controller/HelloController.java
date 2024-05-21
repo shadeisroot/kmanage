@@ -41,13 +41,13 @@ import java.util.*;
 public class HelloController {
 
     @FXML
-    private GridPane calendarGrid = new GridPane();
+    GridPane calendarGrid = new GridPane();
     @FXML
     private Label calendarInfoLabel = new Label();
     @FXML
     private ImageView personSearchButton;
     @FXML
-    private DatePicker datePicker;
+    DatePicker datePicker;
     @FXML
     private Button zoomInd, zoomOut, opretButton;
     public TextField personSearchField;
@@ -64,10 +64,10 @@ public class HelloController {
     Notification not = new Notification();
     ProfileDAO edi = new ProfileDAOImp();
     User loggedInUser = UserSession.getInstance(null).getUser();
-    private ObservableList<Profile> profiles = pdi.getprofile();
+    ObservableList<Profile> profiles = pdi.getprofile();
     private ObservableList<Project> projects = FXCollections.observableArrayList();
-    private enum ViewMode {DAG, UGE, MÅNED} //test
-    private ViewMode currentViewMode = ViewMode.UGE;
+    enum ViewMode {DAG, UGE, MÅNED} //test
+    ViewMode currentViewMode = ViewMode.UGE;
 
 
     //-------------------------------------------------------------------------------
@@ -588,7 +588,7 @@ public class HelloController {
         }
     }
 
-    private void navigateToSelectedDate(LocalDate date) {
+    void navigateToSelectedDate(LocalDate date) {
         updateCalender(date);
     }
 
@@ -645,7 +645,7 @@ public class HelloController {
     }
 
 
-    private void dayView() {
+    void dayView() {
         calendarGrid.getChildren().clear();
         calendarInfoLabel.setText(" ");
 
@@ -722,7 +722,7 @@ public class HelloController {
         }
     }
 
-    private void weekView() {
+    void weekView() {
         calendarGrid.getChildren().clear();
 
         // Definerer dagens dato, ugens start og slut
@@ -844,7 +844,7 @@ public class HelloController {
         }
     }
 
-    private void monthView() {
+    void monthView() {
         calendarGrid.getChildren().clear();
 
         LocalDate today = LocalDate.now();
