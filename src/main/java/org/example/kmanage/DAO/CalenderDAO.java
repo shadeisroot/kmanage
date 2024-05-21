@@ -17,4 +17,6 @@ public interface CalenderDAO {
 
 
     void addProjectMember(int id, int memberid);
+
+    void editEvent(String name, String start, String end, int id, String notes, String event, String meeting, int idofproject) throws SQLException;
     }

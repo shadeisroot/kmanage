@@ -510,18 +510,29 @@ public class HelloController {
         for (String file : project.getFiles()) {
             filesList.getChildren().add(new Label(file));
         }
-
+        Button editButton = new Button("Rediger");
         Button knockButton = new Button("Banke på");
+        editButton.setOnAction(ea -> {
+            try {
+                editbutton(project );
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
 
-        layout.getChildren().addAll(nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList, knockButton);
+        layout.getChildren().addAll(nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList, editButton, knockButton);
 
         Scene scene = new Scene(layout);
         infoStage.setTitle("Projektinformation");
         infoStage.setScene(scene);
         infoStage.sizeToScene();
         infoStage.show();
+    }
+
+    public void editbutton(Project project) throws SQLException {
+        Editproject editproject = new Editproject(project);
     }
 
     public void showEventInfo(Project project){
@@ -535,11 +546,18 @@ public class HelloController {
         Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
         Label notesLabel = new Label("Noter: " + project.getNotes());
         Label personLabel = new Label("Disse personer: " + "deltager at dette event");
-
+        Button editButton = new Button("Rediger");
         Button knockButton = new Button("Banke på");
+        editButton.setOnAction(ea -> {
+            try {
+                editbutton(project );
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
-        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel, personLabel, knockButton);
+        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel, personLabel, editButton, knockButton);
 
 
         Scene scene = new Scene(layout);
