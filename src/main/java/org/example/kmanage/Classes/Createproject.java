@@ -207,8 +207,9 @@ public class Createproject {
             files.forEach(project::addFiles);
 
             List<Profile> members = new ArrayList<>();
+            //tilføjer brugeren som laver projektet til member listen
+            members.add(loggedInUser.getProfile());
 
-            // Iterate over the items in the targettable and add each item to the members list
             for (Object profile : targettable.getItems()) {
                 members.add((Profile) profile);
             }

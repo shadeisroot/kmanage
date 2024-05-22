@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class Project {
+    private int id;
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -22,7 +23,7 @@ public class Project {
 
     private boolean knockRequest = false;
 
-    private List<Profile> members;
+    private List<Profile> members = new ArrayList<>();
 
 
 
@@ -39,6 +40,13 @@ public class Project {
         this.meetingDates = meetingDates;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public String getName() {
         return name;
     }

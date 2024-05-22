@@ -51,6 +51,8 @@ public class HelloController {
     @FXML
     DatePicker datePicker;
     @FXML
+    private ToggleButton viewToggleButton;
+    @FXML
     private Button zoomInd, zoomOut, opretButton;
     public TextField personSearchField;
     public Button adduserbutton;
@@ -68,6 +70,8 @@ public class HelloController {
     User loggedInUser = UserSession.getInstance(null).getUser();
     ObservableList<Profile> profiles = pdi.getprofile();
     private ObservableList<Project> projects = FXCollections.observableArrayList();
+    private ObservableList<Project> allProjects = FXCollections.observableArrayList();
+    private ObservableList<Project> userProjects = FXCollections.observableArrayList();
     enum ViewMode {DAG, UGE, MÅNED} //test
     ViewMode currentViewMode = ViewMode.UGE;
 
@@ -84,6 +88,7 @@ public class HelloController {
         initializebutton();
         initializeevents();
 
+        showAllProjects();
     }
 
     public LocalDate getCurrentDate() {
@@ -512,6 +517,10 @@ public class HelloController {
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER_LEFT);
+
+        Profile ownerProfile = getProfileById(project.getOwner());
+        String ownerName = ownerProfile != null ? ownerProfile.getName() : "Ukendt";
+
         int id = cdi.getprojectidnoowner(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
         List<Profile> profiles = edi.getprofilebyid(cdi.getProjectMembers(id));
         project.setMembers(profiles);
@@ -521,6 +530,7 @@ public class HelloController {
         Label endLabel = new Label("Slutdato: " + project.getEndDate().toString());
         Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
         Label notesLabel = new Label("Noter: " + project.getNotes());
+        Label ownerLabel = new Label("Projekt oprettet af: " + ownerName);
 
         List<String> firstNames = project.getMembers().stream()
                 .map(Profile::getName) // replace with getFirstName() if available
@@ -569,7 +579,7 @@ public class HelloController {
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
 
-        layout.getChildren().addAll(nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList,personLabel, editButton, knockButton, removeProjectButton);
+        layout.getChildren().addAll(nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList,ownerLabel, personLabel, editButton, knockButton, removeProjectButton);
 
         Scene scene = new Scene(layout);
         infoStage.setTitle("Projektinformation");
@@ -587,6 +597,10 @@ public class HelloController {
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER_LEFT);
+
+        Profile ownerProfile = getProfileById(project.getOwner());
+        String ownerName = ownerProfile != null ? ownerProfile.getName() : "Ukendt";
+
         int id = cdi.getprojectidnoowner(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
         List<Profile> profiles = edi.getprofilebyid(cdi.getProjectMembers(id));
         project.setMembers(profiles);
@@ -594,6 +608,8 @@ public class HelloController {
         Label locationLabel = new Label("Lokation: " + project.getLocation());
         Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
         Label notesLabel = new Label("Noter: " + project.getNotes());
+        Label ownerLabel = new Label("Projekt oprettet af: " + ownerName);
+
         List<String> firstNames = project.getMembers().stream()
                 .map(Profile::getName) // replace with getFirstName() if available
                 .map(fullName -> fullName.split(" ")[0]) // splits the full name into parts and takes the first part
@@ -633,7 +649,7 @@ public class HelloController {
         }
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
-        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel, personLabel, editButton, knockButton, removeProjectButton);
+        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel,ownerLabel, personLabel, editButton, knockButton, removeProjectButton);
 
 
         Scene scene = new Scene(layout);
@@ -717,6 +733,36 @@ public class HelloController {
         } catch (NullPointerException e) {
             System.err.println("Kan ikke loade billede: " + imagePath);
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleViewToggle(ActionEvent event) {
+        if (viewToggleButton.isSelected()) {
+            viewToggleButton.setText("Vis alle projekter");
+            showUserProjectsOnly();
+        } else {
+            viewToggleButton.setText("Vis mine projekter");
+            showAllProjects();
+        }
+    }
+
+    private void showAllProjects() {
+        // Load all projects
+        allProjects = cdi.getevents();
+        projects.setAll(allProjects); // Update the projects list used by the calendar
+        updateCalender(currentDate); // Refresh the calendar view
+    }
+
+    private void showUserProjectsOnly() {
+        // Load user-specific projects
+        User loggedInUser = UserSession.getInstance(null).getUser();
+        try {
+            userProjects = FXCollections.observableArrayList(cdi.getProjectsByUserId(loggedInUser.getProfile().getId()));
+            projects.setAll(userProjects); // Update the projects list used by the calendar
+            updateCalender(currentDate); // Refresh the calendar view
+        } catch (SQLException e) {
+            System.out.println("Error loading user projects: " + e);
         }
     }
 

@@ -20,6 +20,23 @@
     -fx-background-color: #1565C0;
 }
 
+.toggle-button {
+    -fx-background-color: #1976D2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 8 16;
+    -fx-border-radius: 4;
+    -fx-border-color: #e0e0e0;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+
+}
+
+.toggle-button:hover {
+    -fx-background-color: #1565C0;
+}
+
 
 .menu-button {
     -fx-background-color: #1976D2;

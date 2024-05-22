@@ -16,6 +16,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 
+<?import javafx.scene.control.ToggleButton?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.kmanage.Controller.HelloController">
     <children>
         <Button fx:id="notButton" layoutX="100.0" layoutY="20.0" mnemonicParsing="false" onAction="#notButtonPressed" text="Notifikationer" />
@@ -45,7 +46,7 @@
             </items>
         </MenuButton>
 
-        <Button layoutX="550.0" layoutY="530.0" mnemonicParsing="false" text="Min kalender" />
+        <ToggleButton fx:id="viewToggleButton" layoutX="550.0" layoutY="530.0" mnemonicParsing="false" text="Min kalender" onAction="#handleViewToggle" />
         <Button fx:id="zoomOut" layoutX="980.0" layoutY="530.0" mnemonicParsing="false" onAction="#zoomOutPressed" text="zoom ud" />
         <Button fx:id="zoomInd" layoutX="890.0" layoutY="530.0" mnemonicParsing="false" onAction="#zoomIndPressed" text="zoom ind" />
       <Button fx:id="tilbageButton" layoutX="240.0" layoutY="87.0" mnemonicParsing="false" onAction="#tilbageButtonPressed" text="&lt;" />
