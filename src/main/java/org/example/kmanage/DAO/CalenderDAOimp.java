@@ -146,4 +146,20 @@ public class CalenderDAOimp implements CalenderDAO{
                 System.out.println("Error" + e);
             }
         }
+
+    public int getprojectidnoowner(String name, String startdate, String enddate, String notes, String eventdate, String meetingdates) throws SQLException {
+        String sql = "SELECT id from dbo.projects WHERE name = ? AND startdate = ? AND enddate = ? AND eventdate = ? AND meetingdates = ? ";
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, name);
+        ps.setString(2, startdate);
+        ps.setString(3, enddate);
+        ps.setString(4, eventdate);
+        ps.setString(5, meetingdates);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("id");
+        } else {
+            throw new SQLException("Failed to retrieve projectid");
+        }
+    }
     }
