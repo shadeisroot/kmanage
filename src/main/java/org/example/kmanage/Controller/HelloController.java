@@ -47,6 +47,8 @@ public class HelloController {
     @FXML
     private Label calendarInfoLabel = new Label();
     @FXML
+    private Label personInfoLabel;
+    @FXML
     private ImageView personSearchButton;
     @FXML
     DatePicker datePicker;
@@ -63,6 +65,8 @@ public class HelloController {
     public TableColumn plistc3;
     private boolean darkMode = false;
     private LocalDate currentDate = LocalDate.now();
+    private Profile currentProfile = null;
+    private boolean viewAllProjects = true;
     CalenderDAO cdi = new CalenderDAOimp();
     PlistDAO pdi = new PlistDAOimp();
     Notification not = new Notification();
@@ -184,11 +188,17 @@ public class HelloController {
                         event2.consume(); // This prevents the alert from closing
                     });
 
-                    alert.showAndWait();
+                    //Tilføjer en knap til at vise den person kalender
+                    ButtonType showCalenderButton = new ButtonType("Vis kalender", ButtonBar.ButtonData.OTHER);
+                    alert.getButtonTypes().add(showCalenderButton);
+                    Button showCalenderButtonNode = (Button) alert.getDialogPane().lookupButton(showCalenderButton);
+                    showCalenderButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
+                        showUserCalender(profile);
+                        event2.consume();
+                    });
+                        alert.showAndWait();
                 }
-
             }
-
         });
     }
 
@@ -323,16 +333,31 @@ public class HelloController {
         currentDate = date;
         calendarGrid.getChildren().clear();
 
+        String calendarInfo = "";
         switch (currentViewMode) {
             case DAG:
                 dayView();
                 break;
             case UGE:
                 weekView();
+                TemporalField woy = WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear();
+                int week = currentDate.get(woy);
+                calendarInfo = "Uge: " + week;
                 break;
             case MÅNED:
                 monthView();
+                String monthYear = currentDate.format(DateTimeFormatter.ofPattern("MMMM yyyy", new Locale("da", "DK")));
+                calendarInfo = "Måned: " + monthYear;
                 break;
+        }
+        calendarInfoLabel.setText(calendarInfo);
+
+        if (viewAllProjects) {
+            personInfoLabel.setText("Alle projekter");
+        } else if (currentProfile != null) {
+            personInfoLabel.setText("Kalender for: " + currentProfile.getName());
+        } else {
+            personInfoLabel.setText("Min kalender");
         }
     }
 
@@ -740,29 +765,48 @@ public class HelloController {
     private void handleViewToggle(ActionEvent event) {
         if (viewToggleButton.isSelected()) {
             viewToggleButton.setText("Vis alle projekter");
-            showUserProjectsOnly();
+            showMyProjects();
         } else {
             viewToggleButton.setText("Vis mine projekter");
             showAllProjects();
         }
     }
 
-    private void showAllProjects() {
-        // Load all projects
+    private void showAllProjects() {;
         allProjects = cdi.getevents();
-        projects.setAll(allProjects); // Update the projects list used by the calendar
-        updateCalender(currentDate); // Refresh the calendar view
+        projects.setAll(allProjects); // Opdater listen over projekter brugt af kalenderen
+        currentProfile = null;
+        viewAllProjects = true;
+        updateCalender(currentDate); // Opdater kalenderen til at vise alle projekter
     }
 
-    private void showUserProjectsOnly() {
-        // Load user-specific projects
+    private void showMyProjects() { //dette er den profil man logger ind med
+        // Loader den logged ind projekter
         User loggedInUser = UserSession.getInstance(null).getUser();
         try {
             userProjects = FXCollections.observableArrayList(cdi.getProjectsByUserId(loggedInUser.getProfile().getId()));
-            projects.setAll(userProjects); // Update the projects list used by the calendar
-            updateCalender(currentDate); // Refresh the calendar view
+            //opdater projekt liste til kalender
+            projects.setAll(userProjects);
+            currentProfile = null;
+            viewAllProjects = false;
+            //opdater kalender til at være den logged ind
+            updateCalender(currentDate);
         } catch (SQLException e) {
             System.out.println("Error loading user projects: " + e);
+        }
+    }
+
+    private void showUserCalender(Profile profile){ //dette er de "andres" kalender
+        try {
+            List<Project> userProjects = cdi.getProjectsByUserId(profile.getId());
+            //opdater liste af projekter
+            projects.setAll(userProjects);
+            currentProfile = profile;
+            viewAllProjects = false;
+            //opdatere kalender med den valgte bruger
+            updateCalender(currentDate);
+        } catch (SQLException e) {
+            System.out.println("kan ikke loade brugerns projekter " + e);
         }
     }
 
