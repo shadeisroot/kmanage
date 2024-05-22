@@ -154,6 +154,7 @@ public class Editproject {
             targettable.getItems().remove(profile);
             cdi.removeprojectmember(id, profile.getId());
             notification.addtoMessage( "Du er blevet fjernet fra projekt" + project.getName(), profile.getId());
+
         });
 
         opretButton.setOnAction(e -> {
