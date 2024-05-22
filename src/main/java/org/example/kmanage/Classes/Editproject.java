@@ -16,6 +16,7 @@ import org.example.kmanage.DAO.CalenderDAOimp;
 import org.example.kmanage.DAO.ProfileDAO;
 import org.example.kmanage.DAO.ProfileDAOImp;
 import org.example.kmanage.Main;
+import org.example.kmanage.Notifications.Notification;
 import org.example.kmanage.User.Profile;
 import org.example.kmanage.User.Project;
 import org.example.kmanage.User.User;
@@ -33,6 +34,7 @@ public class Editproject {
     CalenderDAO cdi = new CalenderDAOimp();
     HelloController hdi = new HelloController();
     ProfileDAO pdi = new ProfileDAOImp();
+    Notification notification = new Notification();
     private LocalDate currentDate = LocalDate.now();
     public Editproject(Project project) throws SQLException {
         Stage stage = new Stage();
@@ -144,12 +146,14 @@ public class Editproject {
             Profile profile = (Profile) Membertableview.getSelectionModel().getSelectedItem();
             targettable.getItems().add(profile);
             cdi.addProjectMember(id, profile.getId());
+            notification.addtoMessage( "Du er blevet tilføjet til projekt" + project.getName(), profile.getId());
         });
 
         removeButton.setOnAction(e -> {
             Profile profile = (Profile) targettable.getSelectionModel().getSelectedItem();
             targettable.getItems().remove(profile);
             cdi.removeprojectmember(id, profile.getId());
+            notification.addtoMessage( "Du er blevet fjernet fra projekt" + project.getName(), profile.getId());
         });
 
         opretButton.setOnAction(e -> {
