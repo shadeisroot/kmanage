@@ -25,4 +25,7 @@ public interface CalenderDAO {
     void removeprojectmember(int id, int memberid);
 
     int getprojectidnoowner(String name, String startdate, String enddate, String notes, String eventdate, String meetingdates) throws SQLException;
+
+    void RemoveEvent(int id) throws SQLException;
+    void removeProject(int id);
 }

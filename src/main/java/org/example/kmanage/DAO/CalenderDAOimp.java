@@ -147,6 +147,17 @@ public class CalenderDAOimp implements CalenderDAO{
             }
         }
 
+        public void removeProject(int id) {
+            try {
+                String sql = "DELETE FROM dbo.ProjectUSER WHERE Project_ID = ?";
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println("Error" + e);
+            }
+        }
+
     public int getprojectidnoowner(String name, String startdate, String enddate, String notes, String eventdate, String meetingdates) throws SQLException {
         String sql = "SELECT id from dbo.projects WHERE name = ? AND startdate = ? AND enddate = ? AND eventdate = ? AND meetingdates = ? ";
         PreparedStatement ps = con.prepareStatement(sql);
@@ -162,4 +173,11 @@ public class CalenderDAOimp implements CalenderDAO{
             throw new SQLException("Failed to retrieve projectid");
         }
     }
+
+    public void RemoveEvent(int id) throws SQLException {
+        String sql = "DELETE FROM dbo.projects WHERE id = ?";
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, id);
+        ps.executeUpdate();
     }
+}
