@@ -18,6 +18,7 @@ public class Adduser {
     HelloController helloController = new HelloController();
     ProfileDAO edi = new ProfileDAOImp();
     public Adduser(MouseEvent event) {
+        //opstilling af stage og pane
         Stage addUserStage = new Stage();
 
         GridPane grid = new GridPane();
@@ -25,7 +26,7 @@ public class Adduser {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-
+        //tilføjer tekst felter og labels til de passende elementer og sætter den ind i grid pane
         TextField usernameField = new TextField();
         grid.add(new Label("Username:"), 0, 0);
         grid.add(usernameField, 1, 0);
@@ -45,16 +46,16 @@ public class Adduser {
         TextField AfdelingField = new TextField();
         grid.add(new Label("Afdeling:"), 0, 4);
         grid.add(AfdelingField, 1, 4);
-
+        //combobox til at vælge imellem admin eller user
         ComboBox<String> roleComboBox = new ComboBox<>();
         roleComboBox.getItems().addAll("admin", "user");
         grid.add(new Label("Role:"), 0, 5);
         grid.add(roleComboBox, 1, 5);
 
-
+        //knap
         Button addButton = new Button("Add User");
         grid.add(addButton, 1, 6);
-
+        //henter værdierne til de forskellige felter
         addButton.setOnAction(e -> {
             String username = usernameField.getText();
             String password = passwordField.getText();
@@ -64,15 +65,17 @@ public class Adduser {
             String Afdeling = AfdelingField.getText();
             int roleId = "admin".equals(role) ? 1 : 3;
             try {
+                //giver værdierne til metode inde i profile
                 edi.addEmployee(navn, Stilling, Afdeling);
                 int id = edi.getUserid(navn, Stilling, Afdeling);
+                // samme men med værdier der passer til login
                 edi.createLogin(username, password, roleId, id);
                 helloController.refreshplist();
 
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-            // Close the window after the user is added
+            // lukker vindue efter det er blevet tilføjet en user
             addUserStage.close();
         });
 
