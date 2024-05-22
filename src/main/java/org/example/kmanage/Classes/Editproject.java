@@ -13,6 +13,8 @@ import javafx.stage.Stage;
 import org.example.kmanage.Controller.HelloController;
 import org.example.kmanage.DAO.CalenderDAO;
 import org.example.kmanage.DAO.CalenderDAOimp;
+import org.example.kmanage.DAO.ProfileDAO;
+import org.example.kmanage.DAO.ProfileDAOImp;
 import org.example.kmanage.Main;
 import org.example.kmanage.User.Profile;
 import org.example.kmanage.User.Project;
@@ -30,6 +32,7 @@ import java.util.List;
 public class Editproject {
     CalenderDAO cdi = new CalenderDAOimp();
     HelloController hdi = new HelloController();
+    ProfileDAO pdi = new ProfileDAOImp();
     private LocalDate currentDate = LocalDate.now();
     public Editproject(Project project) throws SQLException {
         Stage stage = new Stage();
@@ -132,67 +135,7 @@ public class Editproject {
             }
         });
         List<LocalDate> meetingDates = new ArrayList<>();
-
-        targettable.setRowFactory(ts -> {
-            TableRow<Profile> row = new TableRow<>();
-            row.setOnDragDetected(tt -> {
-                if (!row.isEmpty()) {
-                    Dragboard db = row.startDragAndDrop(TransferMode.COPY);
-                    ClipboardContent cc = new ClipboardContent();
-                    cc.putString(Integer.toString(row.getIndex()));
-                    db.setContent(cc);
-                    targettable.getItems().remove(row.getItem());
-
-                }
-            });
-            return row;
-        });
-
-
-        Membertableview.setRowFactory(tv -> {
-            TableRow<Profile> row = new TableRow<>();
-            row.setOnDragDetected(tt -> {
-                if (!row.isEmpty()) {
-                    Dragboard db = row.startDragAndDrop(TransferMode.COPY);
-                    ClipboardContent cc = new ClipboardContent();
-                    cc.putString(Integer.toString(row.getIndex()));
-                    db.setContent(cc);
-
-                }
-            });
-            return row;
-        });
-
-        targettable.setOnDragOver(tv -> {
-            if (tv.getDragboard().hasString()) {
-                tv.acceptTransferModes(TransferMode.COPY);
-            }
-        });
-
-        targettable.setOnDragDropped(tv -> {
-            Dragboard db = tv.getDragboard();
-            if (db.hasString()) {
-                int index = Integer.parseInt(db.getString());
-                Profile profile = (Profile) Membertableview.getItems().get(index);
-                targettable.getItems().add(profile);
-                tv.setDropCompleted(true);
-            } else {
-                tv.setDropCompleted(false);
-            }
-
-        });
-
-        addMeetingButton.setOnAction(e -> {
-            LocalDate meetingDate = meetingDatePick.getValue();
-            if (meetingDate != null) {
-                meetingDates.add(meetingDate); // Tilføj den valgte mødedato til listen
-                String meetingInfo = "Møde: " + meetingNameField.getText() + " | " + meetingDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + " " + meetingTimeComboBox.getValue();
-                notesArea.appendText(meetingInfo + "\n");
-                meetingNameField.clear();
-                meetingTimeComboBox.getSelectionModel().clearSelection();
-            }
-        });
-
+        pdi.getprofilebyid(cdi.getProjectMembers(id)).forEach(targettable.getItems()::add);
         opretButton.setOnAction(e -> {
 
 

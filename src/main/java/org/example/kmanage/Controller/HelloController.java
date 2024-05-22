@@ -519,6 +519,11 @@ public class HelloController {
                 throw new RuntimeException(e);
             }
         });
+        if (project.getOwner() == loggedInUser.getProfile().getId()) {
+            editButton.setDisable(false);
+        } else {
+            editButton.setDisable(true);
+        }
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
 
@@ -555,6 +560,11 @@ public class HelloController {
                 throw new RuntimeException(e);
             }
         });
+        if (project.getOwner() == loggedInUser.getProfile().getId()) {
+            editButton.setDisable(false);
+        } else {
+            editButton.setDisable(true);
+        }
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
         layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel, personLabel, editButton, knockButton);

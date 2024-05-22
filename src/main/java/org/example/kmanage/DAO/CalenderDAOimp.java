@@ -117,4 +117,21 @@ public class CalenderDAOimp implements CalenderDAO{
             ps.setInt(8, idofproject);
             ps.executeUpdate();
         }
+
+        public List<Integer> getProjectMembers(int id) {
+
+            List<Integer> members = new ArrayList<>();
+            try {
+                String sql = "SELECT * from dbo.ProjectUSER WHERE Project_ID = ?";
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, id);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    members.add(rs.getInt("Member_ID"));
+                }
+            } catch (SQLException e) {
+                System.out.println("Error" + e);
+            }
+            return members;
+        }
     }

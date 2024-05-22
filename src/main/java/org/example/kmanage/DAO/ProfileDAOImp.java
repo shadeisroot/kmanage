@@ -1,6 +1,11 @@
 package org.example.kmanage.DAO;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.example.kmanage.User.Profile;
+
 import java.sql.*;
+import java.util.List;
 
 public class ProfileDAOImp implements ProfileDAO {
 
@@ -34,21 +39,21 @@ public class ProfileDAOImp implements ProfileDAO {
         ps.executeUpdate();
     }
 
-        public int getUserid(String Navn, String Stilling, String Afdeling) throws SQLException {
-            String sql = "SELECT userid FROM dbo.employee WHERE Navn = ? AND Stilling = ? AND Afdeling = ?";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, Navn);
-            ps.setString(2, Stilling);
-            ps.setString(3, Afdeling);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("userid");
-            } else {
-                throw new SQLException("Failed to retrieve userid");
-            }
+    public int getUserid(String Navn, String Stilling, String Afdeling) throws SQLException {
+        String sql = "SELECT userid FROM dbo.employee WHERE Navn = ? AND Stilling = ? AND Afdeling = ?";
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, Navn);
+        ps.setString(2, Stilling);
+        ps.setString(3, Afdeling);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("userid");
+        } else {
+            throw new SQLException("Failed to retrieve userid");
         }
+    }
 
-    public void createLogin( String username, String password, int pid, int uid) throws SQLException {
+    public void createLogin(String username, String password, int pid, int uid) throws SQLException {
         String sql = "INSERT INTO dbo.login (username, password, pid, uid) VALUES (?, ?, ?, ?)";
         PreparedStatement ps = con.prepareStatement(sql);
         ps.setString(1, username);
@@ -72,5 +77,24 @@ public class ProfileDAOImp implements ProfileDAO {
         psEmployee.setInt(1, userid);
         psEmployee.executeUpdate();
 
+    }
+
+    public ObservableList<Profile> getprofilebyid(List<Integer> ids) {
+        ObservableList<Profile> profilesbyid = FXCollections.observableArrayList();
+        for (int id : ids) {
+            try {
+                String sql = "SELECT * from dbo.employee WHERE userid = ?";
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, id);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    Profile profile = new Profile(rs.getString("Navn"), rs.getString("Stilling"), rs.getString("Afdeling"), rs.getInt("userid"));
+                    profilesbyid.add(profile);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return profilesbyid;
     }
 }
