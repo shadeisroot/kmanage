@@ -587,7 +587,7 @@ public class HelloController {
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER_LEFT);
-        int id = cdi.getprojectid(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
+        int id = cdi.getprojectidnoowner(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
         List<Profile> profiles = edi.getprofilebyid(cdi.getProjectMembers(id));
         project.setMembers(profiles);
         Label nameLabel = new Label("Projektnavn: " + project.getName());
@@ -601,6 +601,22 @@ public class HelloController {
 
         String namesString = String.join("\n", firstNames);
         Label personLabel = new Label("Disse personer er en del af projektet: " + "\n" + namesString);
+
+        Button removeProjectButton = new Button("Fjern Projekt");
+        removeProjectButton.setOnAction(e -> {
+            if (showConfirmationDialog("Fjern projekt", "Er du sikker på at du vil fjerne projektet?")) {
+                cdi.removeProject(id);
+                try {
+                    cdi.RemoveEvent(id);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                projects.remove(project);
+                infoStage.close();
+            } else {
+                return;
+            }
+        });
         Button editButton = new Button("Rediger");
         Button knockButton = new Button("Banke på");
         editButton.setOnAction(ea -> {
@@ -617,7 +633,7 @@ public class HelloController {
         }
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
-        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel, personLabel, editButton, knockButton);
+        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel, personLabel, editButton, knockButton, removeProjectButton);
 
 
         Scene scene = new Scene(layout);
