@@ -28,4 +28,6 @@ public interface CalenderDAO {
 
     void RemoveEvent(int id) throws SQLException;
     void removeProject(int id);
+
+    List<Project> getProjectsByUserId(int userId) throws SQLException;
 }

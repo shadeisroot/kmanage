@@ -8,7 +8,9 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class CalenderDAOimp implements CalenderDAO{
@@ -179,5 +181,44 @@ public class CalenderDAOimp implements CalenderDAO{
         PreparedStatement ps = con.prepareStatement(sql);
         ps.setInt(1, id);
         ps.executeUpdate();
+    }
+
+    public List<Project> getProjectsByUserId(int userId) throws SQLException {
+        List<Project> projects = new ArrayList<>();
+        String sql = "SELECT p.* FROM Projects p INNER JOIN ProjectUSER pu ON p.id = pu.Project_ID WHERE pu.Member_ID = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Project project = new Project(
+                            rs.getString("name"),
+                            rs.getDate("startdate").toLocalDate(),
+                            rs.getDate("enddate").toLocalDate(),
+                            rs.getInt("owner"),
+                            rs.getString("notes"),
+                            rs.getDate("eventdate") != null ? rs.getDate("eventdate").toLocalDate() : null,
+                            new ArrayList<>()
+                    );
+                    project.setId(rs.getInt("id"));
+
+
+                    String meetingDatesString = rs.getString("meetingdates");
+                    if (meetingDatesString != null && !meetingDatesString.trim().isEmpty()) {
+                        try {
+                            List<LocalDate> meetingDates = Arrays.stream(meetingDatesString.replace("[", "").replace("]", "").split(","))
+                                    .map(String::trim)
+                                    .filter(dateStr -> !dateStr.isEmpty())
+                                    .map(LocalDate::parse)
+                                    .collect(Collectors.toList());
+                            project.setMeetingDatess(meetingDates);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    projects.add(project);
+                }
+            }
+        }
+        return projects;
     }
 }
