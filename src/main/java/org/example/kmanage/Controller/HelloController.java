@@ -488,6 +488,20 @@ public class HelloController {
         return profileTable;
     }
 
+    public boolean showConfirmationDialog(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        ButtonType buttonYes = new ButtonType("Yes");
+        ButtonType buttonNo = new ButtonType("No");
+
+        alert.getButtonTypes().setAll(buttonYes, buttonNo);
+
+        return alert.showAndWait().get() == buttonYes;
+    }
+
     //oprettelse af projekter
     public void opretButtonPressed(ActionEvent event) {
         Createproject createproject = new Createproject(event, this);
@@ -521,8 +535,25 @@ public class HelloController {
         for (String file : project.getFiles()) {
             filesList.getChildren().add(new Label(file));
         }
-        Button editButton = new Button("Rediger");
+        Button removeProjectButton = new Button("Fjern Projekt");
+        removeProjectButton.setOnAction(e -> {
+            if (showConfirmationDialog("Fjern projekt", "Er du sikker på at du vil fjerne projektet?")) {
+                cdi.removeProject(id);
+                try {
+                    cdi.RemoveEvent(id);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                projects.remove(project);
+                infoStage.close();
+            } else {
+                return;
+            }
+        });
+
         Button knockButton = new Button("Banke på");
+
+        Button editButton = new Button("Rediger");
         editButton.setOnAction(ea -> {
             try {
                 editbutton(project );
@@ -538,7 +569,7 @@ public class HelloController {
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
 
-        layout.getChildren().addAll(nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList,personLabel, editButton, knockButton);
+        layout.getChildren().addAll(nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList,personLabel, editButton, knockButton, removeProjectButton);
 
         Scene scene = new Scene(layout);
         infoStage.setTitle("Projektinformation");
