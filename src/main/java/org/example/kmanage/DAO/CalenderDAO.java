@@ -22,4 +22,5 @@ public interface CalenderDAO {
     void editEvent(String name, String start, String end, int id, String notes, String event, String meeting, int idofproject) throws SQLException;
 
     List<Integer> getProjectMembers(int id);
+    void removeprojectmember(int id, int memberid);
 }

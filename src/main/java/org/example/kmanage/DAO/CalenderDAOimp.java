@@ -134,4 +134,16 @@ public class CalenderDAOimp implements CalenderDAO{
             }
             return members;
         }
+
+        public void removeprojectmember(int id, int memberid){
+            try {
+                String sql = "DELETE FROM dbo.ProjectUSER WHERE Project_ID = ? AND Member_ID = ?";
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, id);
+                ps.setInt(2, memberid);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println("Error" + e);
+            }
+        }
     }

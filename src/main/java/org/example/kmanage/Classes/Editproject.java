@@ -82,10 +82,11 @@ public class Editproject {
         notesArea.setPrefColumnCount(20);
         notesArea.setPrefHeight(200);
 
-
+        Button removeButton = new Button("Fjern medlem");
         Button addFilesButton = new Button("Vedhæft fil");
         Button addMeetingButton = new Button("Tilføj møde");
         Button opretButton = new Button("Rediger projekt");
+        Button addButton = new Button("Tilføj medlem");
 
         startDatePick.valueProperty().addListener((obs, oldDate, newDate) -> {
             opretButton.setDisable(endDatePick.getValue() == null || eventDatePick.getValue() == null || newDate == null);
@@ -122,6 +123,8 @@ public class Editproject {
         TableView targettable = hdi.targettable();
         pane.add(targettable, 3, 0);
         GridPane.setRowSpan(targettable, 9);
+        pane.add(addButton, 2, 9);
+        pane.add(removeButton, 3, 9);
         pane.add(addMeetingButton, 1, 9);
         pane.add(addFilesButton, 1, 10);
         pane.add(opretButton, 1, 11);
@@ -136,6 +139,19 @@ public class Editproject {
         });
         List<LocalDate> meetingDates = new ArrayList<>();
         pdi.getprofilebyid(cdi.getProjectMembers(id)).forEach(targettable.getItems()::add);
+
+        addButton.setOnAction(e -> {
+            Profile profile = (Profile) Membertableview.getSelectionModel().getSelectedItem();
+            targettable.getItems().add(profile);
+            cdi.addProjectMember(id, profile.getId());
+        });
+
+        removeButton.setOnAction(e -> {
+            Profile profile = (Profile) targettable.getSelectionModel().getSelectedItem();
+            targettable.getItems().remove(profile);
+            cdi.removeprojectmember(id, profile.getId());
+        });
+
         opretButton.setOnAction(e -> {
 
 
