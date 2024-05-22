@@ -38,6 +38,8 @@ import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
+
 public class HelloController {
 
     @FXML
@@ -491,12 +493,14 @@ public class HelloController {
         Createproject createproject = new Createproject(event, this);
     }
 
-    public void showProjectInfo(Project project) {
+    public void showProjectInfo(Project project) throws SQLException {
         Stage infoStage = new Stage();
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER_LEFT);
-
+        int id = cdi.getprojectidnoowner(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
+        List<Profile> profiles = edi.getprofilebyid(cdi.getProjectMembers(id));
+        project.setMembers(profiles);
         Label nameLabel = new Label("Projektnavn: " + project.getName());
         Label locationLabel = new Label("Lokation: " + project.getLocation());
         Label startLabel = new Label("Startdato: " + project.getStartDate().toString());
@@ -504,6 +508,13 @@ public class HelloController {
         Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
         Label notesLabel = new Label("Noter: " + project.getNotes());
 
+        List<String> firstNames = project.getMembers().stream()
+                .map(Profile::getName) // replace with getFirstName() if available
+                .map(fullName -> fullName.split(" ")[0]) // splits the full name into parts and takes the first part
+                .collect(Collectors.toList());
+
+        String namesString = String.join("\n", firstNames);
+        Label personLabel = new Label("Disse personer er en del af projektet: " + "\n" + namesString);
         // Håndtering af projektets filer
         Label filesLabel = new Label("Filer:");
         VBox filesList = new VBox(5);
@@ -519,10 +530,15 @@ public class HelloController {
                 throw new RuntimeException(e);
             }
         });
+        if (project.getOwner() == loggedInUser.getProfile().getId()) {
+            editButton.setDisable(false);
+        } else {
+            editButton.setDisable(true);
+        }
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
 
-        layout.getChildren().addAll(nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList, editButton, knockButton);
+        layout.getChildren().addAll(nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList,personLabel, editButton, knockButton);
 
         Scene scene = new Scene(layout);
         infoStage.setTitle("Projektinformation");
@@ -535,17 +551,25 @@ public class HelloController {
         Editproject editproject = new Editproject(project);
     }
 
-    public void showEventInfo(Project project){
+    public void showEventInfo(Project project) throws SQLException {
         Stage infoStage = new Stage();
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER_LEFT);
-
+        int id = cdi.getprojectid(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
+        List<Profile> profiles = edi.getprofilebyid(cdi.getProjectMembers(id));
+        project.setMembers(profiles);
         Label nameLabel = new Label("Projektnavn: " + project.getName());
         Label locationLabel = new Label("Lokation: " + project.getLocation());
         Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
         Label notesLabel = new Label("Noter: " + project.getNotes());
-        Label personLabel = new Label("Disse personer: " + "deltager at dette event");
+        List<String> firstNames = project.getMembers().stream()
+                .map(Profile::getName) // replace with getFirstName() if available
+                .map(fullName -> fullName.split(" ")[0]) // splits the full name into parts and takes the first part
+                .collect(Collectors.toList());
+
+        String namesString = String.join("\n", firstNames);
+        Label personLabel = new Label("Disse personer er en del af projektet: " + "\n" + namesString);
         Button editButton = new Button("Rediger");
         Button knockButton = new Button("Banke på");
         editButton.setOnAction(ea -> {
@@ -555,6 +579,11 @@ public class HelloController {
                 throw new RuntimeException(e);
             }
         });
+        if (project.getOwner() == loggedInUser.getProfile().getId()) {
+            editButton.setDisable(false);
+        } else {
+            editButton.setDisable(true);
+        }
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
         layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel, personLabel, editButton, knockButton);
@@ -697,7 +726,13 @@ public class HelloController {
                 Label projectLabel = new Label(project.getName());
                 projectLabel.getStyleClass().add("striped-background");
                 projectLabel.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
-                projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
+                projectLabel.setOnMouseClicked(event -> {
+                    try {
+                        showProjectInfo(project);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
 
                 VBox projectBox = new VBox(projectLabel);
                 projectBox.setPadding(new Insets(2));
@@ -709,14 +744,26 @@ public class HelloController {
                 if (isEventDay) {
                     projectLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                     projectLabel.setText("Event for " + project.getName());
-                    projectLabel.setOnMouseClicked(event -> showEventInfo(project));
+                    projectLabel.setOnMouseClicked(event -> {
+                        try {
+                            showEventInfo(project);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                 }
 
                 // Check og highlight mødedatoer
                 if (project.getMeetingDates() != null && project.getMeetingDates().contains(currentDate)) {
                     projectLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                     projectLabel.setText("Møde til " + project.getName());
-                    projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
+                    projectLabel.setOnMouseClicked(event -> {
+                        try {
+                            showProjectInfo(project);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                 }
             }
         }
@@ -792,7 +839,13 @@ public class HelloController {
                         projectBoxStyle += "-fx-border-color: black;";
                     }
                     projectBox.setStyle(projectBoxStyle);
-                    projectBox.setOnMouseClicked(event -> showProjectInfo(project));
+                    projectBox.setOnMouseClicked(event -> {
+                        try {
+                            showProjectInfo(project);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                     GridPane.setConstraints(projectBox, startCol, rowForProject, endCol - startCol + 1, 1);
                     GridPane.setFillWidth(projectBox, true);
                     calendarGrid.getChildren().add(projectBox);
@@ -811,7 +864,13 @@ public class HelloController {
                         eventBoxStyle += "-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-border-color: black;";
                     }
                     eventBox.setStyle(eventBoxStyle);
-                    eventBox.setOnMouseClicked(event -> showEventInfo(project));
+                    eventBox.setOnMouseClicked(event -> {
+                        try {
+                            showEventInfo(project);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                     GridPane.setConstraints(eventBox, eventCol, rowForProject, 1, 1);
                     GridPane.setFillWidth(eventBox, true);
                     calendarGrid.getChildren().add(eventBox);
@@ -833,7 +892,13 @@ public class HelloController {
                                 meetingBoxStyle += "-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-border-color: black;";
                             }
                             meetingBox.setStyle(meetingBoxStyle);
-                            meetingBox.setOnMouseClicked(event -> showProjectInfo(project));
+                            meetingBox.setOnMouseClicked(event -> {
+                                try {
+                                    showProjectInfo(project);
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
                             GridPane.setConstraints(meetingBox, meetingCol, rowForProject, 1, 1);
                             GridPane.setFillWidth(meetingBox, true);
                             calendarGrid.getChildren().add(meetingBox);
@@ -931,7 +996,13 @@ public class HelloController {
                         Label projectLabel = new Label(project.getName());
                         projectLabel.getStyleClass().add("striped-background");
                         projectLabel.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
-                        projectLabel.setOnMouseClicked(event -> showProjectInfo(project));
+                        projectLabel.setOnMouseClicked(event -> {
+                            try {
+                                showProjectInfo(project);
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
                         dayBox.getChildren().add(projectLabel);
                     }
                 }
@@ -942,7 +1013,13 @@ public class HelloController {
                 VBox eventDayBox = dayBoxes.get(project.getEventDate());
                 Label eventLabel = new Label("Event for " + project.getName());
                 eventLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
-                eventLabel.setOnMouseClicked(event -> showEventInfo(project));
+                eventLabel.setOnMouseClicked(event -> {
+                    try {
+                        showEventInfo(project);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
                 eventDayBox.getChildren().add(eventLabel);
             }
 
@@ -952,7 +1029,13 @@ public class HelloController {
                         VBox meetingDayBox = dayBoxes.get(meetingDate);
                         Label meetingLabel = new Label("Møde for " + project.getName());
                         meetingLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
-                        meetingLabel.setOnMouseClicked(event -> showProjectInfo(project));
+                        meetingLabel.setOnMouseClicked(event -> {
+                            try {
+                                showProjectInfo(project);
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
                         meetingDayBox.getChildren().add(meetingLabel);
                     }
                 }

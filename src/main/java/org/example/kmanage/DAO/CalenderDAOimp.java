@@ -117,4 +117,49 @@ public class CalenderDAOimp implements CalenderDAO{
             ps.setInt(8, idofproject);
             ps.executeUpdate();
         }
+
+        public List<Integer> getProjectMembers(int id) {
+
+            List<Integer> members = new ArrayList<>();
+            try {
+                String sql = "SELECT * from dbo.ProjectUSER WHERE Project_ID = ?";
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, id);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    members.add(rs.getInt("Member_ID"));
+                }
+            } catch (SQLException e) {
+                System.out.println("Error" + e);
+            }
+            return members;
+        }
+
+        public void removeprojectmember(int id, int memberid){
+            try {
+                String sql = "DELETE FROM dbo.ProjectUSER WHERE Project_ID = ? AND Member_ID = ?";
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, id);
+                ps.setInt(2, memberid);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println("Error" + e);
+            }
+        }
+
+    public int getprojectidnoowner(String name, String startdate, String enddate, String notes, String eventdate, String meetingdates) throws SQLException {
+        String sql = "SELECT id from dbo.projects WHERE name = ? AND startdate = ? AND enddate = ? AND eventdate = ? AND meetingdates = ? ";
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, name);
+        ps.setString(2, startdate);
+        ps.setString(3, enddate);
+        ps.setString(4, eventdate);
+        ps.setString(5, meetingdates);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("id");
+        } else {
+            throw new SQLException("Failed to retrieve projectid");
+        }
+    }
     }
