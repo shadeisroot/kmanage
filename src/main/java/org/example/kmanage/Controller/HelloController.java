@@ -652,6 +652,11 @@ public class HelloController {
         }
         //knappe til at fjerne projekt
         Button removeProjectButton = new Button("Fjern Projekt");
+        if (project.getOwner() == loggedInUser.getProfile().getId()) {
+            removeProjectButton.setDisable(false);
+        } else {
+            removeProjectButton.setDisable(true);
+        }
         removeProjectButton.setOnAction(e -> {
             if (showConfirmationDialog("Fjern projekt", "Er du sikker på at du vil fjerne projektet?")) {
                 cdi.removeProject(id);
