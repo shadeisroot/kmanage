@@ -512,8 +512,8 @@ public class HelloController {
         alert.setHeaderText(null);
         alert.setContentText(message);
 
-        ButtonType buttonYes = new ButtonType("Yes");
-        ButtonType buttonNo = new ButtonType("No");
+        ButtonType buttonYes = new ButtonType("Ja");
+        ButtonType buttonNo = new ButtonType("Nej");
 
         alert.getButtonTypes().setAll(buttonYes, buttonNo);
 
@@ -530,13 +530,15 @@ public class HelloController {
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER_LEFT);
-
+        // Henter ejer af projekt (profil og navn)
         Profile ownerProfile = getProfileById(project.getOwner());
         String ownerName = ownerProfile != null ? ownerProfile.getName() : "Ukendt";
 
+        // Hent projektets ID og medlemmer
         int id = cdi.getprojectidnoowner(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
         List<Profile> profiles = edi.getprofilebyid(cdi.getProjectMembers(id));
         project.setMembers(profiles);
+        //labels og deres værdi
         Label nameLabel = new Label("Projektnavn: " + project.getName());
         Label locationLabel = new Label("Lokation: " + project.getLocation());
         Label startLabel = new Label("Startdato: " + project.getStartDate().toString());
@@ -544,10 +546,10 @@ public class HelloController {
         Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
         Label notesLabel = new Label("Noter: " + project.getNotes());
         Label ownerLabel = new Label("Projekt oprettet af: " + ownerName);
-
+        //henter navnet på medlemer til projekt
         List<String> firstNames = project.getMembers().stream()
-                .map(Profile::getName) // replace with getFirstName() if available
-                .map(fullName -> fullName.split(" ")[0]) // splits the full name into parts and takes the first part
+                .map(Profile::getName)
+                .map(fullName -> fullName.split(" ")[0])
                 .collect(Collectors.toList());
 
         String namesString = String.join("\n", firstNames);
@@ -558,6 +560,13 @@ public class HelloController {
         for (String file : project.getFiles()) {
             filesList.getChildren().add(new Label(file));
         }
+        // møder
+        VBox meetingsList = new VBox(5);
+        for (LocalDate meetingDate : project.getMeetingDates()) {
+            String meetingInfo = "Møde: " + meetingDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            meetingsList.getChildren().add(new Label(meetingInfo));
+        }
+        //laver knap til at fjerne projekter
         Button removeProjectButton = new Button("Fjern Projekt");
         removeProjectButton.setOnAction(e -> {
             if (showConfirmationDialog("Fjern projekt", "Er du sikker på at du vil fjerne projektet?")) {
@@ -592,8 +601,11 @@ public class HelloController {
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
 
 
-        layout.getChildren().addAll(nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, filesLabel, filesList,ownerLabel, personLabel, editButton, knockButton, removeProjectButton);
-
+        // Tilføj alle elementer til layoutet
+        layout.getChildren().addAll(
+                nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, ownerLabel,
+                personLabel, filesLabel, filesList, meetingsList, removeProjectButton
+        );
         Scene scene = new Scene(layout);
         infoStage.setTitle("Projektinformation");
         infoStage.setScene(scene);
@@ -610,27 +622,35 @@ public class HelloController {
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER_LEFT);
-
+        //henter ejer af projekt (profil og navn)
         Profile ownerProfile = getProfileById(project.getOwner());
         String ownerName = ownerProfile != null ? ownerProfile.getName() : "Ukendt";
-
+        //henter projekts ID og medlemmer
         int id = cdi.getprojectidnoowner(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
         List<Profile> profiles = edi.getprofilebyid(cdi.getProjectMembers(id));
         project.setMembers(profiles);
+        //labels med detaljer
         Label nameLabel = new Label("Projektnavn: " + project.getName());
         Label locationLabel = new Label("Lokation: " + project.getLocation());
         Label eventDayLabel = new Label("Dato for begivenhed: " + project.getEventDate().toString());
         Label notesLabel = new Label("Noter: " + project.getNotes());
         Label ownerLabel = new Label("Projekt oprettet af: " + ownerName);
-
+        //henter navn på medlemmer
         List<String> firstNames = project.getMembers().stream()
-                .map(Profile::getName) // replace with getFirstName() if available
-                .map(fullName -> fullName.split(" ")[0]) // splits the full name into parts and takes the first part
+                .map(Profile::getName)
+                .map(fullName -> fullName.split(" ")[0])
                 .collect(Collectors.toList());
 
         String namesString = String.join("\n", firstNames);
         Label personLabel = new Label("Disse personer er en del af projektet: " + "\n" + namesString);
 
+        // møder
+        VBox meetingsList = new VBox(5);
+        for (LocalDate meetingDate : project.getMeetingDates()) {
+            String meetingInfo = "Møde: " + meetingDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            meetingsList.getChildren().add(new Label(meetingInfo));
+        }
+        //knappe til at fjerne projekt
         Button removeProjectButton = new Button("Fjern Projekt");
         removeProjectButton.setOnAction(e -> {
             if (showConfirmationDialog("Fjern projekt", "Er du sikker på at du vil fjerne projektet?")) {
@@ -659,8 +679,8 @@ public class HelloController {
             editButton.setDisable(true);
         }
         knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
-
-        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel,ownerLabel, personLabel, editButton, knockButton, removeProjectButton);
+        //tilføjer elementer til layout
+        layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel,ownerLabel, personLabel, meetingsList, editButton, knockButton, removeProjectButton);
 
 
         Scene scene = new Scene(layout);
@@ -683,20 +703,13 @@ public class HelloController {
     }
 
 
-
+    //event for date picker (henter værdien fra datepicker og tager den valgte dag til update kaledner)
     public void datePickerPressed(ActionEvent event) {
         if (datePicker.getValue() != null) {
             LocalDate selectedDate = datePicker.getValue();
-            navigateToSelectedDate(selectedDate);
+            updateCalender(selectedDate);
         }
     }
-
-    void navigateToSelectedDate(LocalDate date) {
-        updateCalender(date);
-    }
-
-
-
 
     //skift tema
 
