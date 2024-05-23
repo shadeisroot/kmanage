@@ -1,11 +1,12 @@
 package org.example.kmanage.User;
 
 public class Profile {
+    //felter
     private String name;
     private String Position;
     private String Department;
     private int id;
-
+    //Constructor
     public Profile(String name, String Position, String Department, int id) {
         this.name = name;
         this.Position = Position;
@@ -13,7 +14,7 @@ public class Profile {
         this.id = id;
 
     }
-
+    //gets n sets n toString
     public int getId() {
         return id;
     }

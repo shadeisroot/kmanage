@@ -80,7 +80,6 @@ public class Createproject {
         createdMeetings.setPrefHeight(125);
         createdMeetings.setEditable(false);
 
-
         //knapper
         Button addFilesButton = new Button("Vedhæft fil");
         Button addMeetingButton = new Button("Tilføj møde");

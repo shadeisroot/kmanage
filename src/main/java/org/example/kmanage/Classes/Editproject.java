@@ -43,10 +43,10 @@ public class Editproject {
         pane.setHgap(10);
         pane.setVgap(10);
         pane.setPadding(new Insets(25, 25, 25, 25));
-
+        //henter den logged in bruger og projekt id
         User loggedInUser = UserSession.getInstance(null).getUser();
         int id = cdi.getprojectid(project.getName(), project.getStartDate().toString(), project.getEndDate().toString(), loggedInUser.getProfile().getId(), project.getNotes(), project.getEventDate().toString(), project.getMeetingDates().toString());
-
+        //fields, datepicker og combo box, med en sat text eller prompt text.
         TextField nameField = new TextField();
         nameField.setPromptText("Skriv Navn på projekt");
         nameField.setText(project.getName());
@@ -84,12 +84,21 @@ public class Editproject {
         notesArea.setPrefColumnCount(20);
         notesArea.setPrefHeight(200);
 
+        //box der viser møder
+        TextArea createdMeetings = new TextArea();
+        createdMeetings.setPromptText("Møder vises her");
+        createdMeetings.setWrapText(true);
+        createdMeetings.setPrefRowCount(4);
+        createdMeetings.setPrefColumnCount(20);
+        createdMeetings.setPrefHeight(125);
+        createdMeetings.setEditable(false);
+        //knapper
         Button removeButton = new Button("Fjern medlem");
         Button addFilesButton = new Button("Vedhæft fil");
         Button addMeetingButton = new Button("Tilføj møde");
         Button opretButton = new Button("Rediger projekt");
         Button addButton = new Button("Tilføj medlem");
-
+        //setter op så opret knap kun bruges hvis man har en værdi på start/end/event dato
         startDatePick.valueProperty().addListener((obs, oldDate, newDate) -> {
             opretButton.setDisable(endDatePick.getValue() == null || eventDatePick.getValue() == null || newDate == null);
         });
@@ -99,11 +108,22 @@ public class Editproject {
         eventDatePick.valueProperty().addListener((obs, oldDate, newDate) -> {
             opretButton.setDisable(startDatePick.getValue() == null || endDatePick.getValue() == null || newDate == null);
         });
+        //gør det samme men for møder
+        meetingNameField.textProperty().addListener((obs, oldDate, newDate) -> {
+            addMeetingButton.setDisable(meetingDatePick.getValue() == null || meetingTimeComboBox.getValue() == null || newDate == null);
+        });
 
+        meetingDatePick.valueProperty().addListener((obs, oldDate, newDate) -> {
+            addMeetingButton.setDisable(meetingNameField.getText() == null || meetingTimeComboBox.getValue() == null || newDate == null);
+        });
+        meetingTimeComboBox.valueProperty().addListener((obs, oldDate, newDate) -> {
+            addMeetingButton.setDisable(meetingNameField.getText() == null || meetingDatePick.getValue() == null || newDate == null);
+        });
 
+        //tilføjer elementer til pane
         pane.add(new Label("Navn:"), 0, 0);
         pane.add(nameField, 1, 0);
-        pane.add(new Label("Lokation:"), 0, 1); // Tilføj label for lokation
+        pane.add(new Label("Lokation:"), 0, 1);
         pane.add(locationField, 1, 1);
         pane.add(new Label("Start Dato:"), 0, 2);
         pane.add(startDatePick, 1, 2);
@@ -119,17 +139,21 @@ public class Editproject {
         pane.add(meetingDatePick, 1, 7);
         pane.add(new Label("Møde Tid:"), 0, 8);
         pane.add(meetingTimeComboBox, 1, 8);
+        pane.add(new Label("Oprettede Møder:"), 0, 9);
+        pane.add(createdMeetings, 1, 9);
+
         TableView Membertableview = hdi.initializecreatenewtable();
         pane.add(Membertableview, 2, 0);
-        GridPane.setRowSpan(Membertableview, 9);
+        GridPane.setRowSpan(Membertableview, 10);
         TableView targettable = hdi.targettable();
         pane.add(targettable, 3, 0);
-        GridPane.setRowSpan(targettable, 9);
+        GridPane.setRowSpan(targettable, 10);
+
         pane.add(addButton, 2, 9);
         pane.add(removeButton, 3, 9);
-        pane.add(addMeetingButton, 1, 9);
-        pane.add(addFilesButton, 1, 10);
-        pane.add(opretButton, 1, 11);
+        pane.add(addMeetingButton, 1, 10);
+        pane.add(addFilesButton, 1, 11);
+        pane.add(opretButton, 1, 12);
 
         List<String> files = new ArrayList<>();
         addFilesButton.setOnAction(e -> {
@@ -139,16 +163,21 @@ public class Editproject {
                 files.add(selectedFile.getName());
             }
         });
-        List<LocalDate> meetingDates = new ArrayList<>();
-        pdi.getprofilebyid(cdi.getProjectMembers(id)).forEach(targettable.getItems()::add);
 
+        List<LocalDate> meetingDates = new ArrayList<>(project.getMeetingDates());
+        for (LocalDate meetingDate : meetingDates) {
+            createdMeetings.appendText("Møde: " + meetingDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + "\n");
+        }
+
+        pdi.getprofilebyid(cdi.getProjectMembers(id)).forEach(targettable.getItems()::add);
+        //funktion
         addButton.setOnAction(e -> {
             Profile profile = (Profile) Membertableview.getSelectionModel().getSelectedItem();
             targettable.getItems().add(profile);
             cdi.addProjectMember(id, profile.getId());
             notification.addtoMessage( "Du er blevet tilføjet til projekt" + project.getName(), profile.getId());
         });
-
+        //action for removeButton (fjerne person fra targettable og sender notifikation
         removeButton.setOnAction(e -> {
             Profile profile = (Profile) targettable.getSelectionModel().getSelectedItem();
             targettable.getItems().remove(profile);
@@ -156,11 +185,21 @@ public class Editproject {
             notification.addtoMessage( "Du er blevet fjernet fra projekt" + project.getName(), profile.getId());
 
         });
-
+        //tilføjer møde
+        addMeetingButton.setOnAction(e -> {
+            LocalDate meetingDate = meetingDatePick.getValue();
+            String meetingTime = meetingTimeComboBox.getValue();
+            String meetingName = meetingNameField.getText();
+            if (meetingDate != null && meetingTime != null && !meetingName.isEmpty()) {
+                meetingDates.add(meetingDate);
+                createdMeetings.appendText("Møde: " + meetingName + " | " + meetingDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + " " + meetingTime + "\n");
+                meetingNameField.clear();
+                meetingDatePick.setValue(null);
+                meetingTimeComboBox.getSelectionModel().clearSelection();
+            }
+        });
+        //opretter projekt knap
         opretButton.setOnAction(e -> {
-
-
-
             project.setName(nameField.getText());
             project.setLocation(locationField.getText());
             project.setStartDate(startDatePick.getValue());
@@ -173,7 +212,7 @@ public class Editproject {
 
             List<Profile> members = new ArrayList<>();
 
-            // Iterate over the items in the targettable and add each item to the members list
+            //tilføjer brugeren som laver projektet til member listen
             for (Object profile : targettable.getItems()) {
                 members.add((Profile) profile);
             }
