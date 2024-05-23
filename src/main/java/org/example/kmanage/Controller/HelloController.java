@@ -179,14 +179,6 @@ public class HelloController {
                             "Afdeling: " + profile.getDepartment());
 
 
-                    // Tilføj en knap til at invitere brugeren
-                    ButtonType invitebutton = new ButtonType("inviter", ButtonBar.ButtonData.OK_DONE);
-                    alert.getButtonTypes().add(invitebutton);
-                    Button inviteButtonNode = (Button) alert.getDialogPane().lookupButton(invitebutton);
-                    inviteButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
-                        System.out.println("Invite knap klikket for profil: " + profile.getName());
-                        event2.consume(); // This prevents the alert from closing
-                    });
 
                     //Tilføjer en knap til at vise den person kalender
                     ButtonType showCalenderButton = new ButtonType("Vis kalender", ButtonBar.ButtonData.OTHER);
