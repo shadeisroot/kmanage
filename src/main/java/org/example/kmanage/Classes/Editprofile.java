@@ -22,14 +22,14 @@ public class Editprofile {
     ProfileDAO edi = new ProfileDAOImp();
     User loggedInUser = UserSession.getInstance(null).getUser();
     public Editprofile(ActionEvent event) {
-
+        //laver stage og pane
         Stage stage = new Stage();
         GridPane pane = new GridPane();
         pane.setAlignment(Pos.CENTER);
         pane.setHgap(10);
         pane.setVgap(10);
         pane.setPadding(new Insets(25, 25, 25, 25));
-
+        //opretter felter og setter tekst(værdi)
         TextField nameField = new TextField();
         nameField.setText(loggedInUser.getProfile().getName());
         TextField positionField = new TextField();
@@ -37,7 +37,7 @@ public class Editprofile {
         TextField departmentField = new TextField();
         departmentField.setText(loggedInUser.getProfile().getDepartment());
         Button editbutton = new Button("Ændre profil");
-
+        //tilføjer label og fields til pane
         pane.add(new Label("Navn:"), 0, 0);
         pane.add(nameField, 1, 0);
         pane.add(new Label("Position:"), 0, 1);
@@ -45,7 +45,7 @@ public class Editprofile {
         pane.add(new Label("Afdeling"), 0, 2);
         pane.add(departmentField, 1, 2);
         pane.add(editbutton, 1, 3);
-
+        //action for edit knap (setter name, positio og department ud fra hvad man har skrevet i passende felt
         editbutton.setOnAction(e -> {
             loggedInUser.getProfile().setName(nameField.getText());
             loggedInUser.getProfile().setPosition(positionField.getText());

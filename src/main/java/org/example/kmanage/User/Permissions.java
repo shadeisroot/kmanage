@@ -4,7 +4,7 @@ public class Permissions {
 
     private int id;
     private String name;
-
+    //CONSTRUCTOR
     public Permissions(int id, String name) {
         this.id = id;
         this.name = name;
@@ -17,7 +17,7 @@ public class Permissions {
                 ", name='" + name + '\'' +
                 '}';
     }
-
+    //gets n sets
     public int getId() {
         return id;
     }
