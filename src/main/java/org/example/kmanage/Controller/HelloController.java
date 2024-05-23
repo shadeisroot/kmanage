@@ -88,7 +88,6 @@ public class HelloController {
         initializeplist();
         updateCalender(LocalDate.now());
         filterplist();
-        doubleclickeventplist();
         initializebutton();
         initializeevents();
 
@@ -131,12 +130,13 @@ public class HelloController {
     public void removeUser(MouseEvent mouseEvent) {
         Profile profile = (Profile) plist.getSelectionModel().getSelectedItem();
         if (profile != null) {
-            try {
-                ;
-                edi.removeEmployee(profile.getId());
-                refreshplist();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+            if (showConfirmationDialog("Fjern bruger", "Er du sikker på at du vil fjerne brugeren?")){
+                try {
+                    edi.removeEmployee(profile.getId());
+                    refreshplist();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         }
     }
@@ -164,34 +164,6 @@ public class HelloController {
             Editprofile editprofile = new Editprofile(actionEvent);
             refreshplist();
         }
-    }
-
-    public void doubleclickeventplist() {
-        plist.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-            if (event.getClickCount() == 2) {
-                Profile profile = (Profile) plist.getSelectionModel().getSelectedItem();
-                if (profile != null) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Profil Information");
-                    alert.setHeaderText("Profile: " + profile.getName());
-                    alert.setContentText("Navn: " + profile.getName() + "\n" +
-                            "Position: " + profile.getPosition() + "\n" +
-                            "Afdeling: " + profile.getDepartment());
-
-
-
-                    //Tilføjer en knap til at vise den person kalender
-                    ButtonType showCalenderButton = new ButtonType("Vis kalender", ButtonBar.ButtonData.OTHER);
-                    alert.getButtonTypes().add(showCalenderButton);
-                    Button showCalenderButtonNode = (Button) alert.getDialogPane().lookupButton(showCalenderButton);
-                    showCalenderButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
-                        showUserCalender(profile);
-                        event2.consume();
-                    });
-                        alert.showAndWait();
-                }
-            }
-        });
     }
 
 
@@ -231,7 +203,31 @@ public class HelloController {
         });
         plist.setItems(profiles);
 
+        plist.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (event.getClickCount() == 2) {
+                Profile profile = (Profile) plist.getSelectionModel().getSelectedItem();
+                if (profile != null) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Profil Information");
+                    alert.setHeaderText("Profile: " + profile.getName());
+                    alert.setContentText("Navn: " + profile.getName() + "\n" +
+                            "Position: " + profile.getPosition() + "\n" +
+                            "Afdeling: " + profile.getDepartment());
 
+
+
+                    //Tilføjer en knap til at vise den person kalender
+                    ButtonType showCalenderButton = new ButtonType("Vis kalender", ButtonBar.ButtonData.OTHER);
+                    alert.getButtonTypes().add(showCalenderButton);
+                    Button showCalenderButtonNode = (Button) alert.getDialogPane().lookupButton(showCalenderButton);
+                    showCalenderButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
+                        showUserCalender(profile);
+                        event2.consume();
+                    });
+                    alert.showAndWait();
+                }
+            }
+        });
     }
 
 
@@ -646,8 +642,6 @@ public class HelloController {
                 }
                 projects.remove(project);
                 infoStage.close();
-            } else {
-                return;
             }
         });
         Button editButton = new Button("Rediger");
