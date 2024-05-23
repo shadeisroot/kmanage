@@ -1,10 +1,11 @@
 package org.example.kmanage.User;
 
 public class User {
+    //felter
     private String username;
     private Permissions permissions;
     private Profile profile;
-
+    //constructor
     public User(String username, Permissions permissions, Profile profile) {
         this.username = username;
         this.permissions = permissions;
@@ -19,7 +20,7 @@ public class User {
                 ", profile=" + profile +
                 '}';
     }
-
+    //gets n sets
     public String getUsername() {
         return username;
     }

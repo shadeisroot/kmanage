@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class Project {
+    //felter
     private int id;
     private String name;
     private LocalDate startDate;
@@ -16,17 +17,12 @@ public class Project {
     private LocalDate eventDate;
     private List<LocalDate> meetingDates;
     private int owner;
-
     private String notes;
     private String location;
     private List<String> files;
-
     private boolean knockRequest = false;
-
     private List<Profile> members = new ArrayList<>();
-
-
-
+    //constructor
     public Project(String name, LocalDate startDate, LocalDate endDate, int owner, String notes,  LocalDate eventDate, List<LocalDate> meetingDates) {
 
         this.name = name;
@@ -39,7 +35,7 @@ public class Project {
         this.files = new ArrayList<>();
         this.meetingDates = meetingDates;
     }
-
+    //gets n sets
     public int getId() {
         return id;
     }
@@ -139,7 +135,7 @@ public class Project {
     public boolean isKnockRequest(){
         return knockRequest;
     }
-
+    //banke på metode, som sender en notifikation til projekt ejeren
     public void requestKnock(User user){
         this.knockRequest = true;
         Notification notification = new Notification();
