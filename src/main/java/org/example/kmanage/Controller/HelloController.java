@@ -93,7 +93,6 @@ public class HelloController {
 
         showAllProjects();
     }
-
     public LocalDate getCurrentDate() {
         return currentDate;
     }
@@ -147,7 +146,7 @@ public class HelloController {
         Stage stage = (Stage) plist.getScene().getWindow();
 
 
-        //start the main class
+        //starter main klasse
         Main main = new Main();
         try {
             main.start(stage);
@@ -166,7 +165,7 @@ public class HelloController {
         }
     }
 
-
+    //sætter værdier op i personale listen (tableviewet)
     public void initializeplist() {
         plistc1.setCellValueFactory(new PropertyValueFactory<>("name"));
         plistc2.setCellValueFactory(new PropertyValueFactory<>("position"));
@@ -181,6 +180,7 @@ public class HelloController {
                 if (item == null || empty) {
                     setStyle("");
                 } else {
+                    //switch case som setter farven for de forskellige afdelinger
                     switch (item.getDepartment()) {
                         case "Tønder Bibliotekerne":
                             setStyle("-fx-background-color: lightblue;");
@@ -202,7 +202,7 @@ public class HelloController {
             }
         });
         plist.setItems(profiles);
-
+        //event hvis man double klikker (laver en alert)
         plist.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getClickCount() == 2) {
                 Profile profile = (Profile) plist.getSelectionModel().getSelectedItem();
@@ -232,14 +232,12 @@ public class HelloController {
 
 
     public void filterplist() {
-
-
+        //laver en ny filteredlist
         FilteredList<Profile> filteredProfiles = new FilteredList<>(profiles, p -> true);
-
 
         personSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredProfiles.setPredicate(profile -> {
-                // If filter text is empty, display all profiles.
+                // hvis søgefelt er tomt, så vises alle
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
@@ -247,17 +245,17 @@ public class HelloController {
                 String lowerCaseFilter = newValue.toLowerCase();
 
                 if (profile.getName().toLowerCase().contains(lowerCaseFilter)) {
-                    return true; // Filter matches name.
+                    return true; // filter navn
                 } else if (profile.getPosition().toLowerCase().contains(lowerCaseFilter)) {
-                    return true; // Filter matches position.
+                    return true; // filter position.
                 } else if (profile.getDepartment().toLowerCase().contains(lowerCaseFilter)) {
-                    return true; // Filter matches department.
+                    return true; // filter afdeling
                 }
-                return false; // Does not match.
+                return false;
             });
         });
 
-
+        //laver en sortedlist og sætter den ind på personale listen
         SortedList<Profile> sortedProfiles = new SortedList<>(filteredProfiles);
 
         sortedProfiles.comparatorProperty().bind(plist.comparatorProperty());
@@ -311,7 +309,7 @@ public class HelloController {
 
         alert.showAndWait();
     }
-
+    //notifikation knap
     @FXML
     private void notButtonPressed(ActionEvent event) {
         notifi(not.showMessages());
@@ -320,7 +318,7 @@ public class HelloController {
     public void updateCalender(LocalDate date) {
         currentDate = date;
         calendarGrid.getChildren().clear();
-
+        //switch case som skifter i mellem dayview, weekview, monthview og retter på info label
         String calendarInfo = "";
         switch (currentViewMode) {
             case DAG:
@@ -354,8 +352,7 @@ public class HelloController {
         this.projects.add(project);
     }
 
-    // knappe events
-
+    //zoom ud knap. Dag til uge, uge til måned
     public void zoomOutPressed(ActionEvent event) {
         if (currentViewMode == ViewMode.DAG) {
             currentViewMode = ViewMode.UGE;
@@ -366,7 +363,7 @@ public class HelloController {
         updateCalender(currentDate);
     }
 
-
+    //zoom ind knap. måned til uge, uge til dag.
     public void zoomIndPressed(ActionEvent event) {
         if (currentViewMode == ViewMode.MÅNED) {
             currentViewMode = ViewMode.UGE;
@@ -376,7 +373,7 @@ public class HelloController {
 
         updateCalender(currentDate);
     }
-
+    //tilbage knap. switch case som minusser med dage, uge eller måned
     public void tilbageButtonPressed(ActionEvent event) {
         switch (currentViewMode) {
             case DAG:
@@ -391,7 +388,7 @@ public class HelloController {
         }
         updateCalender(currentDate);
     }
-
+    //frem knap. switch case som plusser med dage, uge eller måned
     public void fremButtonPressed(ActionEvent event) {
         switch (currentViewMode) {
             case DAG:
@@ -407,44 +404,43 @@ public class HelloController {
         updateCalender(currentDate);
     }
 
-
+    //tableview til opret projekt og rediger projekt (den her table er med dem som er medlem af projekt)
     public TableView<Profile> targettable() {
+        //sætter table op med værdier
         TableView<Profile> targetTable = new TableView<>();
         TableColumn<Profile, String> nameColumn = new TableColumn<>("Name");
         TableColumn<Profile, String> positionColumn = new TableColumn<>("Position");
         TableColumn<Profile, String> departmentColumn = new TableColumn<>("Department");
-
+        //sætter værdi
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
         departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
-
+        //tilføjer dem
         targetTable.getColumns().add(nameColumn);
         targetTable.getColumns().add(positionColumn);
         targetTable.getColumns().add(departmentColumn);
 
-
-
         return targetTable;
     }
 
-    public TableView<Profile> initializecreatenewtable() {
-        // Create a TableView for profiles
+    public TableView<Profile> initializecreatenewtable() { // denne her er inde i opret projekt og rediger
+        // laver tableview for profiler
         TableView<Profile> profileTable = new TableView<>();
         TableColumn<Profile, String> nameColumn = new TableColumn<>("Navn");
         TableColumn<Profile, String> positionColumn = new TableColumn<>("Position");
         TableColumn<Profile, String> departmentColumn = new TableColumn<>("Afdeling");
 
-        // Set cell value factories
+        // sætter værdi
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
         departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
 
-        // Add columns to the table
+        // tilføjer kollonerne til table
         profileTable.getColumns().add(nameColumn);
         profileTable.getColumns().add(positionColumn);
         profileTable.getColumns().add(departmentColumn);
 
-
+        //filføjer double klick event (åbner en alert)
         profileTable.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getClickCount() == 2) {
                 Profile profile = (Profile) profileTable.getSelectionModel().getSelectedItem();
@@ -462,7 +458,7 @@ public class HelloController {
                     Button inviteButtonNode = (Button) alert.getDialogPane().lookupButton(invitebutton);
                     inviteButtonNode.addEventFilter(ActionEvent.ACTION, event2 -> {
                         System.out.println("Inviter knap blev trykket for profilen: " + profile.getName());
-                        event2.consume(); // This prevents the alert from closing
+                        event2.consume();
                     });
 
                     alert.showAndWait();
@@ -471,7 +467,7 @@ public class HelloController {
             }
 
         });
-
+        //opdatere værdien i profil table
         profileTable.setRowFactory(tv -> new TableRow<Profile>() {
             @Override
             protected void updateItem(Profile item, boolean empty) {
@@ -480,6 +476,7 @@ public class HelloController {
                 if (item == null || empty) {
                     setStyle("");
                 } else {
+                    //setter farver med switch case
                     switch (item.getDepartment()) {
                         case "Tønder Bibliotekerne":
                             setStyle("-fx-background-color: lightblue;");
@@ -501,20 +498,21 @@ public class HelloController {
             }
         });
 
-        // Set data to the table
+        // Setter data til tabelen
         profileTable.setItems(profiles);
         return profileTable;
     }
-
+    //bekræftelse box (alert) kommer ved fjern bruger og fjern projekt
     public boolean showConfirmationDialog(String title, String message) {
+        //laver alert vindue
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-
+        //laver knapper
         ButtonType buttonYes = new ButtonType("Ja");
         ButtonType buttonNo = new ButtonType("Nej");
-
+        //tilføjer knapper
         alert.getButtonTypes().setAll(buttonYes, buttonNo);
 
         return alert.showAndWait().get() == buttonYes;
@@ -694,13 +692,13 @@ public class HelloController {
         infoStage.sizeToScene();
         infoStage.show();
     }
-
+    //knap til at skifte tema
     @FXML
     private void handleToggleTheme(ActionEvent event) {
         Scene scene = ((MenuItem)event.getSource()).getParentPopup().getOwnerWindow().getScene();
         toggleTheme(scene);
     }
-
+    //i dag knap
     public void todayButtonPressed(ActionEvent event) {
         currentDate = LocalDate.now();
 
@@ -717,10 +715,10 @@ public class HelloController {
     }
 
     //skift tema
-
     private void toggleTheme(Scene scene) {
+        //laver observableliste for stylesheets
         ObservableList<String> stylesheets = scene.getStylesheets();
-
+        //laver stierne om til string
         String lightThemePath = getClass().getResource("/org/example/kmanage/maincss.css").toExternalForm();
         String darkThemePath = getClass().getResource("/org/example/kmanage/mainCssDark.css").toExternalForm();
 
@@ -728,7 +726,6 @@ public class HelloController {
             System.err.println("Din tråd til css er forkert");
             return;
         }
-
 
         if (stylesheets.contains(lightThemePath)) {
             // Skifter fra lys til mørk tema
@@ -743,14 +740,16 @@ public class HelloController {
             darkMode = false;
 
         }
+        //opdater kalender og skifter søge icon
         updateCalender(currentDate);
         updateSearchIcon(darkMode);
     }
+
     //ændre billeder(søge ikonet)
     private void updateSearchIcon(boolean darkMode) {
         String imagePath;
 
-
+        //if til at vælge hvilke billed
         if (darkMode) {
             imagePath = "/org/example/kmanage/soeg_hvid.png";
         } else {
@@ -767,6 +766,7 @@ public class HelloController {
 
     @FXML
     private void handleViewToggle(ActionEvent event) {
+        //togglekanp skifter i mellem alle projekter og den logged ind projekter
         if (viewToggleButton.isSelected()) {
             viewToggleButton.setText("Vis alle projekter");
             showMyProjects();
@@ -841,7 +841,7 @@ public class HelloController {
         dateLabel.setStyle("-fx-text-fill: #666666; -fx-font-size: 16px;");
 
         dayBox.getChildren().addAll(dayLabel, dateLabel);
-
+        // hvis darkmode er valgt
         if (darkMode) {
             dayBox.setStyle("-fx-background-color: #121212; -fx-text-fill: #ffffff; -fx-border-color: #cccccc; -fx-border-width: 1;");
             dateLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 16px; ");
@@ -855,7 +855,7 @@ public class HelloController {
             dayLabel.setStyle("-fx-text-fill: #121212; -fx-font-size: 18px;");
             dateLabel.setStyle("-fx-text-fill: #121212; -fx-font-weight: bold; -fx-font-size: 16px;");
         }
-
+        //tilføjer dags box til grid pane
         calendarGrid.add(dayBox, 0, 0);
 
         int projectRow = 1;
@@ -874,14 +874,14 @@ public class HelloController {
                         throw new RuntimeException(e);
                     }
                 });
-
+                //laver v boxe til projekter
                 VBox projectBox = new VBox(projectLabel);
                 projectBox.setPadding(new Insets(2));
                 projectBox.getStyleClass().add("striped-background");
                 projectBox.setStyle("-fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.7;");
                 calendarGrid.add(projectBox, 0, projectRow++);
                 Profile ownerProfile = getProfileById(project.getOwner());
-
+                //hvis er event dato så laves der en event box
                 if (isEventDay) {
                     projectLabel.setStyle("-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-padding: 5; -fx-border-color: black; -fx-opacity: 0.8;");
                     projectLabel.setText("Event for " + project.getName());
@@ -945,7 +945,7 @@ public class HelloController {
             dateLabel.setStyle("-fx-text-fill: #666666;");
 
             dayBox.getChildren().addAll(dayLabel, dateLabel);
-
+            //hvis i dag eller hvis dark mode er valgt så highlight eller dark mode
             if (date.equals(today)) {
                 dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
                 dayLabel.setStyle("-fx-text-fill: #121212");
@@ -954,7 +954,7 @@ public class HelloController {
                 dayBox.setStyle("-fx-background-color: #121212; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10; -fx-text-fill: #ffffff");
                 dateLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: bold;");
             }
-
+            //tilføjer uge boxe til grid
             calendarGrid.add(dayBox, i, 0);
 
             //Viser projekter, der spænder over den aktuelle dato
@@ -970,10 +970,11 @@ public class HelloController {
                     int endCol = (int) ChronoUnit.DAYS.between(startOfWeek, project.getEndDate());
                     startCol = Math.max(startCol, 0);
                     endCol = Math.min(endCol, 6);
-
+                    //laver boxe til at vise projekter
                     VBox projectBox = new VBox(new Label(project.getName()));
                     projectBox.getStyleClass().add("striped-background");
                     String projectBoxStyle = "-fx-padding: 5; -fx-opacity: 0.7;";
+                    //hvis dark mode er valgt
                     if (darkMode) {
                         projectBoxStyle += "-fx-background-color: #444444; -fx-text-fill: #ffffff; -fx-border-color: white; -fx-font-weight: bold;";
                     } else {
@@ -987,6 +988,7 @@ public class HelloController {
                             throw new RuntimeException(e);
                         }
                     });
+                    //tilføjer projekt boxe til pane
                     GridPane.setConstraints(projectBox, startCol, rowForProject, endCol - startCol + 1, 1);
                     GridPane.setFillWidth(projectBox, true);
                     calendarGrid.getChildren().add(projectBox);
@@ -999,6 +1001,7 @@ public class HelloController {
 
                     VBox eventBox = new VBox(new Label("Event for " + project.getName()));
                     String eventBoxStyle = "-fx-padding: 5; -fx-opacity: 0.7;";
+                    //hvis dark mode er valgt
                     if (darkMode) {
                         eventBoxStyle += "-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-text-fill: #ffffff; -fx-border-color: white; -fx-font-weight: bold;";
                     } else {
@@ -1012,6 +1015,7 @@ public class HelloController {
                             throw new RuntimeException(e);
                         }
                     });
+                    //tilføjer event boxe til grid pane
                     GridPane.setConstraints(eventBox, eventCol, rowForProject, 1, 1);
                     GridPane.setFillWidth(eventBox, true);
                     calendarGrid.getChildren().add(eventBox);
@@ -1027,6 +1031,7 @@ public class HelloController {
                             VBox meetingBox = new VBox(new Label("Møde for " + project.getName()));
 
                             String meetingBoxStyle = "-fx-padding: 5; -fx-opacity: 0.8;";
+                            //hvis dark mode er valgt
                             if (darkMode) {
                                 meetingBoxStyle += "-fx-background-color: " + getColorForProfile(ownerProfile, darkMode) + "; -fx-text-fill: #ffffff; -fx-border-color: white; -fx-font-weight: bold;";
                             } else {
@@ -1040,6 +1045,7 @@ public class HelloController {
                                     throw new RuntimeException(e);
                                 }
                             });
+                            //tilføjer til grid
                             GridPane.setConstraints(meetingBox, meetingCol, rowForProject, 1, 1);
                             GridPane.setFillWidth(meetingBox, true);
                             calendarGrid.getChildren().add(meetingBox);
@@ -1053,12 +1059,14 @@ public class HelloController {
     void monthView() {
         calendarGrid.getChildren().clear();
 
+        // Definerer dagens dato, ugens start og slut
         LocalDate today = LocalDate.now();
         LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
         LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
         YearMonth yearMonth = YearMonth.from(currentDate);
         int daysInMonth = yearMonth.lengthOfMonth();
         DayOfWeek startDayOfWeek = firstDayOfMonth.getDayOfWeek();
+        //sætter op så så mandag så den første dag i rækken altid er mandag
         int startCol = (startDayOfWeek.getValue() - 1) % 7;
         LocalDate gridStartDate = firstDayOfMonth.minusDays(startCol);
         int totalDays = daysInMonth + startCol;
@@ -1068,18 +1076,18 @@ public class HelloController {
         calendarInfoLabel.setText("Måned: " + monthYear);
 
         Map<LocalDate, VBox> dayBoxes = new HashMap<>();
-
+        // Løkke igennem hver dag i måned
         for (int i = 0; i < totalDays; i++) {
             LocalDate date = gridStartDate.plusDays(i);
             String dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, new Locale("da", "DK"));
             String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMM", new Locale("da", "DK")));
-
+            //laver vbox
             VBox dayBox = new VBox();
             dayBox.setSpacing(5);
             dayBox.setPrefWidth(120);
             dayBox.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #ffffff; -fx-padding: 10;");
 
-
+            //hvis dage er ude for denne måned eller hvis dag er i dag (så ændre stilen på box)
             if (date.isBefore(firstDayOfMonth) || date.isAfter(lastDayOfMonth)) {
                 dayBox.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10;");
             } else if (date.equals(today)) {
@@ -1090,7 +1098,7 @@ public class HelloController {
             Label dayLabel = new Label(dayName + " " + formattedDate);
             dayLabel.setStyle("-fx-font-weight: bold;");
             dayBox.getChildren().add(dayLabel);
-
+            //styler hvis dark mode er valgt
             if (darkMode) {
                 if (date.isEqual(today)) {
                     dayBox.setStyle("-fx-background-color: #ffdd55; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 10");
@@ -1109,14 +1117,13 @@ public class HelloController {
             int row = i / 7;
             calendarGrid.add(dayBox, col, row);
         }
-
-
+        //henter projekter
         for (Project project : projects) {
             LocalDate startDate = project.getStartDate();
             LocalDate endDate = project.getEndDate();
 
+            //laver hashset for specialDays (møde og event dag)
             Set<LocalDate> specialDays = new HashSet<>();
-
 
             if (project.getEventDate() != null && dayBoxes.containsKey(project.getEventDate())) {
                 specialDays.add(project.getEventDate());
@@ -1129,7 +1136,7 @@ public class HelloController {
                 }
             }
 
-
+            //tilføjer projekterne inde i daybox hvis de ikke er special dag
             for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
                 if (!specialDays.contains(date)) {  // Kun tilføj hvis datoen ikke er en speciel dag
                     VBox dayBox = dayBoxes.get(date);
@@ -1149,7 +1156,7 @@ public class HelloController {
                 }
             }
             Profile ownerProfile = getProfileById(project.getOwner());
-            // Highlight eventDate with a distinct style or add a special marker
+            // Highlighter event dag (label)
             if (project.getEventDate() != null && dayBoxes.containsKey(project.getEventDate())) {
                 VBox eventDayBox = dayBoxes.get(project.getEventDate());
                 Label eventLabel = new Label("Event for " + project.getName());
@@ -1163,7 +1170,7 @@ public class HelloController {
                 });
                 eventDayBox.getChildren().add(eventLabel);
             }
-
+            //hvis det er en dag møde ændre label
             if (project.getMeetingDates() != null) {
                 for (LocalDate meetingDate : project.getMeetingDates()) {
                     if (dayBoxes.containsKey(meetingDate)) {
@@ -1188,7 +1195,7 @@ public class HelloController {
         if (profile == null) {
             return darkMode ? "#333333" : "#FFFFFF";
         }
-
+        //henter farverne til profriler og laver switch case, så farve skifter hvis dark mode
         switch (profile.getDepartment()) {
             case "Tønder Bibliotekerne":
                 return darkMode ? "#4a90e2" : "lightblue";
@@ -1202,7 +1209,7 @@ public class HelloController {
                 return darkMode ? "#333333" : "#FFFFFF";
         }
     }
-
+    //henter profilerne med deres id
     private Profile getProfileById(int id) {
         for (Profile profile : profiles) {
             if (profile.getId() == id) {
