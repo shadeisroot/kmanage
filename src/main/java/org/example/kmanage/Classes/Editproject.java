@@ -239,6 +239,7 @@ public class Editproject {
             Scene scene = new Scene(pane);
             scene.getStylesheets().add
                     (Main.class.getResource("notiStyle.css").toExternalForm());
+            stage.setResizable(false);
             stage.setScene(scene);
             stage.show();
         }

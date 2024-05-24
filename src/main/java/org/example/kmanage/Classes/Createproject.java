@@ -276,6 +276,7 @@ public class Createproject {
         });
 
         Scene scene = new Scene(pane);
+        stage.setResizable(false);
         scene.getStylesheets().add
                 (Main.class.getResource("notiStyle.css").toExternalForm());
         stage.setScene(scene);

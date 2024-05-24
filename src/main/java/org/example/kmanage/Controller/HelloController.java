@@ -584,6 +584,7 @@ public class HelloController {
             } else {
                 return;
             }
+            updateCalender(currentDate);
         });
 
         Button knockButton = new Button("Banke på");
@@ -612,6 +613,7 @@ public class HelloController {
         Scene scene = new Scene(layout);
         infoStage.setTitle("Projektinformation");
         infoStage.setScene(scene);
+        infoStage.setResizable(false);
         infoStage.sizeToScene();
         infoStage.show();
     }
@@ -671,6 +673,7 @@ public class HelloController {
                 projects.remove(project);
                 infoStage.close();
             }
+            updateCalender(currentDate);
         });
         Button editButton = new Button("Rediger");
         Button knockButton = new Button("Banke på");
@@ -693,6 +696,7 @@ public class HelloController {
 
         Scene scene = new Scene(layout);
         infoStage.setTitle("Eventinformation");
+        infoStage.setResizable(false);
         infoStage.setScene(scene);
         infoStage.sizeToScene();
         infoStage.show();

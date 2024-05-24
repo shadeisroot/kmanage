@@ -63,6 +63,7 @@ public class Editprofile {
         });
 
         Scene scene = new Scene(pane);
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }

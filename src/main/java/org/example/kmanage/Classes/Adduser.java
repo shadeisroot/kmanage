@@ -81,6 +81,7 @@ public class Adduser {
 
         // Create a Scene with the GridPane and set it on the Stage
         Scene scene = new Scene(grid, 300, 300);
+        addUserStage.setResizable(false);
         addUserStage.setScene(scene);
 
         // Show the Stage
