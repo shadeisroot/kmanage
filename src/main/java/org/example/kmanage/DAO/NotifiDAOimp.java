@@ -21,7 +21,7 @@ public class NotifiDAOimp implements NotifiDAO{
             System.out.println("Cant connect to Database" + e);
         }
     }
-
+//tilføjer notificationerne til databasen
     public void addallNotification(String message) {
         try {
             String sql = "INSERT INTO dbo.Notifications (Message, from_id, to_id) VALUES (?, ?, ?)";
@@ -35,7 +35,7 @@ public class NotifiDAOimp implements NotifiDAO{
             System.out.println("Error" + e);
         }
     }
-
+//tilføjer notificationer der er til en specifik bruger
     public void addtoNotification(String message, int to_id) {
         try {
             String sql = "INSERT INTO dbo.Notifications (Message, from_id, to_id) VALUES (?, ?, ?)";
@@ -49,7 +49,7 @@ public class NotifiDAOimp implements NotifiDAO{
             System.out.println("Error" + e);
         }
     }
-
+//henter alle notificationer
     public List getNotifications() {
         List<String> notifications = new ArrayList<>();
         try {

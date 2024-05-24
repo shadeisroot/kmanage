@@ -26,7 +26,7 @@ public class CalenderDAOimp implements CalenderDAO{
         }
     }
 
-
+//tilføjer event til databasen
     public void addEvent(String name, String start, String end, int id, String notes, String event, String meeting) throws SQLException {
         String sql = "INSERT INTO dbo.projects (name, startdate, enddate, owner, notes, eventdate, meetingdates) VALUES (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = con.prepareStatement(sql);
@@ -39,7 +39,7 @@ public class CalenderDAOimp implements CalenderDAO{
         ps.setString(7, meeting);
         ps.executeUpdate();
     }
-
+//henter alle events og ligger det ind i en observable list
     public ObservableList<Project> getevents() {
         ObservableList<Project> projects = FXCollections.observableArrayList();
         try {
@@ -76,7 +76,7 @@ public class CalenderDAOimp implements CalenderDAO{
         }
         return projects;
     }
-
+//henter et eventid ud fra navn, startdato, slutdato, ejer, noter, eventdato og mødedatoer
     public int getprojectid(String name, String startdate, String enddate, int owner, String notes, String eventdate, String meetingdates) throws SQLException {
             String sql = "SELECT id from dbo.projects WHERE name = ? AND startdate = ? AND enddate = ? AND owner = ? AND eventdate = ? AND meetingdates = ? ";
             PreparedStatement ps = con.prepareStatement(sql);
@@ -93,7 +93,7 @@ public class CalenderDAOimp implements CalenderDAO{
                 throw new SQLException("Failed to retrieve projectid");
             }
     }
-
+//tilføjer et medlem til et event
         public void addProjectMember(int id, int memberid){
             try {
                 String sql = "INSERT INTO dbo.ProjectUSER (Project_ID, Member_ID) VALUES (?, ?)";
@@ -105,7 +105,7 @@ public class CalenderDAOimp implements CalenderDAO{
                 System.out.println("Error" + e);
             }
         }
-
+//redigere et event
         public void editEvent(String name, String start, String end, int id, String notes, String event, String meeting, int idofproject) throws SQLException {
             String sql = "UPDATE dbo.projects SET name = ?, startdate = ?, enddate = ?, owner = ?, notes = ?, eventdate = ?, meetingdates = ? WHERE id = ?";
             PreparedStatement ps = con.prepareStatement(sql);
@@ -119,7 +119,7 @@ public class CalenderDAOimp implements CalenderDAO{
             ps.setInt(8, idofproject);
             ps.executeUpdate();
         }
-
+//henter alle medlemmer tilknyttet et event
         public List<Integer> getProjectMembers(int id) {
 
             List<Integer> members = new ArrayList<>();
@@ -136,7 +136,7 @@ public class CalenderDAOimp implements CalenderDAO{
             }
             return members;
         }
-
+//fjerner et medlem fra et event
         public void removeprojectmember(int id, int memberid){
             try {
                 String sql = "DELETE FROM dbo.ProjectUSER WHERE Project_ID = ? AND Member_ID = ?";
@@ -148,7 +148,7 @@ public class CalenderDAOimp implements CalenderDAO{
                 System.out.println("Error" + e);
             }
         }
-
+//fjerner et event fra projectuser
         public void removeProject(int id) {
             try {
                 String sql = "DELETE FROM dbo.ProjectUSER WHERE Project_ID = ?";
@@ -159,7 +159,7 @@ public class CalenderDAOimp implements CalenderDAO{
                 System.out.println("Error" + e);
             }
         }
-
+//henter id ud fra navn, startdato, slutdato, noter, eventdato og mødedatoer bare uden loggedin id
     public int getprojectidnoowner(String name, String startdate, String enddate, String notes, String eventdate, String meetingdates) throws SQLException {
         String sql = "SELECT id from dbo.projects WHERE name = ? AND startdate = ? AND enddate = ? AND eventdate = ? AND meetingdates = ? ";
         PreparedStatement ps = con.prepareStatement(sql);
@@ -175,7 +175,7 @@ public class CalenderDAOimp implements CalenderDAO{
             throw new SQLException("Failed to retrieve projectid");
         }
     }
-
+//fjerner et event
     public void RemoveEvent(int id) throws SQLException {
         String sql = "DELETE FROM dbo.projects WHERE id = ?";
         PreparedStatement ps = con.prepareStatement(sql);
@@ -183,6 +183,7 @@ public class CalenderDAOimp implements CalenderDAO{
         ps.executeUpdate();
     }
 
+    //henter alle events fra en bruger og ligger det ind i en liste
     public List<Project> getProjectsByUserId(int userId) throws SQLException {
         List<Project> projects = new ArrayList<>();
         String sql = "SELECT p.* FROM Projects p INNER JOIN ProjectUSER pu ON p.id = pu.Project_ID WHERE pu.Member_ID = ?";

@@ -18,6 +18,8 @@ public class PlistDAOimp implements PlistDAO {
             System.out.println("Cant connect to Database" + e);
         }
     }
+
+    //henter alle profiler i employee tabellen
         public ObservableList<Profile> getprofile() {
             ObservableList<Profile> profiles = FXCollections.observableArrayList();
             try {

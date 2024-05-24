@@ -19,7 +19,7 @@ public class LoginDAOImp implements LoginDAO{
             System.out.println("Cant connect to Database" + e);
         }
     }
-
+//metode til at tjekke login når der instastes brugernavn og password
     public User checkLogin(String username, String password) {
         try {
             String sql = "SELECT * from dbo.Login " +
