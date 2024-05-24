@@ -48,7 +48,7 @@ public class Main extends Application {
         grid.add(sceneTitle, 0, 0, 2, 1);
 
         //labels og field til navn og kode
-        Label userName = new Label("Brugernavn: ");
+        Label userName = new Label("Brugernavn id: ");
         grid.add(userName, 0, 1);
 
         TextField userTextField = new TextField();
