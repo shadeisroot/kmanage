@@ -17,15 +17,15 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.kmanage.Controller.HelloController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.kmanage.Controller.HelloController" styleClass="root">
     <children>
         <Button fx:id="notButton" layoutX="100.0" layoutY="20.0" mnemonicParsing="false" onAction="#notButtonPressed" text="Notifikationer" />
         <HBox layoutX="20.0" layoutY="124.0">
             <TableView fx:id="plist" prefHeight="402.0" prefWidth="227.0">
                 <columns>
-                    <TableColumn fx:id="plistc1" prefWidth="75.0" text="Navn" />
-                    <TableColumn fx:id="plistc2" prefWidth="75.0" text="Position" />
-                    <TableColumn fx:id="plistc3" prefWidth="75.0" text="Afdeling" />
+                    <TableColumn fx:id="plistc1" prefWidth="75.0" text="Navn"/>
+                    <TableColumn fx:id="plistc2" prefWidth="75.0" text="Position"/>
+                    <TableColumn fx:id="plistc3" prefWidth="75.0" text="Afdeling"/>
                 </columns>
             </TableView>
             <ScrollPane fitToWidth="true" prefHeight="402.0" prefWidth="820.0">
