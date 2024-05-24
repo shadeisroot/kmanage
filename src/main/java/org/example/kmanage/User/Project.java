@@ -136,10 +136,10 @@ public class Project {
         return knockRequest;
     }
     //banke på metode, som sender en notifikation til projekt ejeren
-    public void requestKnock(User user){
+    public void requestKnock(Profile profil){
         this.knockRequest = true;
         Notification notification = new Notification();
-        notification.addMessage( user.getUsername() + " har banket på til projektet: " + name);
+        notification.addMessage( profil.getName()+ " har banket på til projektet: " + name);
         System.out.println("banke på til " + name);
     }
 }
