@@ -607,7 +607,7 @@ public class HelloController {
         // Tilføj alle elementer til layoutet
         layout.getChildren().addAll(
                 nameLabel, locationLabel, startLabel, endLabel, eventDayLabel, notesLabel, ownerLabel,
-                personLabel, filesLabel, filesList, meetingsList, removeProjectButton
+                personLabel, filesLabel, filesList, meetingsList, removeProjectButton, editButton, knockButton
         );
         Scene scene = new Scene(layout);
         infoStage.setTitle("Projektinformation");
