@@ -33,7 +33,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         //sætter scene op grid spacing
-        primaryStage.setTitle("XX Login");
+        primaryStage.setTitle("Login");
         GridPane grid = new GridPane();
         primaryStage.setResizable(false);
         grid.setAlignment(Pos.CENTER);
