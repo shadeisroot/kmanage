@@ -51,3 +51,9 @@
     -fx-opacity: 0.7;
 }
 
+.root {
+    -fx-background-image: url("bagground.jpg");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
