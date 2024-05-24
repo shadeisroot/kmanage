@@ -601,7 +601,7 @@ public class HelloController {
         } else {
             editButton.setDisable(true);
         }
-        knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
+        knockButton.setOnAction(e -> project.requestKnock(loggedInUser.getProfile()));
 
 
         // Tilføj alle elementer til layoutet
@@ -686,7 +686,7 @@ public class HelloController {
         } else {
             editButton.setDisable(true);
         }
-        knockButton.setOnAction(e -> project.requestKnock(loggedInUser));
+        knockButton.setOnAction(e -> project.requestKnock(loggedInUser.getProfile()));
         //tilføjer elementer til layout
         layout.getChildren().addAll(nameLabel, locationLabel, eventDayLabel, notesLabel,ownerLabel, personLabel, meetingsList, editButton, knockButton, removeProjectButton);
 
